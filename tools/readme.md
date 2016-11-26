@@ -1,0 +1,1 @@
+[Reset your Master Password if you've forgotten it](chrome://pippki/content/resetpassword.xul)
