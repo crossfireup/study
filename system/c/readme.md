@@ -258,4 +258,29 @@ Error number 	Error Code 	Error Description
 
     3. The ldconfig manpage recommends explicitly linking against libc, which has been done above using the -l option (-lc).
 
+    * preprocess
+      gcc -E hello.c -o hello.i
+    * compile
+      gcc -S hello.i -o hello.s
 
+      /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/cc1 open.c
+
+    * assembly
+      as hello.s -o hello.o
+      gcc -c hello.s -o hello.o
+
+    * 
+
+# io
+-----
+  * file
+    
+    RESTRICTED DELETION FLAG OR STICKY BIT: 
+
+       The  restricted deletion flag or sticky bit is a single bit, whose interpretation depends on the file type.  
+       
+       * For directories, it prevents unprivileged users from removing or renaming a file in the directory  unless  they  own
+       the  file or the directory; this is called the restricted deletion flag for the directory, and is commonly found
+       on world-writable directories like /tmp. 
+       * For regular files on some older systems, the bit saves  the  program’s
+       text image on the swap device so it will load more quickly when run; this is called the sticky bit.
