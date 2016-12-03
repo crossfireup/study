@@ -1,3 +1,10 @@
+# rules
+  * no harm
+  * defiine and honor boundaries
+  * consider contermeasures only after haking is complete
+  * get  agreement in advance
+  * document everything
+
 # start postgres db
     * Metasploit uses PostgreSQL as its database so it needs to be launched first.
 
@@ -226,3 +233,7 @@ SEE THE MAN PAGE FOR MANY MORE OPTIONS, DESCRIPTIONS, AND EXAMPLES
 
 nping --arp --arp-type arp-reply --arp-sender-mac a0:8d:16:55:ce:38 --arp-sender-ip 192.168.43.1 --arp-target-mac 84:4b:f5:85:91:8e --arp-target-ip 192.168.43.206 192.168.43.206
 echo "this is a test from all of you" |  ncat -u 127.0.0.1 4913
+
+
+* rce
+  arbitrary code execution

@@ -311,10 +311,63 @@
     ulimit -c unlimited
     ulimit -c 
     ```
-    gdb:
+  * gdb:
+    * compile
+
         gcc -g -O0 
 
-        gdb exec_file core_file
+    * gdb exec_file core_file
+
+        info variable
+
+        info locals
+
+        p <variable name>
+
+        i register (i r)
+
+        info proc map
+
+        disassamble
+
+        ctrl + x + a
+
+     * multiple process:
+          set follow-fork-mode child/parent
+          set detach-on fork off
+
+     * watch: (same for break print)
+      ```
+        watch foo
+        watch -l foo
+        rwatch foo         # stop if foo is read
+        watch foo thread 3 # watch if thread 3 modify foo
+        watch foo if foo = 3 
+      ```
+
+      * thread
+      ```
+        thread apply 1-4 backtrace/print $sp
+        thread apply all backtrace full
+      ```
+      
+      * dynamic printf
+        dprintf mutex_lock, ...
+        set dprintf-style gdb/call
+        set dprintf-channel mylog
+        set dprintf-function fprintf
+
+      * catch
+        catch syscall nanosleep
+        catch syscall 100
+
+        tbreak # temparory break
+        rbreak # regex break
+        command
+        silent # suppress output on breakpoint hit
+        info line * $pc
+        info line foo.c:42
+    D_PRELOAD to the path of a shared object, that file will be loaded before any other library (including the C runtime, libc.so).
 
 # file system #
     
@@ -356,6 +409,8 @@
     ```bash
     pids=` ps x -o  "%p %r %c" | grep bash | sort -k 2 | awk '{print $2}' | sort -u `
     for pid in ${pids};do kill -TERM -- -$pid ;done;
+
+    ps -p 6514 -F
     ```
 
   * redirect
@@ -363,3 +418,73 @@
     write stdout and stderr to logfie and stderr to stdout:
     /a.out < /etc/services 2>&1 >>stderr.out | tee --append stderr.out
     
+
+  * [anonymize ssh traffic](http://tor.stackexchange.com/questions/123/how-can-i-anonymize-my-ssh-traffic-using-the-tor-network/127#127)
+
+    1. For SSH you can do something like the following:
+    ```
+    ssh -o ProxyCommand='nc -x localhost:$orport %h %p' example.com
+    ```
+
+    2. Options can also be configured in your ~/.ssh/config (or /etc/ssh/ssh_config, or the equivalent on your OS) file:
+    ```
+    Host example
+        Hostname example.com
+        ProxyCommand /usr/bin/nc -x localhost:$orport %h %p
+    ```
+
+    3. Rsync can then use ssh as its remote shell and it will pick up the previous config:
+      ```
+      rsync -e ssh example:path/to/files /dest
+      ```
+      > or, by directly passing arguments to the remote shell:
+      
+      ```
+      rsync -e "ssh -o ProxyCommand='nc -x localhost:$orport %h %p'" example.com /dest
+      ```
+
+    4. Finally, you can use the RSYNC_CONNECT_PROG environment variable to set up all future RSYNC invocations to use Tor (without having to manually specify it each time):
+        ```
+        export RSYNC_CONNECT_PROG='ssh proxyhost nc -x localhost:$orport %h %p'
+        rsync example.com:/src /dest 
+        ```
+       Replace $orport with the port you've got Tor's SOCKS proxy listening on.
+
+# tmux
+
+  Prefix-Command,tmux default CTRL+b。
+  * session:
+
+    create: tmux new-session -s <session-name> or tmux new -s <session-name>
+    detach: prefix d
+    attach: tmux attach -t <session-name> or tmux a -t <session-name>
+    tmux ls: list sessions
+    prefix $: rename sessions
+
+  *window
+
+    tmux new -n <window-name>
+    new window: prefix c
+    previous: prefix p
+    next: prefix n
+    switch to previous active windows: prefix space
+    window number: prefix <win-num>
+    list: prefix w
+    close: prefix &
+    rename: prefix ,
+
+  * panel
+
+    list panel nmuber: prefix q
+    vsplit）：prefix %
+    hsplit：prefix "
+    switch: prefix o
+    array : prefix <left/rigth arrow>
+    layout: prefix space 
+    
+        水平平分（even-horizontal）
+        垂直平分（even-vertical）
+        主窗格最大化，其他窗格水平平分（main-horizontal）
+        主窗格最大化，其他窗格垂直平分（main-vertical）
+        平铺，窗格均等分（tiled）
+

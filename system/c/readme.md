@@ -284,3 +284,23 @@ Error number 	Error Code 	Error Description
        on world-writable directories like /tmp. 
        * For regular files on some older systems, the bit saves  the  program’s
        text image on the swap device so it will load more quickly when run; this is called the sticky bit.
+
+# buffer overflow
+    * Make sure that the memory auditing is done properly in the program using utilities like valgrind memcheck
+    * Use fgets() instead of gets().
+    * Use strncmp() instead of strcmp(), strncpy() instead of strcpy() and so on.
+
+# socket
+
+  * ruptime
+    1. add service config
+      vi /etc/services
+      ruptime    180/tcp   # ruptime
+
+      vi /etc/hosts
+      <ip> hostname
+
+    2. start server to listen
+       ruptimed 
+    3. start client
+       ruptime hostname

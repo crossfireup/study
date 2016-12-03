@@ -331,3 +331,14 @@ tools:
      Ctrl+Shift+L  mutil to one line 
 
      Ctrl+Shift+P show command
+
+* [hook](https://en.wikipedia.org/wiki/Hooking)
+     hooking covers a range of techniques used to alter or augment the behavior of an operating system, 
+     of applications, or of other software components by intercepting function calls or messages or events passed between
+      software components. Code that handles such intercepted function calls, events or messages is called a "hook".
+
+      ILT: import lookup table
+      IAT: import address table
+
+      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug
+      "C:\WinDDK\7600.16385.1\Debuggers\windbg.exe" -p %ld -e %ld -g
