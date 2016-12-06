@@ -342,3 +342,93 @@ tools:
 
       HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug
       "C:\WinDDK\7600.16385.1\Debuggers\windbg.exe" -p %ld -e %ld -g
+
+* assembly
+    1. windbg工具使用：
+      
+      * dependency walker
+        1. executables are just sequences of bytes
+        2. symbols help debugger to:
+            * map raw address to source code
+            * analyze internal layout and size of app
+        3. pdb -> program database
+            * newest debug info format coff and codeview are deprecated
+            * pdbs are stored separately from executables
+            * pdb format undocumented
+            * special apis work with it: dbghelp.dll MsDiaxy.dll
+        
+      * [fpo](https://msdn.microsoft.com/en-us/library/2kxx5t2c.aspx)
+
+        cl /Oy(-) enable/disable frame pointer ommition, can free one register called EBP
+         The /Ox (Full Optimization) and /O1, /O2 (Minimize Size, Maximize Speed) options imply /Oy. 
+         Specifying /Oy– after the /Ox, /O1, or /O2 option disables /Oy, whether it is explicit or implied.
+        
+      * debug info
+        1. linker:/pdbstripped:
+           * Public functions and variables
+           * FPO information
+        2. Private functions and variables
+        3. Source file and line information
+        4. Type information
+        
+      * options for debug 
+        * Compiler options: /Z7, /Zi, /ZI
+        * Linker options: /debug, /pdb, /pdbstripped
+    
+      * match debug info
+        * signature in executables and pdb files during building:
+          1. timestamp (pdb v2.0)
+          2. guid (pdb v7.0) 
+        * debugger match the signature and they must be same
+        * algorithm to search pdb files:
+            1. try module path
+            2. try name and path specified in PE header 
+                ( NB10 or rsds debug header)
+            3. set _NT_SYMBOLS_PATH or _NT_ALT_SYMBOLS_PATH environment variables
+    
+    * attach mode
+      1. invasive
+      2. noninvasive is usefull if:
+        * app is debugging by vs, can still use windbg for debugging
+        * the target application is completely frozen and 
+            can't lauch the break-in thread neccessary for a true attach
+    
+    * dbg command
+      * regular cmd used to __debug process__
+        
+        k lm g
+
+      * mata or dot-commands __control the behavior of debugger__
+        
+        .sympath  .cls  .lastevent  .detach  .if
+    
+      * extention cmd 
+        - implemented as export functions in extension dlls
+        - large part of what makes windbg such a powerfull debugger
+        - lots of preinstalled dlls: exts.dll, ntsdexts.dll, uext.dll,wow64exts.dll, kdexts.dll, ..
+        - can write our own extension dll
+        - !analyze !address !handle, !ped 
+    
+      * _NT_SOURCE_PATH environment variable
+        
+        .srcpath
+        .srcpath+ xy
+    
+      * processed and thread on nt
+        * each process is represented by executive process block(EPROCESS) in kernel-mode in system address space
+        * each process has one or more thread represented by executables thread block(ETHREAD) in kernel-mode in system address space
+        * EPROCESS points to related structs such as ETHREAD
+        * EPROCESS points to PEB(process environment block) in process address space
+        * ETHREAD points to TEB(thread environment block) in process address space
+
+        * PEB = Process Environment Block
+          - basic image information (base address, version numbers, module list)
+          - process heap information
+          - environment variables
+          - command-line parameter
+          - DLL search path
+          - Display it: !peb, dt nt!_PEB
+        * TEB = Thread Environment block
+          - stack information (stack-base and stack-limit)
+          - TLS (Thread Local Storage) array
+          - Display it: !teb, dt nt!_TEB

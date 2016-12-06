@@ -206,7 +206,13 @@
 
         nnoremap <F3> :set hlsearch!<CR>
 
-
+     * delete
+        
+        d63G # delete from cursor to line 63
+        
+        :a,bd # delete from a to b
+        
+        :,bd # delete from current to d 
 
 
 * linux
