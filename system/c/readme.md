@@ -290,6 +290,12 @@ Error number 	Error Code 	Error Description
        on world-writable directories like /tmp. 
        * For regular files on some older systems, the bit saves  the  program’s
        text image on the swap device so it will load more quickly when run; this is called the sticky bit.
+    
+      buffer:
+        stderr not full buffered
+        stdout, stdin is full buffered when not directed to interactive device
+        setvbuf(stdout, NULL, _IONBF, 0)
+        ioctl
 
 # buffer overflow
     * Make sure that the memory auditing is done properly in the program using utilities like valgrind memcheck

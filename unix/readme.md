@@ -194,7 +194,7 @@
 
         To turn off highlighting until the next search:
 
-        :noh
+        :nohl
 
         Or turn off highlighting completely:
 
@@ -375,6 +375,40 @@
         info line foo.c:42
     D_PRELOAD to the path of a shared object, that file will be loaded before any other library (including the C runtime, libc.so).
 
+    * common commands
+      command | description
+      --| --
+      h[elp] 	     |     Get help on gdb commands
+      h[elp]       |     $ <$ cmd$ >$ 	Get help on a specific gdb command
+      r[un] 	     |     Run to next breakpoint or to end
+      s[tep] 	     |     Single-step, descending into functions
+      [ext]        |    	Single-step without descending into functions
+      fin[ish] 	   |     Finish current function, loop, etc. (useful!)
+      c[ontinue] 	 |     Continue to next breakpoint or end
+      up 	         |     Go up one context level on stack (to caller)
+      do[wn] 	     |     Go down one level (only possible after up)
+      l[ist] 	     |      Show lines of code surrounding the current point
+      p[rint] $ <$ name$ >$ |	Print value of variable called $ <$ name$ >$
+      p $ \ast<$ name$ >$   |	  Print what is pointed to by $ <$ name$ >$
+      p/x $ <$ name$ >$ 	  |  Print value of $ <$ name$ >$ in hex format
+      p $ <$ name$ >$ @$ <$ n$ >$ |	print $ <$ n$ >$ values starting at $ <$ name$ >$
+      p $ <$ chars$ >$ $ <$ tab$ >$ |	List all variables starting with $ <$ chars$ >$
+      b[reak] $ <$ name$ >$ |	Set a breakpoint at function $ <$ name$ >$
+      b $ <$ class$ >$ ::$ <$ name$ >$ |	Set a breakpoint at $ <$ name$ >$ in $ <$ class$ >$
+      b $ <$ class$ >$ ::$ <$ tab$ >$ |	List all members in $ <$ class$ >$
+      h[elp] b |	Documentation for setting breakpoints
+      i[nfo] b |	List breakpoints
+      i 	| List all info commands
+      dis[able] 1 |	Disable breakpoint 1
+      en[able] 1  |	Enable breakpoint 1
+      d[elete] 1 	| Delete breakpoint 1
+      d 1 2       |	Delete breakpoints 1 and 2
+      d 	        | Delete all breakpoints
+      cond[ition] 1 $ <$ expr$ >$ |	Stop at breakpoint 1 only if $ <$ expr$ >$ is true
+      cond 1 |	Make breakpoint 1 unconditional
+      comm[ands] 1 	| Add a list of gdb commands to execute each time breakpoint 1 is hit
+        (usually just print <var>)
+
 # file system #
     
   * ZFS has three major design goals: https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/zfs.html
@@ -487,10 +521,160 @@
     switch: prefix o
     array : prefix <left/rigth arrow>
     layout: prefix space 
+    ```text
+    水平平分（even-horizontal）
+    垂直平分（even-vertical）
+    主窗格最大化，其他窗格水平平分（main-horizontal）
+    主窗格最大化，其他窗格垂直平分（main-vertical）
+    平铺，窗格均等分（tiled）
+    ```
+
+# nginx
+--------------------------
+  * master: 
+    * reading and validating configuration
+    * creating, binding and closing sockets
+    * starting, terminating and maintaining the configured number of worker processes
+    * reconfiguring without service interruption
+    * controlling non-stop binary upgrades (starting new binary and rolling back if necessary)
+    * re-opening log files
+    * compiling embedded Perl scriptss
+  * worker:
+     * accept, handle and process connections from clients
+     * provide reverse proxying 
+     * filtering functionality
+     * etc
+  * cache loader process
+    * repares nginx instances to work with files already stored on disk in a specially allocated directory structure
+    * It traverses the directories, checks cache content metadata, 
+      updates the relevant entries in shared memory and 
+      then exits when everything is clean and ready for use.
+  * cache manager : stay in memory and is restarted by master when fails
+    * responsible for cache expiration and invalidation
+
+# makefile
+  * order 
     
-        水平平分（even-horizontal）
-        垂直平分（even-vertical）
-        主窗格最大化，其他窗格水平平分（main-horizontal）
-        主窗格最大化，其他窗格垂直平分（main-vertical）
-        平铺，窗格均等分（tiled）
+    GNUmakefile, makefile and Makefile
+
+    variable:MAKEFILES
+      global makefiles,split by space, "target" in thoese files take no effect
+
+  * global: *, ? , ~
+    ~bob/ same as /home/bob
+
+    objects = *.o # like macro in c
+    objects = $(wildcard *.o)
+
+  * ignore a makefile
+      -include filename
+  * add makefie
+      include *.md 
+
+  * vpath : search path for make
+    1. vpath <pattern> <directories> : match files
+    2. vpath <pattern> : clean match files
+    3. vpath : clean all files
+    ```makefile
+    vpath %.c foo:foa
+    vpath % blish
+    vpath %.c bar
+    ```
+  * multiple targets
+    ```makefile
+    bigoutput littleoutput : text.g
+      generate text.g -$(subst output,,$@) > $@
+
+    # same as
+    bigoutput : text.g
+      generate text.g -big > bigoutput
+    littleoutput : text.g
+      generate text.g -little > littleoutput
+    ```
+
+  * static pattern
+    ```makefile
+    <targets ...> : <target-pattern> : <prereq-patterns ...>
+      <commands>
+
+    objects = foo.o bar.o
+      all: $(objects)
+    $(objects): %.o: %.c
+      $(CC) -c $(CFLAGS) $< -o $@
+
+    foo.o : foo.c
+        $(CC) -c $(CFLAGS) foo.c -o foo.o
+    bar.o : bar.c
+        $(CC) -c $(CFLAGS) bar.c -o bar.o
+
+
+    files = foo.elc bar.o lose.o
+    $(filter %.o,$(files)): %.o: %.c
+      $(CC) -c $(CFLAGS) $< -o $@
+    $(filter %.elc,$(files)): %.elc: %.el
+      emacs -f batch-byte-compile $<
+    
+    ```
+
+    * display
+      @echo 
+
+      make -n/--just-print : only show command 
+      make -s/--silent : supress all dispaly
+    
+    * execute: fork a shell to execute cmd
+      write the command in one line if you want the later executed based on the fronter
+
+      ```makefile
+        exec:
+          cd /home/;pwd # print /home
+        
+        extc:
+          cd /home
+          pwd
+        # print the cwd
+      ```
+
+    * error handle
+      -rm -f not-exits # ignore rm error
+      make -i/--ignore-errors
+      make -k/--keep-going :stop current target, go to next target
+
+    * 
+
+
+
+
+  * $@ is the name of the target.
+    ```makefile
+    client: client.c
+        $(CC) client.c -o $@
+
+    server: server.c
+        $(CC) server.c -o $@
+    ```
+  * $? macro stores the list of dependents more recent than the target 
+  (i.e., those that have changed since the last time make was invoked for the given target)
+    ```makefile
+    client: client.c
+        $(CC) $? -o $@
+
+    server: server.c
+        $(CC) $? -o $@
+    ```
+  * $^ gives you all dependencies, regardless of whether they are more recent than the target. 
+      Duplicate names, however, will be removed. 
+      This might be useful if you produce transient output 
+      (such as displaying a result to the screen rather than saving it to a file). 
+      ```makefile
+      # print the source to the screen
+      viewsource: client.c server.c
+      less $^
+      ```
+  * $+ is like $^, but it keeps duplicates and gives you the entire list of dependencies in the order they appear.
+    ```makefile
+    # print the source to the screen
+    viewsource: client.c server.c
+            less $+
+    ```
 
