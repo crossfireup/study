@@ -640,10 +640,40 @@
       make -i/--ignore-errors
       make -k/--keep-going :stop current target, go to next target
 
-    * 
+    * nesting
+      ```makefile
+      subsystem:
+        cd subdir && $(MAKE)
 
+      # same as
+      subsystem:
+        $(MAKE) -C subdir
+    
+    * export: pass value to sub makefile
+    ```
+      export variable := value
 
+      variable = value
+      export variable      
 
+      export  # export all variables to sub makefiles
+    ```
+
+      __SHELL and MAKEFLAGS are always passed to sub Makfiles __
+
+      -C , -f , -h, -o 和 -W/--print-directory
+      when use -C , -w is auto enables unless use -s/--silent or --no-print-directory
+
+    * package
+      define run-yacc 
+        yacc $(firstwork $^)
+        mv y.tab.c $@
+      endef
+
+      foo.c : foo.y
+        $(run-yacc)
+
+      
 
   * $@ is the name of the target.
     ```makefile
