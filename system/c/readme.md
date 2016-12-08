@@ -272,10 +272,17 @@ Error number 	Error Code 	Error Description
       nm -Ca  # list all function in lib so
 
     * ld 
-      make sure mylib.so exist, if not, make a link to mylib.so.xx.xx.xx
+      make sure libmylib.so exist, if not, make a link to mylib.so.xx.xx.xx
       ld find error ways:
       1. LD_DEBUG=all make 
       2. ld -lmylib --verbose or -Wl,--verbose or -Xlinker --verbose to gcc for passing parameters to ld
+    
+    * [create tiny size](http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html)
+      [libc free](https://blogs.oracle.com/ksplice/entry/hello_from_a_libc_free)
+
+      gcc -Wall -s -nostdlib tiny.o
+
+      gcc -fno-builtin/-fno-builtin-function
 
 # io
 -----
