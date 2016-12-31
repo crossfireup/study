@@ -1,6 +1,8 @@
 ## Socket Header Files
 https://www.gnu.org/software/libc/manual/
 
+http://www.iso-9899.info/wiki/Books#Learning_C
+
 ## Socket header files contain data definitions, structures, constants, macros, and options used by socket subroutines. An application program must include the appropriate header file to make use of structures or other information a particular socket subroutine requires. Commonly used socket header files are:
     header                        | description
     ------                        | -----------
@@ -304,6 +306,11 @@ Error number 	Error Code 	Error Description
         setvbuf(stdout, NULL, _IONBF, 0)
         ioctl
 
+      * open 
+        1. file access flags: O_RDWR, O_RDONLY, O_WRONLY
+        2. file create flags: O_CREAT, o_TRUNC, O_DIRECTORY,O_DIRECT
+        3. file status flags: O_ASYNC, O_NONBLOCK, OAPPEND
+
 # buffer overflow
     * Make sure that the memory auditing is done properly in the program using utilities like valgrind memcheck
     * Use fgets() instead of gets().
@@ -342,3 +349,82 @@ Error number 	Error Code 	Error Description
     6. At the end of an initializer; for example, after the evaluation of 5 in the declaration int a = 5;.
     7. Between each declarator in each declarator sequence; for example, between the two evaluations of a++ in int x = a++, y = a++.[8] (This is not an example of the comma operator.)
     8. After each conversion associated with an input/output format specifier. For example, in the expression printf("foo %n %d", &a, 42), there is a sequence point after the %n is evaluated and before printing 42.
+
+# io multiplexing
+  * level-trigger
+
+  * edge-trigger
+    1. signal-driven io
+      * Establish the signal handler before enabling signal-driven I/O
+
+        On some UNIX implementations,  SIGIO is ignored by default.
+      * Setting the file descriptor owner
+        ```c
+        fcntl(fd, F_SETOWN, pid);
+        ```
+        On older UNIX implementations, an ioctl() operation—either  FIOSETOWN or
+        SIOCSPGRP —was used to achieve the same effect as  F_SETOWN . For compatibility,
+        these ioctl() operations are also provided on Linux.
+
+        The fcntl()  F_GETOWN operation returns the ID of the process or process group
+        that is to receive signals when I/O is possible on a specified file descriptor:
+        ```c
+        id = fcntl(fd, F_GETOWN);
+        if (id == -1)
+          errExit("fcntl");
+        ```
+        A process group ID is returned as a negative number by this call.
+        The ioctl() operation that corresponds to  F_GETOWN on older UNIX implementa-
+        tions was  FIOGETOWN or  SIOCGPGRP . Both of these ioctl() operations are also provided
+        on Linux.
+      
+      * 
+
+# process
+  * memory
+    If a processtries to access an address for which there is no corresponding page-table entry, it
+    receives a  SIGSEGV signal.
+
+    allocates and deallocates pages:
+    * stack grow downward beyond limits previously reached;
+    * allocated or deallocated on the heap: 
+      brk(), sbrk(), malloc() family functions;
+
+       Traditionally, the UNIX system has provided two system calls for manipulating the program break,
+       and these are both available on Linux: brk() and sbrk();
+       The precise upper limit on where the program break can be set depends on a range of factors, including: 
+       1. the process resource limit for the size of the data segment ( RLIMIT_DATA , described in Section 36.3);
+       2. the location of memory mappings, shared memory segments, and shared libraries.
+
+       In general, free() doesn’t lower the program break, but instead adds the block of
+        memory to a list of free blocks that are recycled by future calls to malloc().
+    * share memory:
+      * shmat()
+      * mmap(), munmap()
+    
+  * preprocess
+    * [variadic macro](https://en.wikipedia.org/wiki/Variadic_macro)
+    ```
+      #define PRINT_ERR(fmt, ...) fprintf(stderr, fmt, __VA_ARGS__)
+      # define dbgprintf(...) realdbgprintf (__FILE__, __LINE__, __VA_ARGS__)
+      for gcc:
+      #define PRINT_ERR(fmt, ...) fprintf(fmt, ##__VA_ARGS__)
+      which removes the trailing comma when __VA_ARGS__ is empty.
+
+        PRINT_ERR("hello c %s\n", "world");
+        PRINT_ERR("hello c \n");
+
+        fprintf(stderr, "hello c %s\n", "world");
+        fprintf(stderr, "hello c \n");
+    ```
+
+# macros
+  * # and ##
+    * The number-sign or "stringizing" operator (#) converts macro parameters to string literals without expanding the parameter definition. 
+    * The double-number-sign or "token-pasting" operator (##), which is sometimes called the "merging" operator, is used in both object-like and function-like macros. 
+      It permits separate tokens to be joined into a single token and therefore cannot be the first or last token in the macro definition.
+
+      #define paster( n ) printf_s( "token" #n " = %d", token##n )  
+      int token9 = 9;  
+      paster( 9 );   --> printf_s( "token" "9" " = %d", token9 );   --> printf_s( "token9 = %d", token9 );  
+    

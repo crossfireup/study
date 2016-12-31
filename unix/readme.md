@@ -1,3 +1,9 @@
+# start
+  https://www.linux.com/learn/kernel-newbie-corner-kernel-and-module-debugging-gdb
+  http://www.makelinux.net/ldd3/
+  https://communities.vmware.com/
+  http://sysprogs.com/VisualKernel/tutorials/vmware/  
+
 * umask
 	
     * For directories, the base permissions are (rwxrwxrwx) 0777 
@@ -213,7 +219,29 @@
         :a,bd # delete from a to b
         
         :,bd # delete from current to d 
+      
+      * tab pages
+        gt
+        gT
 
+      * map
+        n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
+        i  Insert mode map. Defined using ':imap' or ':inoremap'.
+        v  Visual and select mode map. Defined using ':vmap' or ':vnoremap'.
+        x  Visual mode map. Defined using ':xmap' or ':xnoremap'.
+        s  Select mode map. Defined using ':smap' or ':snoremap'.
+        c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
+        o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
+        
+        <Space>  Normal, Visual and operator pending mode map. Defined using
+                 ':map' or ':noremap'.
+        !  Insert and command-line mode map. Defined using 'map!' or
+           'noremap!'.
+      * show tab whitespace
+        :set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
+        :set list
+
+        autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
 
 * linux
   * runlevel
@@ -707,4 +735,177 @@
     viewsource: client.c server.c
             less $+
     ```
+
+# kernel
+  * [RCU](https://www.kernel.org/doc/Documentation/RCU/whatisRCU.txt)
+    http://www2.rdrop.com/users/paulmck/RCU/ 
+    The basic idea behind RCU is to split updates into "removal" and "reclamation" phases.
+    Splitting the update into removal and reclamation phases permits the
+    updater to perform the removal phase immediately, and to defer the
+    reclamation phase until all readers active during the removal phase have
+    completed, either by blocking until they finish or by registering a
+    callback that is invoked after they finish.
+
+      Holding a reference from one RCU read-side critical section
+    to another is just as illegal as holding a reference from
+    one lock-based critical section to another!  Similarly,
+    using a reference outside of the critical section in which
+    it was acquired is just as illegal as doing so with normal
+    locking.
+
+      The following diagram shows how each API communicates among the
+reader, updater, and reclaimer.
+      ```
+	          rcu_assign_pointer()
+	    			                        +--------+
+            +---------------------->| reader |---------+
+            |                       +--------+         |
+            |                           |              |
+            |                           |              | Protect:
+            |                           |              | rcu_read_lock()
+            |                           |              | rcu_read_unlock()
+            |        rcu_dereference()  |              |
+       +---------+                      |              |
+       | updater |<---------------------+              |
+       +---------+                                     V
+            |                                    +-----------+
+            +----------------------------------->| reclaimer |
+                                                 +-----------+
+              Defer:
+              synchronize_rcu() & call_rcu()
+       ```
+
+       This section shows a simple use of the core RCU API to protect a
+       global pointer to a dynamically allocated structure.  More-typical
+       uses of RCU may be found in listRCU.txt, arrayRCU.txt, and NMI-RCU.txt.
+       ```c
+          struct foo {
+            int a;
+            char b;
+            long c;
+          };
+          DEFINE_SPINLOCK(foo_mutex);
+
+          struct foo __rcu *gbl_foo;
+
+          /*
+          * Create a new struct foo that is the same as the one currently
+          * pointed to by gbl_foo, except that field "a" is replaced
+          * with "new_a".  Points gbl_foo to the new structure, and
+          * frees up the old structure after a grace period.
+          *
+          * Uses rcu_assign_pointer() to ensure that concurrent readers
+          * see the initialized version of the new structure.
+          *
+          * Uses synchronize_rcu() to ensure that any readers that might
+          * have references to the old structure complete before freeing
+          * the old structure.
+          */
+          void foo_update_a(int new_a)
+          {
+            struct foo *new_fp;
+            struct foo *old_fp;
+
+            new_fp = kmalloc(sizeof(*new_fp), GFP_KERNEL);
+            spin_lock(&foo_mutex);
+            old_fp = rcu_dereference_protected(gbl_foo, lockdep_is_held(&foo_mutex));
+            *new_fp = *old_fp;
+            new_fp->a = new_a;
+            rcu_assign_pointer(gbl_foo, new_fp);
+            spin_unlock(&foo_mutex);
+            synchronize_rcu();
+            kfree(old_fp);
+          }
+
+          /*
+          * Return the value of field "a" of the current gbl_foo
+          * structure.  Use rcu_read_lock() and rcu_read_unlock()
+          * to ensure that the structure does not get deleted out
+          * from under us, and use rcu_dereference() to ensure that
+          * we see the initialized version of the structure (important
+          * for DEC Alpha and for people reading the code).
+          */
+          int foo_get_a(void)
+          {
+            int retval;
+
+            rcu_read_lock();
+            retval = rcu_dereference(gbl_foo)->a;
+            rcu_read_unlock();
+            return retval;
+          }
+       ```
+       So, to sum up:
+        
+       * Use rcu_read_lock() and rcu_read_unlock() to guard RCU
+          read-side critical sections.
+
+       * Within an RCU read-side critical section, use rcu_dereference()
+          to dereference RCU-protected pointers.
+
+       *	Use some solid scheme (such as locks or semaphores) to
+          keep concurrent updates from interfering with each other.
+
+       * Use rcu_assign_pointer() to update an RCU-protected pointer.
+          This primitive protects concurrent readers from the updater,
+          -not- concurrent updates from each other!  You therefore still
+          need to use locking (or something similar) to keep concurrent
+          rcu_assign_pointer() primitives from interfering with each other.
+
+       *  Use synchronize_rcu() -after- removing a data element from an
+          RCU-protected data structure, but -before- reclaiming/freeing
+          the data element, in order to wait for the completion of all
+          RCU read-side critical sections that might be referencing that
+          data item.
+
+
+  * intall
+    * [download tar.gz](https://www.kernel.org/pub/linux/kernel/) 
+
+    * uncompress
+      tar -jzxv linux-2.6.34.tar.bz2
+
+    * make defconfig 
+
+    * make oldconfig
+
+    * make -j2
+
+    * make modules_install
+
+    * cp bzImage to root
+      ```bash
+      cp arch/x86_64/boot/bzImage  /boot/vmlinuz-2.6.34.el6.x86_64
+      chmod +x /boot/vmlinuz-2.6.34.el6.x86_64
+      ```
+    * cp system.map
+      ```bash
+      cp System.map /boot/System.map-2.6.34.el6.x86_64
+      ```
+
+    * mkinitrd /boot/initramfs-2.6.34.el6.x86_64.img 2.6.34
+
+    * grub
+      ```bash
+      cp /boot/grub/grub.conf /boot/grub/grub.conf.bak
+      title CentOS (2.6.34.el6.x86_64)
+        root (hd0,0)
+        kernel /vmlinuz-2.6.34.el6.x86_64 ro root=/dev/mapper/VolGroup-lv_root rd_NO_LUKS LANG=en_US.UTF-8 rd_NO_MD rd_LVM_LV=VolGroup/lv_swap SYSFONT=latarcyrheb-sun16 crashkernel=auto rd_LVM_LV=VolGroup/lv_root  KEYBOARDTYPE=pc KEYTABLE=us rd_NO_DM rhgb quiet
+        initrd /initramfs-2.6.34.el6.x86_64.img
+      ```
+
+    * initrd:
+      he kernel then can use /dev/initrd’s contents for a two-phase system boot-up
+      1. boot-up  phase:the kernel starts up and mounts an initial root file-system from the contents of
+       /dev/initrd (e.g., RAM disk initialized by the boot loader)
+      
+      2. additional drivers  or  other modules  are  loaded  from the initial root device’s contents.
+      gunzip initramfs.img.gz
+      mkdir initramfs
+      cd initramfs
+      cpio -idv < ../initramfs.img
+
+      find . | cpio --create --format='newc' > /tmp/newinitrd
+      gzip newinitrd 
+      
 

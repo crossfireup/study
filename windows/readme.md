@@ -1,3 +1,5 @@
+# reference
+    Windows NT File System Internals : OSR Classic Reprints
 # windows tools:
     * appwiz.cpl
     * inetcpl.cpl
@@ -432,3 +434,7 @@ tools:
           - stack information (stack-base and stack-limit)
           - TLS (Thread Local Storage) array
           - Display it: !teb, dt nt!_TEB
+
+
+1. book
+    Troubleshooting with the Windows Sysinternals Tools          
