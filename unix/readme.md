@@ -437,6 +437,21 @@
       comm[ands] 1 	| Add a list of gdb commands to execute each time breakpoint 1 is hit
         (usually just print <var>)
 
+    * debug
+      print x=4 # set and print x
+      set {int}0x83040 = 4 # set memory in 0x8304
+      whatis $ebp
+        void *
+      
+      jump *0x1000
+
+      break *0x7c00 if 
+
+      save breakpoints brks.gdb
+      source -s brks.gdb   # If -s is specified, then gdb searches for filename on the search path even if filename specifies a directory
+      
+
+
 # file system #
     
   * ZFS has three major design goals: https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/zfs.html
@@ -593,6 +608,8 @@
 
     objects = *.o # like macro in c
     objects = $(wildcard *.o)
+
+    OBJS = $(SRCS:.c=.o)
 
   * ignore a makefile
       -include filename
@@ -907,5 +924,27 @@ reader, updater, and reclaimer.
 
       find . | cpio --create --format='newc' > /tmp/newinitrd
       gzip newinitrd 
+  
+  * gdb
+    gdb --args bochs-bin -q -f bochsrc
+
+  * git
+    * view updates
+      git add -u -n
+    * add changes to stage
+      git add . # add all incluing untraced files
+      git commit -a -m "message"
+
+    * stash
+      git stash
+      git stash list
+      git stash apply stash@{1}  
+      git stash pop # apply the top stash on the stack
+      git stash drop <id>
+      git stash clear
+
+      git stash show -p stash@{0}
+      git stash save --keep-index
+
       
 

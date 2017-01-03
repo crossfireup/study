@@ -3,6 +3,12 @@ https://www.gnu.org/software/libc/manual/
 
 http://www.iso-9899.info/wiki/Books#Learning_C
 
+http://planet.kernel.org/
+
+http://www.makelinux.net/ldd3/
+
+Rootkit Programming
+
 ## Socket header files contain data definitions, structures, constants, macros, and options used by socket subroutines. An application program must include the appropriate header file to make use of structures or other information a particular socket subroutine requires. Commonly used socket header files are:
     header                        | description
     ------                        | -----------
@@ -427,4 +433,7 @@ Error number 	Error Code 	Error Description
       #define paster( n ) printf_s( "token" #n " = %d", token##n )  
       int token9 = 9;  
       paster( 9 );   --> printf_s( "token" "9" " = %d", token9 );   --> printf_s( "token9 = %d", token9 );  
-    
+
+
+
+      
