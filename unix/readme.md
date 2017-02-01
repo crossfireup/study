@@ -144,6 +144,14 @@
 
         +p
 
+        copy to system clipboard
+        gg
+        :%y+
+
+        g g " + y G 
+
+        ggVG
+
     * save files as sudo
 
         :w !sudo dd of=%
@@ -242,6 +250,43 @@
         :set list
 
         autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+
+      * file name  
+      ```
+      :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
+      :echo expand('%:t') 	my.txt 	name of file ('tail')
+      :echo expand('%:p') 	/abc/def/my.txt 	full path
+      :echo expand('%:p:h') 	/abc/def 	directory containing file ('head')
+      :echo expand('%:p:h:t') 	def 	First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
+      :echo expand('%:r') 	my 	name of file less one extension ('root')
+      :echo expand('%:e') 	txt 	name of file's extension ('extension') 
+      ```
+
+      * mark
+        ```
+        ma 	set mark a at current cursor location
+        'a 	jump to line of mark a (first non-blank character in line)
+        `a 	jump to position (line and column) of mark a
+        d'a 	delete from current line to line of mark a
+        d`a 	delete from current cursor position to position of mark a
+        c'a 	change text from current line to line of mark a
+        y`a 	yank text to unnamed buffer from cursor to position of mark a
+        :marks 	list all the current marks
+        :marks aB 	list marks a, B
+        ```
+      
+      * reverse lines
+      ```
+      help 12.4
+      1. set a marker at the last line you want reverse (I name the marker 'a' using ma), 
+      2. move cursor to the first line of the block, 
+      3. type :'a,.g/^/m 'a
+
+      For those more comfortable with Visual mode:
+      1. Identify the line number above the selection you want flipped using :set nu.
+      2. Shift-V to highlight selection you want flipped (visual mode).
+      3. :g/^/m <Line number from step 1>.
+      ```
 
 * linux
   * runlevel
@@ -931,6 +976,10 @@ reader, updater, and reclaimer.
   * git
     * view updates
       git add -u -n
+
+    * undo add
+      git reset <file>
+
     * add changes to stage
       git add . # add all incluing untraced files
       git commit -a -m "message"

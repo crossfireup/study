@@ -143,3 +143,75 @@
     2. compile use inter
       ```
       gcc -nasm=intel intel_syntax.c
+
+* nasm
+  * macro
+    * normal define
+       %define are case sensitive
+       %idefine instead of %define (the ‘i’ stands for ‘insensitive’) 
+       you can define all the case variants of a macro at once
+      %define THIS_VERY_LONG_MACRO_NAME_IS_DEFINED_TO \
+          THIS_VALUE
+    * Resolving %define: %xdefine
+      ```asm
+      %xdefine isTrue 1
+      %xdefine isFalse isTrue
+      %xdefine isTrue 0
+      val1: db isFalse          # 1
+      %xdefine isTrue 1
+      val2: db isFalse          # 1
+      ```
+    
+    * Macro Indirection: %[...]
+      ```asm
+      [bits 16]
+      mov ax,Foo%[__BITS__] ; # mov ax, Foo16
+
+      %xdefine Bar Quux     ; Expands due to %xdefine
+      %define Bar %[Quux]   ; Expands due to %[...]
+      ```
+
+    * Concatenating Single Line Macro Tokens: %+
+      ```asm
+      %define BDASTART 400h ; Start of BIOS data area
+      struc tBIOSDA ; its structure
+      .COM1addr RESW 1
+      .COM2addr RESW 1
+      ; ..and so on
+      endstruc
+
+      %define BDA(x) BDASTART + tBIOSDA. %+ x
+
+      mov ax,BDA(COM1addr)    ; mov ax,BDASTART + tBIOSDA.COM1addr
+      mov bx,BDA(COM2addr)    ; mov bx,BDASTART + tBIOSDA.COM2addr
+      ```
+    * The Macro Name Itself: %? and %??
+      * %? refers to the macro name as invoked.
+      * %?? refers to the macro name as declared.
+      ```asm
+      %idefine Foo mov %?,%??
+      foo      ; mov foo,Foo
+      FOO      ; mov FOO,Foo
+      
+
+      %idefine keyword $%?
+      can be used to make a keyword "disappear", for example in case a new instruction has been used as a label in
+      older code. For example:
+         %idefine pause $%?
+      ```
+    * Undefining Single−Line Macros: %undef
+
+    * Preprocessor Variables: %assign
+      %assign i i+1
+
+    * Defining Strings: %defstr
+      ```
+      %defstr test TEST
+      %define test ’TEST’
+      ```
+    * Defining Tokens: %deftok
+      ```
+      %deftok test ’TEST’
+      %define test TEST
+      ```
+      

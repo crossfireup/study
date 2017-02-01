@@ -6,6 +6,7 @@
 !_TAG_PROGRAM_VERSION	5.8	//
 MyTcpHandle	D:\study\app\python\socket\socket_server.py	/^class MyTcpHandle(SocketServer.BaseRequestHandler):$/;"	kind:class	line:6
 SocketServer	D:\study\app\python\socket\socket_server.py	/^import SocketServer$/;"	kind:namespace	line:4
+file.py	D:\study\app\python\file\file.py	1;"	kind:file	line:1
 handle	D:\study\app\python\socket\socket_server.py	/^    def handle(self):$/;"	kind:member	line:8
 server	D:\study\app\python\socket\socket_server.py	/^    server = SocketServer.TCPServer((host, port), MyTcpHandle)$/;"	kind:variable	line:16
 socket_server.py	D:\study\app\python\socket\socket_server.py	1;"	kind:file	line:1
