@@ -215,3 +215,17 @@
       %define test TEST
       ```
       
+* nop operations[http://computer-programming-forum.com/46-asm/218312f780fb733f.htm]
+  ```
+  NOPs are recommended for the following operations:
+  . 1-byte: xchg EAX, EAX
+  . 2-byte: mov reg, reg
+  . 3-byte: lea reg, 0 (reg) (8-bit displacement)
+  . 6-byte: lea reg, 0 (reg) (32-bit displacement)
+
+  These are all true NOPs, having no effect on the state of the machine except
+  to advance the EIP. Because NOPs require hardware resources to decode and
+  execute, use the least number of NOPs to achieve the desired padding.
+
+  The one byte NOP, xchg EAX,EAX, has special hardware support.
+  ```

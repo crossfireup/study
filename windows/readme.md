@@ -435,6 +435,111 @@ tools:
           - TLS (Thread Local Storage) array
           - Display it: !teb, dt nt!_TEB
 
+    
+    * set remote debug using vmware
+        1. Installation
+            http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx
+        2. Setting the symbol file path
+            _NT_SYMBOL_PATH=srv*C:\Windows\Symbols*https://msdl.microsoft.com/download/symbols
+
+            If you want to observe the process of symbol matching, you can enable verbose symbol matching by executing the command
+
+            !sym noisy 
+
+            Afterwards, you can force windbg to reload the symbols by typing
+
+            .reload /f
+        3. configure environment in vmware
+            * windows xp:
+            ```
+            c:\boot.ini               
+
+            [boot loader]
+            timeout=30
+            default=multi(0)disk(0)rdisk(0)partition(1)\WINDOWS
+            [operating systems]
+            multi(0)disk(0)rdisk(0)partition(1)\WINDOWS=”Microsoft Windows XP Professional” /fastdetect
+            multi(0)disk(0)rdisk(0)partition(1)\WINDOWS=”Microsoft Windows XP Professional Debug Mode” /fastdetect /debug /debugport=COM2 /baudrate=115200 
+            ```
+            
+            * vista and above:
+            ```
+            Administrator (using runas) and execute bcdedit. The format of the command is:
+
+            bcdedit /dbgsettings DebugType [debugport:Port] [baudrate:Baud]
+
+            1. serial debugging (using COM1 at 115200bps) it is:
+
+                bcdedit /dbgsettings serial debugport:1 baudrate:115200
+
+            2. 1394 (using channel 32) it is:
+
+                bcdedit /dbgsettings 1394 CHANNEL:32
+
+            3. USB (using “debugging” as the target name) it is:
+
+                bcdedit /dbgsettings USB targetname:debugging
+
+            After that, you need to enable debugging by typing:
+
+                bcdedit /debug on
+
+            In order to disable it later, you can type:
+
+                bcdedit /debug off
+            ```
+
+            * create a serial port on vmware workstation:
+                
+                * The name of the named pipe is \\.\pipe\com_port (you can use whatever you want after \\.\pipe\)
+                * The COM port number is 2 (see in the picture where it is mentioned "Serial Port 2" on the left pane)
+                * The two dropboxes with this end is the server and the other end is an application.
+                * According to the documentation, about "Yield CPU on Poll":
+                ```
+                This configuration option forces the affected virtual machine to yield processor time if the only task it
+                 is trying to do is poll the virtual serial port.
+                ```
+
+        4. use debugging tools:
+            windbg -k com:pipe,port=\\.\pipe\com_port,resets=0,reconnect
+            kd -k com:pipe,port=\\.\pipe\com_port,resets=0,reconnect
+
+            * reference:
+                http://stackoverflow.com/questions/33820520/kernel-debug-with-a-vmware-machine
+                https://blogs.msdn.microsoft.com/iliast/2006/12/11/windbg-tutorials/
+    * use windbg debug a process in kernel debug [https://blogs.msdn.microsoft.com/iliast/2008/02/01/debugging-user-mode-processes-using-a-kernel-mode-debugger/]
+        * !process 0 0
+            ```
+            PROCESS 81ddd220  SessionId: 3  Cid: 0724    Peb: 7ffdf000  ParentCid: 0200
+                DirBase: 0e013000  ObjectTable: e1272418  HandleCount: 148.
+                Image: winlogon.exe
+
+            PROCESS 81ab43a8  SessionId: 0  Cid: 065c    Peb: 7ffdf000  ParentCid: 0258
+                DirBase: 0f65a000  ObjectTable: e1ac6750  HandleCount:  88.
+                Image: rdpclip.exe
+
+            PROCESS 81b0c370  SessionId: 3  Cid: 06dc    Peb: 7ffdf000  ParentCid: 0724
+                DirBase: 1019b000  ObjectTable: e1288098  HandleCount: 136.
+                Image: logonui.exe
+
+            PROCESS 81ea9da8  SessionId: 0  Cid: 02c8    Peb: 7ffdf000  ParentCid: 0710
+                DirBase: 10cd4000  ObjectTable: e1639768  HandleCount:  21.
+                Image: calc.exe
+            ```
+
+        * .process /i 81ea9da8  # After you press “g”, you have to wait for the windows scheduler to do the context switch.
+           .process /r /p 85709738 #  the debugger does the context switch immediately (as opposed to the windows scheduler) and there is no waiting time.  
+
+        * lm 
+        
+        * x calc!gpsz*
+          01014db0 calc!gpszNum = <no type information>
+        * dd calc!gpszNum l1
+          01014db0  00098f38
+        * du 98f38 # unicode characters
+          00098f38  "58746921."
+
+
 
 1. book
     Troubleshooting with the Windows Sysinternals Tools          
