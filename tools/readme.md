@@ -3,3 +3,6 @@
 # books
 1. debugging
     debug by thinking Robert Charles Metzger
+
+2. tools 
+    http://ports.su/security

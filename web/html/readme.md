@@ -48,4 +48,14 @@
             stylesheet 	
 
     img:
-        alt 	text 	Specifies an alternate text for an image
+      * alt 	text 	Specifies an alternate text for an image
+
+      * What is SVG?
+        ```
+        SVG stands for Scalable Vector Graphics
+        SVG is used to define vector-based graphics for the Web
+        SVG defines the graphics in XML format
+        SVG graphics do NOT lose any quality if they are zoomed or resized
+         Every element and every attribute in SVG files can be animated
+        SVG integrates with other W3C standards such as the DOM and XSL
+        ```

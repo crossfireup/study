@@ -342,12 +342,25 @@ tools:
       ILT: import lookup table
       IAT: import address table
 
-      HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug
-      "C:\WinDDK\7600.16385.1\Debuggers\windbg.exe" -p %ld -e %ld -g
+     
 
 * assembly
-    1. windbg工具使用：
-      
+    1. windbg
+      * [set windbg as postmortem debugger](https://msdn.microsoft.com/en-us/library/windows/hardware/ff542967(v=vs.85).aspx)
+        ```
+        C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe –I
+        C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x86\windbg.exe –I
+
+        HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug
+        Debugger = "C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x64\windbg.exe" -p %ld -e %ld -c ".dump /j %p /u d:\debug\AeDebug.dmp; qd" 
+        Auto = 1
+
+        HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows NT\CurrentVersion\AeDebug
+        Debugger = "C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x86\windbg.exe" -p %ld -e %ld –g -c ".jdinfo 0x%p"
+
+        Debugger = "C:\Windows\system32\vsjitdebugger.exe" -p %ld -e %ld
+        ```
+
       * dependency walker
         1. executables are just sequences of bytes
         2. symbols help debugger to:
@@ -538,8 +551,117 @@ tools:
           01014db0  00098f38
         * du 98f38 # unicode characters
           00098f38  "58746921."
+        * r eip=40103a
+        * tr # step in
+        * pr # step over
 
+* software debugging
+    * catagory
+        1. target environment 
+            windows, linux, macOS, etc
+            for language run in vm such as java and .net
+        2. taget code 
+            * native debugging
+            * inter-op debugging (混合)
+            * script debugging
+        3. target excute mode
+            * user mode debugging
+            * kernel mode debugging
+        4. debugger and target location
+            * local debugging
+            * remote debugging
+        5. target activity
+            * live target debugging
+            * dump file debbugging
+        6. debugging tools
+    * break point:
+        1. set space 
+            * code bk
+            * data bk
+            * I/O bk
+        2. set method
+            * software break: IA32 INT 3 , only for code breakpoint
+            * hardware break: debugging registers: DR0-DR7
+        3. others
+            * tracepoint
+            * condition breakpoint 
+    * step by step:
+        1. a assembly instruction:
+            * IA32: set trap flag to genarate INT 1
+        2. a phrase in src code: 
+        3. a branch:
+            set dbgctl msr btf(branch trap flag), set tf 
+        4. a task:
+            set TSS(task status segment) T to 1
+    * method    
+        * print
+        * log
+        * event trace
+        * dump
+        * stack backtrace
+        * disassemble
+        * watch and modify data
+        * control the process and thread debugging on
 
+    * basic procedure
+       1. replay fault
+       2. locate the root cause
+       3. explore and implement a solution
+       4. verify the solution
+    * tools
+       bugzilla
+    * cost 
+       period          | cost
+       ------          | ----
+       requirement     | 2
+       design          | 5
+       coding          | 10
+       developing test | 20
+       acceptance test | 50
+       run             | 150
+    * debug and test 
+       * test: find defect
+       * debug: find root cause
+    * cpu debug support 
+        1. INT 3
+        2. EFLAGS TF
+        3. DR0-DR7
+        4. breakpoint exception(#BP): INT 3
+        6. debugpoint exception(#DP): deubgging events cause by others except int 3
+        7. tss T flag: task trap flag 
+        8. branck record: record address of branch, interrupts or exceptions before
+        9. performance monitor: monitor and optimize cup and software
+        10. JTAG:  Joint Test Action Group 
+    * IA32
+        1. 4GB
+        2. flat memory model
+        3. paging
+        4. debugging registers
+        5. virtual 8086
+        6. SMM: system management mode include power management, hardware control and other firmware
+        7. MMX: multimedia extention, SIMD
+        8. APIC: local and io
+        9. msr: model specific registers, rdmsr  wrmsr
+        10. mtrr: memory type and range register: UC(unreachable), WC(write-combine), WT(write-throght), WP(write-protect)
+        11. SSE: Stream SIMD extentio
+    
+    * int 3: software breakpoint
+      - breakpoint on code, not suitable for data or I/O.
+      - can't add breakpoint to ROM, use hard interrupt
+      - can't work when IDT or IVT being destroyed, use hard level debugging tools
+    
+    * hardware breakpoint
+      - IA32 debug registers dr0-dr7
+        - dr4, dr5 are reserved, when debug extension enables(cr4 DE=1), access dr4 or dr5 cause 
+          undefined instruction(#UD), when disabled, dr4 and dr5 are alias of dr6 and dr7 seperately
+        
+        - 4 32-bit address regester dr0-dr3: 
+          - 64bit on 64-bit system
+          - Specifies the addresses of up to 4 breakpoints
+          - 
+        - 1 32-bit status  register dr6: high 32 reserved on 64-bit system
+        - 1 32-bit control register dr7: high 32 reserved on 64-bit system
+    
 
 1. book
     Troubleshooting with the Windows Sysinternals Tools          
