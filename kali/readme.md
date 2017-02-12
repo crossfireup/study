@@ -466,5 +466,139 @@
       - SMTP 25
         - sendmail
         - postfix
-        - 
+        ```
+          telnet 192.168.2.131 25
+          220 centos.163.com ESMTP Postfix
+          vrfy root
+          252 2.0.0 root
+          expn test
+          502 5.5.2 Error: command not recognized
+          quit
+          221 2.0.0 Bye
 
+
+          Connection to host lost.
+        ```
+      
+      - smt enumeration countermeasures
+        - turn off if posssible
+        - configure to disable some commands(EXPN, VRFY) being used by nonprivileged user
+
+      - DNS tcp/udp 53
+        - zone transfers
+          ```
+          dig @192.168.2.131 dob.com axfr
+            ; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.4 <<>> @192.168.2.131 dob.com axfr
+            ; (1 server found)
+            ;; global options: +cmd
+            dob.com.		172800	IN	SOA	ns1.dob.com. centos.dob.com. 2003080800 43200 900 1814400 7200
+            dob.com.		172800	IN	NS	ns1.dob.com.
+            dob.com.		1814400	IN	MX	10 mail.dob.com.
+            centos.dob.com.		172800	IN	CNAME	ns1.dob.com.
+            mail.dob.com.		172800	IN	A	192.168.2.131
+            ns1.dob.com.		172800	IN	A	192.168.2.131
+            www.dob.com.		172800	IN	A	192.168.2.131
+            dob.com.		172800	IN	SOA	ns1.dob.com. centos.dob.com. 2003080800 43200 900 1814400 7200
+            ;; Query time: 1 msec
+            ;; SERVER: 192.168.2.131#53(192.168.2.131)
+            ;; WHEN: Sun Feb 12 02:35:04 2017
+            ;; XFR size: 8 records (messages 1, bytes 209)
+
+
+          C:\Windows\system32>nslookup
+          Default Server: 192.168.1.1 
+          Address:  192.168.1.1
+
+          > server 192.168.2.131
+          Default Server:  [192.168.2.131]
+          Address:  192.168.2.131
+
+          > ls -d dob.com
+          [[192.168.2.131]]
+          dob.com.                       SOA    ns1.dob.com centos.dob.com. (2003080800 4
+          3200 900 1814400 7200)
+          dob.com.                       NS     ns1.dob.com
+          dob.com.                       MX     10   mail.dob.com
+          centos                         CNAME  ns1.dob.com
+          mail                           A      192.168.2.131
+          ns1                            A      192.168.2.131
+          www                            A      192.168.2.131
+          dob.com.                       SOA    ns1.dob.com centos.dob.com. (2003080800 4
+          3200 900 1814400 7200)
+          >
+          ```
+
+        - bind enumeration 
+          ```
+          dig @192.168.2.131 version.bind txt chaos
+          ; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.4 <<>> @192.168.2.131 version.bind txt chaos
+          ; (1 server found)
+          ;; global options: +cmd
+          ;; Got answer:
+          ;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 62424
+          ;; flags: qr aa rd; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 0
+          ;; WARNING: recursion requested but not available
+
+          ;; QUESTION SECTION:
+          ;version.bind.			CH	TXT
+
+          ;; ANSWER SECTION:
+          version.bind.		0	CH	TXT	"9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.4"
+
+          ;; AUTHORITY SECTION:
+          version.bind.		0	CH	NS	version.bind.
+
+          ;; Query time: 0 msec
+          ;; SERVER: 192.168.2.131#53(192.168.2.131)
+          ;; WHEN: Sun Feb 12 03:50:11 2017
+          ;; MSG SIZE  rcvd: 95
+          ```
+
+        - dns cache snooping
+          
+        - dns enumeration
+          - dnsenum
+          - fierce.pl
+          - http://centralops.net/
+        
+        - dns enumeraton countermeasures
+          - windows dns config mmc computer management
+            '''
+             \Services and Applications\DNS\[server_name]\Forward Lookup Zones\[zone_name] 
+            ```
+          - named configure acl and allow-transfor{};
+
+          - blocking bind version.bind request
+            ```
+            dig @192.168.2.131 version.bind choas txt
+
+            ; <<>> DiG 9.8.2rc1-RedHat-9.8.2-0.47.rc1.el6_8.4 <<>> @192.168.2.131 version.bind choas txt
+            ; (1 server found)
+            ;; global options: +cmd
+            ;; Got answer:
+            ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 30291
+            ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+
+            ;; QUESTION SECTION:
+            ;version.bind.			IN	A
+
+            ;; Query time: 4005 msec
+            ;; SERVER: 192.168.2.131#53(192.168.2.131)
+            ;; WHEN: Mon Feb 13 03:11:17 2017
+            ;; MSG SIZE  rcvd: 30
+
+            ;; Got answer:
+            ;; ->>HEADER<<- opcode: QUERY, status: SERVFAIL, id: 12958
+            ;; flags: qr rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 0, ADDITIONAL: 0
+
+            ;; QUESTION SECTION:
+            ;choas.				IN	TXT
+
+            ;; Query time: 3355 msec
+            ;; SERVER: 192.168.2.131#53(192.168.2.131)
+            ;; WHEN: Mon Feb 13 03:11:26 2017
+            ;; MSG SIZE  rcvd: 23
+            ```
+          
+          - disable dns caching snooping
+            Luis Grangeia
