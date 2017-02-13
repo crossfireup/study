@@ -601,4 +601,55 @@
             ```
           
           - disable dns caching snooping
-            Luis Grangeia
+            Luis Grangeia http://cs.unc.edu/~fabian/course_papers/cache_snooping.pdf
+
+        - enumerating tftp tcp/udp 69
+          - tftp 192.168.2.131
+            ```bash
+            tftp 192.168.2.131
+            tftp> verbose
+            Verbose mode on.
+            tftp> trace
+            Packet tracing on.
+            tftp> get test
+            getting from 192.168.2.131:test to test [netascii]
+            sent RRQ <file=test, mode=netascii>
+            received DATA <block=1, 0 bytes>
+            tftp> get /etc/passwd /tmp/passwd.copy
+            getting from 192.168.2.131:/etc/passwd to /tmp/passwd.copy [netascii]
+            sent RRQ <file=/etc/passwd, mode=netascii>
+            received ERROR <code=1, msg=File not found>
+            Error code 1: File not found
+            ```
+          - Accessing Router/Switch Configurations via TFTP, such as:
+            1. runing-config
+            2. startup-config
+            3. .config
+            4. config
+            5. run
+
+          - TFTP Enumeration Countermeasures
+            - TFTP is an inherently insecure protocol—the protocol runs in cleartext on the wire, it offers no authentication mechanism, 
+              and it can leave misconfigured file-system ACLs wide open to abuse.
+            - don't run tftp, or :
+              1. wrap it to restrict access (using a tool such as TCP Wrappers), 
+                1. /etc/hosts.allow
+                  ```
+                  in.tftpd: LOCAL
+                  ```
+                2. /etc/host.deny
+                  ```
+                  in.tftpd: ALL: spawn (/usr/sbin/safe_finger -l @%h | \
+                              /usr/ucb/mail -s %d-%h root) &
+                  ```
+                3. logs:
+                  ```
+                  Feb 14 00:19:04 centos xinetd[5185]: START: tftp pid=6444 from=192.168.2.135
+                  Feb 14 00:19:04 centos xinetd[6444]: libwrap refused connection to tftp (libwrap=in.tftpd) from 192.168.2.135
+                  Feb 14 00:19:04 centos xinetd[6444]: FAIL: tftp libwrap from=192.168.2.135
+                  Feb 14 00:19:04 centos xinetd[5185]: EXIT: tftp status=0 pid=6444 duration=0(sec)
+                  ```
+              2. limit access to the/tftpboot directory
+              3. make sure it’s blocked at the border firewall.
+        - finger tcp/udp 79
+          - 

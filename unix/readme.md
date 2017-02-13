@@ -1508,3 +1508,176 @@ reader, updater, and reclaimer.
       apt-get upgrade -s -f
 
       apt-get -f update
+    
+    * dpkg error:
+      ```
+      * apt-get update
+        .......
+        dpkg: dependency problems prevent processing triggers for man-db:
+        man-db depends on bsdmainutils; however:
+          Package bsdmainutils is not configured yet.
+
+        dpkg: error processing archive /var/cache/apt/archives/libpam-modules_1.1.8-3.5_amd64.deb (--unpack):
+        dependency problems - leaving triggers unprocessed
+        Errors were encountered while processing:
+        /var/cache/apt/archives/libpam-modules_1.1.8-3.5_amd64.deb
+        E: Sub-process /usr/bin/dpkg returned an error code (1)
+
+      * apt-get install bsdmainutils
+        Reading package lists... Done
+        Building dependency tree       
+        Reading state information... Done
+        bsdmainutils is already the newest version.
+        You might want to run 'apt-get -f install' to correct these:
+        The following packages have unmet dependencies:
+        libpam-modules : PreDepends: libpam-modules-bin (= 1.1.3-7.1) but 1.1.8-3.5 is to be installed
+        E: Unmet dependencies. Try 'apt-get -f install' with no packages (or specify a solution).
+
+      * dpkg --force-downgrade --install libpam-modules-bin-1.1.3-7.1
+
+      * apt-cache showpkg libpam-modules-bin
+        Package: libpam-modules-bin
+        Versions: 
+        1.1.8-3.5 (/var/lib/apt/lists/http.kali.org_kali_dists_kali-rolling_main_binary-amd64_Packages)
+        Description Language: 
+                        File: /var/lib/apt/lists/http.kali.org_kali_dists_kali-rolling_main_binary-amd64_Packages
+                          MD5: 25d278fc7450d5202a9a137f71302e58
+
+
+        Reverse Depends: 
+          libpam-modules,libpam-modules-bin 1.1.3-7.1
+          libpam-modules,libpam-modules-bin 1.1.8-3.5
+        Dependencies: 
+        1.1.8-3.5 - libaudit1 (2 1:2.2.1) libc6 (2 2.14) libpam0g (2 0.99.7.1) libselinux1 (2 1.32) libpam-modules (3 1.1.3-8) 
+        Provides: 
+        1.1.8-3.5 - 
+        Reverse Provides: 
+
+      * apt-cache policy libpam-modules-bin
+        libpam-modules-bin:
+        Installed: (none)
+        Candidate: 1.1.8-3.5
+        Version table:
+          1.1.8-3.5 0
+              500 http://http.kali.org/kali/ kali-rolling/main amd64 Packages
+        
+        apt-get install libpam-modules-bin=1.1.3-7.1
+      ```
+
+  * network connection error
+    * eth0 eth1
+      * ifconfig eth1 down
+        ifconfig eth0 down
+      * ifconfig eth0 up
+      
+      * tcpdump -i any -vvv &> /tmp/tcpdump.log
+        dhclient -4 -p 68 -s 255.255.255.255 -d -v 
+
+        strace -f -e verbose=a trace=process,file -s 128 ifup eth1
+        /sbin/dhclient [/sbin/dhclient -4 -v -pf /run/dhclient.eth1.pid -lf /var/lib/dhcp/dhclient.eth1.leases -I -df /var/lib/dhcp/dhclient6.eth1.leases eth1]
+
+  * tftp server configure
+    * yum install xinetd tftp tftp-server -y
+    
+    * configure tftp:
+      ```
+      cat /etc/xinetd.d/tftp 
+      # default: off
+      # description: The tftp server serves files using the trivial file transfer \
+      #	protocol.  The tftp protocol is often used to boot diskless \
+      #	workstations, download configuration files to network-aware printers, \
+      #	and to start the installation process for some operating systems.
+      service tftp
+      {
+        socket_type		= dgram
+        protocol		  = udp
+        port          = 69
+        wait			    = yes
+        user			    = root
+        server			  = /usr/sbin/in.tftpd
+        server_args		= -s /var/lib/tftpboot # root directory 
+        disable			  = yes
+        per_source		= 11
+        cps			      = 100 2
+        flags			    = IPv4
+      }
+      ```
+    
+    * service xinetd restart
+      iptables -t filter -I INPUT -p udp -s 192.168.0.0/16 --dport 69 -j ACCEPT
+    
+    * tftp:
+      ```bash
+      tftp 192.168.2.131
+      tftp> verbose
+      Verbose mode on.
+      tftp> trace
+      Packet tracing on.
+      tftp> get test
+      getting from 192.168.2.131:test to test [netascii]
+      sent RRQ <file=test, mode=netascii>
+      received DATA <block=1, 0 bytes>
+      tftp> get /etc/passwd /tmp/passwd.copy
+      getting from 192.168.2.131:/etc/passwd to /tmp/passwd.copy [netascii]
+      sent RRQ <file=/etc/passwd, mode=netascii>
+      received ERROR <code=1, msg=File not found>
+      Error code 1: File not found
+      ```
+    
+  - [tcp wrappers](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security_Guide/sect-Security_Guide-TCP_Wrappers_and_xinetd-TCP_Wrappers_Configuration_Files.html):
+    - configure:<daemon list> : <client list> [: <option> : <option> : …]
+       ```
+        sshd : .example.com  \
+        : spawn /bin/echo `/bin/date` access denied>>/var/log/sshd.log \
+        : deny
+       ```
+      - daemon list> — A comma-separated list of process names (not service names) or the ALL wildcard.
+      - client list> — A comma-separated list of hostnames, host IP addresses, special patterns, or wildcards which identify the hosts affected by the rule.
+      - option> — An optional action or colon-separated list of actions performed when the rule is triggered. 
+        1. Wildcards:
+           - ALL — Matches everything. It can be used for both the daemon list and the client list.
+           - LOCAL — Matches any host that does not contain a period (.), such as localhost.
+           - KNOWN — Matches any host where the hostname and host address are known or where the user is known.
+           - UNKNOWN — Matches any host where the hostname or host address are unknown or where the user is unknown.
+           - PARANOID — A reverse DNS lookup is done on the source IP address to obtain the host name. Then a DNS lookup is performed to resolve the IP address.
+             If the two IP addresses do not match the connection is dropped and the logs are updated 
+        2. patterns: 
+          ```
+          1.  beginning with a period (.) 
+            ALL : .example.com
+          2. ending with a period (.) 
+            ALL : 192.168.
+          3. IP address/netmask pair
+            ALL : 192.168.0.0/255.255.254.0
+          4. [IPv6 address]/prefixlen pair — [net]/prefixlen pairs
+            ALL : [3ffe:505:2:1::]/64
+          5. he asterisk (*) 
+            ALL : *.example.com
+          6. The slash (/) 
+            in.telnetd : /etc/telnet.hosts
+          ```
+        3. expansions:
+          - %a — Returns the client's IP address.
+          - %A — Returns the server's IP address.
+          - %c — Returns a variety of client information, such as the user name and hostname, or the user name and IP address.
+          - %d — Returns the daemon process name.
+          - %h — Returns the client's hostname (or IP address, if the hostname is unavailable).
+          - %H — Returns the server's hostname (or IP address, if the hostname is unavailable).
+          - %n — Returns the client's hostname. If unavailable, unknown is printed. If the client's hostname and host address do not match, paranoid is printed.
+          - %N — Returns the server's hostname. If unavailable, unknown is printed. If the server's hostname and host address do not match, paranoid is printed.
+          - %p — Returns the daemon's process ID.
+          - %s —Returns various types of server information, such as the daemon process and the host or IP address of the server.
+          - %u — Returns the client's user name. If unavailable, unknown is printed. 
+      - step: take effect immediately when files changes
+        1. /etc/hosts.allow
+          ```
+          in.tftpd: LOCAL
+          ```
+        2. /etc/host.deny
+          ```
+          in.tftpd: ALL: spawn (/usr/sbin/safe_finger -l @%h | \
+                       /usr/ucb/mail -s %d-%h root) &
+          ```
+
+
+    
