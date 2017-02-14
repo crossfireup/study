@@ -51,3 +51,5 @@
     3. proxy
       * Paros Proxy
 
+       SLMGR /REARM.
+
