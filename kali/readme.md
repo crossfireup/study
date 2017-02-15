@@ -652,4 +652,120 @@
               2. limit access to the/tftpboot directory
               3. make sure it’s blocked at the border firewall.
         - finger tcp/udp 79
-          - 
+          - finger -l @192.168.2.131
+
+        - finger countermeasures
+          - disable finger-server
+            ```
+            vim /etc/xinetd.conf/finger
+            
+            # disable = yes
+            ```
+          - stop xinetd
+            ```
+            killall -HUP xinetd
+            ```
+
+          - block port 79
+            ```
+            iptables -filter -I INPUT -p tcp --dport 79 -j DROP
+            service iptabls save
+            ```
+          - if must use, configure tcp Wrappers
+            ```
+            vim /etc/host.deny
+            in.finger: ALL: spawn (/usr/sbin/safe_finger -l @%h | \
+                        /usr/ucb/mail -s %d-%h root) &)
+            ```
+        
+        - enumerating http tcp 80
+          - http
+            ```
+            C:\Windows\system32>ncat 192.168.2.131 80
+              HEAD / HTTP/1.0
+
+              HTTP/1.1 200 OK
+              Server: nginx/1.11.6
+              Date: Wed, 15 Feb 2017 09:08:36 GMT
+              Content-Type: text/html; charset=UTF-8
+              Connection: close
+              X-Powered-By: PHP/7.0.13
+
+              close: Result too large
+            ```
+          - https:We did this because servers have the ability to host multiple websites, so in some cases you may have to set
+                  the HTTP host header to the hostname of the web page you’re visiting to elicit a 200 OK
+            ```
+            OpenSSL> s_client -quiet -connect 192.168.2.131:443
+              Loading 'screen' into random state - done
+              depth=0 C = US, ST = New York, L = New York City, O = "Dobly, Inc.", OU = Securi
+              ty Department, CN = centos.dob.com, emailAddress = doblys@yahoo.com
+              verify error:num=18:self signed certificate
+              verify return:1
+              depth=0 C = US, ST = New York, L = New York City, O = "Dobly, Inc.", OU = Securi
+              ty Department, CN = centos.dob.com, emailAddress = doblys@yahoo.com
+              verify error:num=9:certificate is not yet valid
+              notBefore=Feb 15 09:34:49 2017 GMT
+              verify return:1
+              depth=0 C = US, ST = New York, L = New York City, O = "Dobly, Inc.", OU = Securi
+              ty Department, CN = centos.dob.com, emailAddress = doblys@yahoo.com
+              notBefore=Feb 15 09:34:49 2017 GMT
+              verify return:1
+              HEAD / HTTP/1.1
+              host: centos.lob.com
+
+              HTTP/1.1 200 OK
+              Server: nginx/1.11.6
+              Date: Wed, 15 Feb 2017 10:16:53 GMT
+              Content-Type: text/html
+              Content-Length: 612
+              Last-Modified: Wed, 16 Nov 2016 16:47:31 GMT
+              Connection: keep-alive
+              ETag: "582c8da3-264"
+              Accept-Ranges: bytes
+          ```
+        
+          - http enumeration countermeasures
+            - IIS(Internet Information Services):
+              - urlScan
+
+        - MSRPC(Microsotf RPC Endpoint Mapper), tcp 135
+          - epdump
+            ```
+            c:\windows\>epdump 192.168.1.1
+            binding is 'ncacn_ip_tcp:192.168.1.1'
+            int d95afe70-a6d5-4259-822e-2c84da1ddb0d v1.0
+              binding 765294ba-60bc-48b8-92e9-89fd77769d91@ncacn_ip_tcp:192.168.1.1[1025]
+              annot ''
+            int 367abb81-9844-35f1-ad32-98f038001003 v2.0
+              binding 00000000-0000-0000-0000-000000000000@ncacn_ip_tcp:192.168.1.1[1060]
+              annot ''
+            int 2f5f6521-cb55-1059-b446-00df0bce31db v1.0
+              binding 00000000-0000-0000-0000-000000000000@ncacn_np:192.168.1.1[\\PIPE\\wkssvc]
+              annot 'Unimodem LRPC Endpoint'
+            int 2f5f6521-cb55-1059-b446-00df0bce31db v1.0
+              binding 00000000-0000-0000-0000-000000000000@ncacn_np:192.168.1.1[\\pipe\\keysvc]
+              annot 'Unimodem LRPC Endpoint'
+            int 2f5f6521-cb55-1059-b446-00df0bce31db v1.0
+              binding 00000000-0000-0000-0000-000000000000@ncacn_np:192.168.1.1[\\pipe\\tapsrv]
+              annot 'Unimodem LRPC Endpoint'
+            ```
+          - rpcdump
+          - ifids
+          - winfingerprint
+
+        - MSRPC enumeration countermeasures
+          - restrict access to tcp port 135
+          - expose the Exchange Server to the Internet via TCP port 135 for Outlook MAPI client
+            - use VPN
+
+        - NetBIOS, upd 137
+          - NBNS(NetBIOS name service) served as the distributed naming system for Microsoft Windows–based networks
+            - nbtstat
+              - lmhosts (LAN manager)
+                ```
+                C:\Windows\System32\drivers\etc\lmhosts.sam
+                # reload config
+                nbtstat -R
+                ```
+            - net view /domian

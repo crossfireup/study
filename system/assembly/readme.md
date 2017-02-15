@@ -27,6 +27,103 @@
     * two sets of rules
       * the caller of the subroutine
       * the callee 
+    
+    * The following calling conventions are supported by the Visual C/C++ compiler:
+      Keyword     | Stack cleanup | Parameter passing
+      -------     | ------------- | -----------------
+      __cdecl     |  Caller       |  Pushes parameters on the stack, in reverse order (right to left)
+      __clrcall   |  n/a          |  Load parameters onto CLR expression stack in order (left to right).
+      __stdcall   |  Callee       |  Pushes parameters on the stack, in reverse order (right to left)
+      __fastcall  |  Callee       |  Stored in registers, then pushed on stack
+      __thiscall  |  Callee       |  Pushed on stack; this pointer stored in ECX
+     __vectorcall |  Callee       |  Stored in registers, then pushed on stack in reverse order (right to left)
+
+    1. cdecl: must return the value of the stack pointer ( ESP ) to its initial state after the callee function exits.
+      ```
+      cl helloc.c /Fahelloc_Gd.asm /Gd
+        _main   PROC
+            push    ebp
+            mov ebp, esp
+            push    2
+            push    1
+            call    _print_int
+            add esp, 8
+            xor eax, eax
+            pop ebp
+            ret 0
+        _main   ENDP
+      ```
+    2. stdcall:  the callee must set ESP to the initial state by executing the RET x instruction instead of RET
+      ```
+      cl helloc.c /Fahelloc_Gz.asm /Gz
+       _main   PROC
+        push    ebp
+        mov ebp, esp
+        push    2
+        push    1
+        call    _print_int@8
+        xor eax, eax
+        pop ebp
+        ret 0
+      _main   ENDP
+
+      _a$ = 8                         ; size = 4
+      _b$ = 12                        ; size = 4
+      _print_int@8 PROC
+          push    ebp
+          mov ebp, esp
+          mov eax, DWORD PTR _b$[ebp]
+          push    eax
+          mov ecx, DWORD PTR _a$[ebp]
+          push    ecx
+          push    OFFSET $SG4505
+          call    _printf
+          add esp, 12                 ; 0000000cH
+          mov eax, DWORD PTR _a$[ebp]
+          add eax, DWORD PTR _b$[ebp]
+          pop ebp
+          ret 8
+      _print_int@8 ENDP
+      ```
+    3. fastcall: Both MSVC and GCC pass the first and second arguments via ECX and EDX and the rest of the arguments via the stack.
+      ```
+      cl helloc.c /Fahelloc_Gr.asm /Gr
+      _TEXT   SEGMENT
+      _main   PROC
+          push    ebp
+          mov ebp, esp
+          mov edx, 2
+          mov ecx, 1
+          call    @print_int@8
+          xor eax, eax
+          pop ebp
+          ret 0
+      _main   ENDP
+      _TEXT   ENDS
+      _TEXT   SEGMENT
+      _b$ = -8                        ; size = 4
+      _a$ = -4                        ; size = 4
+      @print_int@8 PROC
+          push    ebp
+          mov ebp, esp
+          sub esp, 8
+          mov DWORD PTR _b$[ebp], edx
+          mov DWORD PTR _a$[ebp], ecx
+          mov eax, DWORD PTR _b$[ebp]
+          push    eax
+          mov ecx, DWORD PTR _a$[ebp]
+          push    ecx
+          push    OFFSET $SG4505
+          call    _printf
+          add esp, 12                 ; 0000000cH
+          mov eax, DWORD PTR _a$[ebp]
+          add eax, DWORD PTR _b$[ebp]
+          mov esp, ebp
+          pop ebp
+          ret 0
+      @print_int@8 ENDP
+      _TEXT   ENDS
+      ```
 
 # asm 
   
@@ -289,3 +386,16 @@
     real mode  <-----------> protected mode <---------------> Virtual-8086 mode 
     
     virtual-8086: allows the processor execute 8086 software in a protected, multitasking environment.
+
+
+* c/c++ disassemble
+  * set developing env
+    ```
+    call C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\Tools\VsDevCmd.bat
+    ```
+  * compile 
+    ```
+    cd /d D:\study\system\assembly\src 
+    cl stdcall_x64.c /Fastdcall_x64.asm
+    cl stdcall_x64 /Ob /Fa stdcall_x64.asm
+    ```

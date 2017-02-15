@@ -1,7 +1,13 @@
-#include<stdio.h>
+#include <stdio.h>
+
+int print_int(int a, int b)
+{
+    printf("a=%d, b=%d\n", a, b);
+    return a+b;
+}
 
 int main(void)
 {
-    printf("hello world\n");
+    print_int(1, 2);
     return 0;
 }

@@ -72,6 +72,7 @@ Packages for mainline version also have the following arguments:
     --with-stream_realip_module
 
 nginx config:
+    ```
     groupadd nginx 
     useradd  nginx -g nginx
 
@@ -195,8 +196,68 @@ nginx config:
     iptables -t filter -L INPUT --line-numbers
     iptables-save
 
-rpm -ql pcre
+    rpm -ql pcre
+    ```
 
+   * configure ssl for nginx server
+    * openssl 
+      ```
+      https://www.nginx.com/blog/nginx-https-101-ssl-basics-getting-started/
+      http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_protocols
+      https://www.digitalocean.com/community/tutorials/how-to-create-an-ssl-certificate-on-nginx-for-ubuntu-14-04
+
+      openssl req -x509 -nodes -days 366 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.cert
+      Generating a 2048 bit RSA private key
+      ..........+++
+      .......................+++
+      writing new private key to '/etc/nginx/ssl/nginx.key'
+      -----
+      You are about to be asked to enter information that will be incorporated
+      into your certificate request.
+      What you are about to enter is what is called a Distinguished Name or a DN.
+      There are quite a few fields but you can leave some blank
+      For some fields there will be a default value,
+      If you enter '.', the field will be left blank.
+      -----
+      Country Name (2 letter code) [XX]:US
+      State or Province Name (full name) []:New York 
+      Locality Name (eg, city) [Default City]:New York City
+      Organization Name (eg, company) [Default Company Ltd]:Dobly, Inc.
+      Organizational Unit Name (eg, section) []:Security Department
+      Common Name (eg, your name or your server's hostname) []:centos.dob.com
+      Email Address []:doblys@yahoo.com
+
+      iptables -t filter -I INPUT -p tcp --dport 443 -j ACCEPT
+      service iptables save
+
+      OpenSSL> s_client -quiet -connect 192.168.2.131:443
+        Loading 'screen' into random state - done
+        depth=0 C = US, ST = New York, L = New York City, O = "Dobly, Inc.", OU = Securi
+        ty Department, CN = centos.dob.com, emailAddress = doblys@yahoo.com
+        verify error:num=18:self signed certificate
+        verify return:1
+        depth=0 C = US, ST = New York, L = New York City, O = "Dobly, Inc.", OU = Securi
+        ty Department, CN = centos.dob.com, emailAddress = doblys@yahoo.com
+        verify error:num=9:certificate is not yet valid
+        notBefore=Feb 15 09:34:49 2017 GMT
+        verify return:1
+        depth=0 C = US, ST = New York, L = New York City, O = "Dobly, Inc.", OU = Securi
+        ty Department, CN = centos.dob.com, emailAddress = doblys@yahoo.com
+        notBefore=Feb 15 09:34:49 2017 GMT
+        verify return:1
+        HEAD / HTTP/1.1
+        host: centos.lob.com
+
+        HTTP/1.1 200 OK
+        Server: nginx/1.11.6
+        Date: Wed, 15 Feb 2017 10:16:53 GMT
+        Content-Type: text/html
+        Content-Length: 612
+        Last-Modified: Wed, 16 Nov 2016 16:47:31 GMT
+        Connection: keep-alive
+        ETag: "582c8da3-264"
+        Accept-Ranges: bytes
+      ```
 
 # gcc #
     The compiler option -D can be used to define the macro MY_MACRO from command line.
