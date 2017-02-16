@@ -19,12 +19,17 @@
     * compmgmt.msc services.msc diskmgmt.msc devmgmt.msc evenvwr.exe
         gpedit.msc
     * schdtasks.exe
-
+      ```
+      schtasks /run /tn “TASKNAMEINQUOTES”
+      ```
     * optionalfeatures.exe
 
     * secedit /analyze 
 
-    *   arp
+    *  network tools
+        ```
+        ncpa.cpl
+        arp
         hostname
         ipconfig
         nbtstat
@@ -54,6 +59,7 @@
             ipconfig /renew 
             ipconfig /showclassid
             ipconfig /setclassid
+        ```
     
     * winmgmt.exe
 
@@ -98,7 +104,80 @@
              14C machine (x86)
                    32 bit word machine
         ```
+    
+    * wf.msc # windows firewall
+      firewall.cpl
+    
+    * main.cpl
+      desk.cpl
+      sysdm.cpl
 
+    * net
+      ```
+      net share admin$ /users:3
+      net share
+      net use
+      ```
+
+    * netsh
+      ```
+      netsh firewall set opmode disable
+      ```
+
+    * sc
+      ```
+      https://forum.sysinternals.com/topic15919.html
+      http://stackoverflow.com/questions/828432/psexec-access-denied-errors/14103682#14103682
+      windows xp sp3
+      sc query type= all state= inactive | findstr /I "remote"
+      sc config remoteaccess start= auto
+      [SC] ChangeServiceConfig SUCCESS
+
+      sc start remoteaccess
+      SERVICE_NAME: remoteaccess
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        STATE              : 2  START_PENDING
+                                (NOT_STOPPABLE,NOT_PAUSABLE,IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x7d0
+        PID                : 1420
+        FLAGS              :
+
+      sc query lanmanworkstation
+      SERVICE_NAME: lanmanworkstation
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        STATE              : 4  RUNNING
+                                (STOPPABLE,PAUSABLE,ACCEPTS_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+
+      sc query lanmanserver
+      SERVICE_NAME: lanmanserver
+        TYPE               : 20  WIN32_SHARE_PROCESS
+        STATE              : 4  RUNNING
+                                (STOPPABLE,PAUSABLE,ACCEPTS_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x0
+
+      sc query sharedaccess
+
+      cmdkey /add:192.168.2.128 /user:dolphin /pass:
+      Enter the password for 'dolphin' to connect to '192.168.2.128':
+
+      cmdky /list
+
+      secpol.msc security-setting -> local policies -> security options -> "network access: sharing and security mode for local account"
+        set it to "classical local user loggin as themselves"
+
+      net user \\192.168.2.128\admin$ /user:dolphin-xp-sp3\dolphin
+      ```
+    
     * vs code
       ```
       Ctrl+D
@@ -106,6 +185,40 @@
       Ctrl+Shift+L  mutil to one line 
 
       Ctrl+Shift+P show command
+      ```
+    
+    * control panel tools
+      ```
+        Control panel tool             Command
+      -----------------------------------------------------------------
+      Accessibility Options          control access.cpl
+      Add New Hardware               control sysdm.cpl add new hardware
+      Add/Remove Programs            control appwiz.cpl
+      Date/Time Properties           control timedate.cpl
+      Display Properties             control desk.cpl
+      FindFast                       control findfast.cpl
+      Fonts Folder                   control fonts
+      Internet Properties            control inetcpl.cpl
+      Joystick Properties            control joy.cpl
+      Keyboard Properties            control main.cpl keyboard
+      Microsoft Exchange             control mlcfg32.cpl
+          (or Windows Messaging)
+      Microsoft Mail Post Office     control wgpocpl.cpl
+      Modem Properties               control modem.cpl
+      Mouse Properties               control main.cpl
+      Multimedia Properties          control mmsys.cpl
+      Network Properties             control netcpl.cpl      
+                                      NOTE: In Windows NT 4.0, Network
+                                      properties is Ncpa.cpl # network control panel applet
+      Password Properties            control password.cpl
+      PC Card                        control main.cpl pc card (PCMCIA)
+      Power Management (Windows 95)  control main.cpl power
+      Power Management (Windows 98)  control powercfg.cpl
+      Printers Folder                control printers
+      Regional Settings              control intl.cpl
+      Scanners and Cameras           control sticpl.cpl
+      Sound Properties               control mmsys.cpl sounds
+      System Properties              control sysdm.cpl
       ```
 
 * [hook](https://en.wikipedia.org/wiki/Hooking)
@@ -433,3 +546,23 @@
           - 
         - 1 32-bit status  register dr6: high 32 reserved on 64-bit system
         - 1 32-bit control register dr7: high 32 reserved on 64-bit system
+
+
+# registry
+  * structures
+    1. https://blogs.technet.microsoft.com/ganand/2008/01/05/internal-structures-of-the-windows-registry/
+    2. https://technet.microsoft.com/library/cc750583.aspx
+    3. https://support.microsoft.com/en-us/help/256986/windows-registry-information-for-advanced-users
+  
+  * location
+    * %SystemRoot%\System32\Config folder on Windows NT 4.0, Windows 2000, Windows XP, Windows Server 2003, and Windows Vista.
+    * HKEY_CURRENT_USER are in the %SystemRoot%\Profiles\Username folder
+      ```
+      Registry hive	Supporting files
+      HKEY_LOCAL_MACHINE\SAM	Sam, Sam.log, Sam.sav
+      HKEY_LOCAL_MACHINE\Security	Security, Security.log, Security.sav
+      HKEY_LOCAL_MACHINE\Software	Software, Software.log, Software.sav
+      HKEY_LOCAL_MACHINE\System	System, System.alt, System.log, System.sav
+      HKEY_CURRENT_CONFIG	System, System.alt, System.log, System.sav, Ntuser.dat, Ntuser.dat.log
+      HKEY_USERS\DEFAULT	Default, Default.log, Default.sav
+      ```

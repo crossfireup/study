@@ -761,11 +761,109 @@
 
         - NetBIOS, upd 137
           - NBNS(NetBIOS name service) served as the distributed naming system for Microsoft Windows–based networks
-            - nbtstat
-              - lmhosts (LAN manager)
+            - nbtstat: NetBIOS over TCP/IP (NetBT)
+              - [lmhosts(LAN manager)](https://technet.microsoft.com/en-us/library/cc959839.aspx)
+                * Before configuring a computer to use the LMHOSTS file, you must create the primary LMHOSTS file on each computer, 
+                  name the file LMHOSTS, and save the file in the directory %systemroot %\System32\Drivers\Etc.
+                * text file (An example LMHOSTS file named LMHOSTS.sam is provided with Windows 2000 in the directory % systemroot %\System32\Drivers\Etc. 
+                  This is only an example file; do not use this file as the primary LMHOSTS file.)
                 ```
-                C:\Windows\System32\drivers\etc\lmhosts.sam
+                C:\Windows\System32\drivers\etc\lmhosts
                 # reload config
                 nbtstat -R
+                ping -S 192.168.2.1 centos
                 ```
             - net view /domian
+        
+        - netbios enumeration countermeasures
+          - disable the Alerter and Messenger Services on individual hosts, windows 2000 and later, disabled by default;
+          - disable NetBIOS over TCP/IP under the settings for individual network adapters;
+          - if you block UDP 137 fromtraversing routers, you will disable Windows name resolutionacross those routers, 
+            breaking any applications that rely on NBNS.
+
+        - netbios session enumerating 139/445
+          - null sessions:
+            Microsoft’s Server Message Block (SMB) protocol, which forms the basis of Windows File and Print Sharing 
+            (the Linux implementation of SMB is called Samba). 
+            ```
+            net use \\192.168.2.128\IPC$ "" /u:""
+
+            C:\Windows\system32>net use
+            New connections will be remembered.
+
+            Status       Local     Remote                    Network
+
+            -------------------------------------------------------------------------------
+            OK                     \\192.168.2.128\IPC$      Microsoft Windows Network
+            The command completed successfully.
+            ```
+            - file shares:
+              net view \\
+            - registry :
+              reg query \\192.168.2.128\HKLM\Software\Microsoft\WindowsNT\CurrentVersion
+            - trusted domains
+            
+            - users
+              - dumpsec
+              - sid2user
+              - user2sid
+            
+            - all-in-one
+              - winfingerprint
+              - enum4linux.pl
+          
+        - NetBIOS enumeration countermeasuers
+          - under windows 2000: unbinding WINS Client (TCP/IP) fromthe appropriate interface using the Network Control Panel’s Bindings tab
+          - windows 2000 and above: unbinding File and Print Sharing for Microsoft Networks fromthe appropriate adapter
+          - registry
+            1. regjump HKLM\SYSTEM\CurrentControlSet\Control\LSA
+              ```
+              'Launches Registry Editor with the chosen branch open automatically
+              'Author  : Ramesh Srinivasan
+              'Website: http://windowsxp.mvps.org
+
+              Set WshShell = CreateObject("WScript.Shell")
+
+              Dim MyKey
+
+              MyKey = Inputbox("Type the Registry path")
+
+              MyKey = "My Computer\" & MyKey    ' for xp
+              Mykey = "computer\" & MyKey       'windows 7
+
+              WshShell.RegWrite "HKCU\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit\Lastkey",MyKey,"REG_SZ"
+
+              WshShell.Run "regedit", 1,True
+
+              Set WshShell = Nothing
+              ```
+            2. set restrictanonymous = 1 (2 on windows 2000 and later)
+              - 0—None. Rely on default permissions.
+
+              - 1—Do not allow enumeration of Security Accounts Manager accounts and names.
+                ```
+                reg query \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA /v restrictanonymous
+                  HKEY_LOCAL_MACHINE\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA
+                  restrictanonymous    REG_DWORD    0x0
+                reg add \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA /v restrictanonymous /t REG_DWORD /d 0x1 /f 
+                  The operation completed successfully.
+                reg query \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA /v restrictanonymous
+                  HKEY_LOCAL_MACHINE\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA
+                  restrictanonymous    REG_DWORD    0x1
+                ```
+              - 2—No access without explicit anonymous permissions.
+                To completely restrict access to CIFS/SMB info rmation on Windows 2000 and later systems, set the Additional 
+                Restrictions For Anonymous Connections 
+                ```
+                reg add \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA /v restrictanonymous /t REG_DWORD /d 0x2 /f 
+                  The operation completed successfully.
+
+                psexec \\192.168.2.128 -w "C:\Program Files\SysinternalsSuite" "pskill" explorer
+                
+
+            3. set  
+              reg query \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA
+
+            
+
+

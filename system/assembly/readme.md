@@ -124,7 +124,17 @@
       @print_int@8 ENDP
       _TEXT   ENDS
       ```
-
+  * using gcc
+    * __attribute__(stdcall)
+    * -mrtd: 
+      * Use a different function-calling convention, in which functions that take a fixed number of arguments return
+           with the "ret" num instruction, which pops their arguments while returning.
+      * You can specify that an individual function is called with this calling sequence with the function attribute
+           stdcall.  You can also override the -mrtd option by using the function attribute cdecl.
+    * -mregparm=num:
+      Control how many registers are used to pass integer arguments.  By default, no registers are used to pass
+           arguments, and at most 3 registers can be used.  You can control this behavior for a specific function by
+           using the function attribute regparm.
 # asm 
   
   gcc.pdf 
