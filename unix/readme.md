@@ -1790,6 +1790,49 @@ reader, updater, and reclaimer.
           in.tftpd: ALL: spawn (/usr/sbin/safe_finger -l @%h | \
                        /usr/ucb/mail -s %d-%h root) &
           ```
+  - snmp 
+    ```
+    service snmpd start
+    iptables -t filter -I INPUT -p udp -s 192.168.0.0/16 --dport 161 -j ACCEPT
+    service iptables save
+
+    snmpcmd:
+      # community:public snmp-version 1, 2c, 3
+      snmpwalk -c public -v 2c 192.168.2.131
+        iso.3.6.1.2.1.1.1.0 = STRING: "Linux centos.dob.com 2.6.32-642.11.1.el6.x86_64 #1 SMP Fri Nov 18 19:25:05 UTC 2016 x86_64"
+        iso.3.6.1.2.1.1.2.0 = OID: iso.3.6.1.4.1.8072.3.2.10
+        iso.3.6.1.2.1.1.3.0 = Timeticks: (228904) 0:38:09.04
+        iso.3.6.1.2.1.1.4.0 = STRING: "Root <root@localhost> (configure /etc/snmp/snmp.local.conf)"
+        iso.3.6.1.2.1.1.5.0 = STRING: "centos.dob.com"
+        iso.3.6.1.2.1.1.6.0 = STRING: "Unknown (edit /etc/snmp/snmpd.conf)"
+        iso.3.6.1.2.1.1.8.0 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.2.1 = OID: iso.3.6.1.6.3.11.2.3.1.1
+        iso.3.6.1.2.1.1.9.1.2.2 = OID: iso.3.6.1.6.3.15.2.1.1
+        iso.3.6.1.2.1.1.9.1.2.3 = OID: iso.3.6.1.6.3.10.3.1.1
+        iso.3.6.1.2.1.1.9.1.2.4 = OID: iso.3.6.1.6.3.1
+        iso.3.6.1.2.1.1.9.1.2.5 = OID: iso.3.6.1.2.1.49
+        iso.3.6.1.2.1.1.9.1.2.6 = OID: iso.3.6.1.2.1.4
+        iso.3.6.1.2.1.1.9.1.2.7 = OID: iso.3.6.1.2.1.50
+        iso.3.6.1.2.1.1.9.1.2.8 = OID: iso.3.6.1.6.3.16.2.2.1
+        iso.3.6.1.2.1.1.9.1.3.1 = STRING: "The MIB for Message Processing and Dispatching."
+        iso.3.6.1.2.1.1.9.1.3.2 = STRING: "The MIB for Message Processing and Dispatching."
+        iso.3.6.1.2.1.1.9.1.3.3 = STRING: "The SNMP Management Architecture MIB."
+        iso.3.6.1.2.1.1.9.1.3.4 = STRING: "The MIB module for SNMPv2 entities"
+        iso.3.6.1.2.1.1.9.1.3.5 = STRING: "The MIB module for managing TCP implementations"
+        iso.3.6.1.2.1.1.9.1.3.6 = STRING: "The MIB module for managing IP and ICMP implementations"
+        iso.3.6.1.2.1.1.9.1.3.7 = STRING: "The MIB module for managing UDP implementations"
+        iso.3.6.1.2.1.1.9.1.3.8 = STRING: "View-based Access Control Model for SNMP."
+        iso.3.6.1.2.1.1.9.1.4.1 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.2 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.3 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.4 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.5 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.6 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.7 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.1.9.1.4.8 = Timeticks: (67) 0:00:00.67
+        iso.3.6.1.2.1.25.1.1.0 = Timeticks: (955530) 2:39:15.30
+        End of MIB
+    ```
 
 
     

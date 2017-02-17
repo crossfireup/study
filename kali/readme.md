@@ -762,6 +762,21 @@
         - NetBIOS, upd 137
           - NBNS(NetBIOS name service) served as the distributed naming system for Microsoft Windows–based networks
             - nbtstat: NetBIOS over TCP/IP (NetBT)
+              - NetBIOS provides three distinct services:
+                1. Name service for name registration and resolution (ports: 137/udp and 137/tcp)
+                2. Datagram distribution service for connectionless communication (port: 138/udp)
+                3. Session service for connection-oriented communication (port: 139/tcp)
+              
+              - Direct hosting over TCP/IP uses TCP port 445 instead of the NetBIOS session TCP port 139
+
+              - Windows 2000 TCP/IP systems use several methods to locate NetBIOS resources:
+                1. NetBIOS name cache.
+                2. NetBIOS name server.
+                3. IP subnet broadcasts.
+                4. Static Lmhosts file.
+                5. Static Hosts file (optional, depends on EnableDns registry entry (HKLM\SYSTEM\CurrentControlSet\Services\Netbt\Parameters)).
+                6. DNS servers (optional, depends on EnableDns registry entry).
+
               - [lmhosts(LAN manager)](https://technet.microsoft.com/en-us/library/cc959839.aspx)
                 * Before configuring a computer to use the LMHOSTS file, you must create the primary LMHOSTS file on each computer, 
                   name the file LMHOSTS, and save the file in the directory %systemroot %\System32\Drivers\Etc.
@@ -841,6 +856,9 @@
               - 0—None. Rely on default permissions.
 
               - 1—Do not allow enumeration of Security Accounts Manager accounts and names.
+                - userinfo.exe
+                - userdump.exe
+                - getacct
                 ```
                 reg query \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA /v restrictanonymous
                   HKEY_LOCAL_MACHINE\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA
@@ -861,9 +879,105 @@
                 psexec \\192.168.2.128 -w "C:\Program Files\SysinternalsSuite" "pskill" explorer
                 
 
-            3. set  
-              reg query \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA
+            3. ensuer the Registry is locked down and not accessible remotely
+              [restrict remote registry](https://support.microsoft.com/en-us/help/153183/how-to-restrict-access-to-the-registry-from-a-remote-computer)
+              ```
+
+              reg query \\192.168.2.128\HKLM\SYSTEM\CURRENTCONTROLSET\CONTROL\LSA /v restrictanonymous /t REG_DWORD /d 0x
+              To create the registry key to restrict access to the registry:
+
+              1. Start Registry Editor (Regedt32.exe) and go to the following subkey:
+                HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control
+              2. On the Edit menu, click Add Key.
+                Enter the following values:
+                  Key Name: SecurePipeServers
+                  Class: REG_SZ
+              3. Go to the following subkey:
+                HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurePipeServers
+                On the Edit menu, click Add Key.
+                Enter the following values:
+              Key Name: winreg
+              Class: REG_SZ
+              Go to the following subkey:
+              HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg
+              On the Edit menu, click Add Value.
+              Enter the following values:
+              Value Name: Description
+              Data Type: REG_SZ
+              String: Registry Server
+              Go to the following subkey.
+              HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurePipeServers\winreg
+              Select "winreg". Click Security and then click Permissions. Add users or groups to which you want to grant access.
+              Exit Registry Editor and restart Windows.
+              If you at a later stage want to change the list of users that can access the registry, repeat steps 10-12.
+
+              ```
+
+        - snmp udp 161
+           - introduction
+              provide intimate information about network devices, software, and systems. monitor network performance, audit network usage, 
+              detect network faults or inappropriate access, and in some cases configure remote devices.
+            - MIB :RFC 1213, “Management Information Base for Network Management of TCP/IP based Internets: MIB II.” A standard that 
+                    defines a set of objects that represent information about IP and IPX components on your network, such as :
+                    1. the list of network interfaces, 
+                    2. the routing table, 
+                    3. the Address Resolution Protocol (ARP) table, 
+                    4. the list of open TCP connections, 
+                    5. Internet Control Message Protocol (ICMP) statistics.
+                    RFC 1213 is updated (but not made obsolete) by RFC 2011, “SNMPv2 Management Information Base for the Internet Protocol 
+                    using SMIv2,” RFC 2012, “SNMPv2 Management Information Base for the Transmission Control Protocol using SMIv2,” and RFC 2013,
+                     “SNMPv2 Management Information Base for the User Datagram Protocol using SMIv2.”
+            - SMI :RFC 2578, “Structure of Management Information Version 2 (SMIv2).” A standard that describes the object syntax f
+                    or specifying how MIB data is referenced and stored.
+          - snmputil
+          - snmpget
+          - [snscan 1.05](mcafee.com/us/downloads/free-tools/snscan.aspx)
+            192.168.2.131,161,"public","Linux centos.dob.com 2.6.32-642.11.1.el6.x86_64 #1 SMP Fri Nov 18 19:25:05 UTC 2016 x86_64"
+          - onesixtyone
 
             
 
 
+ # hacking windows
+  - for in-depth coverage of Windows security architecture : Hacking exposed Windows, 3rd edition
+
+  - unauthenticated attacks:
+    1. starting only with knownledge of target system gained for infomation gathered before;
+    2. remote network exploits;
+
+    - primary vectors compromising windows system remotely include:
+      - authentication spoofing:
+        - frail password
+        - bruteforce/dictionary password guessing
+        - man-in-middle authentication spoofing
+
+        - remote password guessing
+          - windows file and print sharing service using SMB via tcp 445, udp 139(NetBIOS-based service)
+          - RPC via tcp 135 
+          - TS(terminal service) via tcp 3389
+          - SQL on tcp 1433 and udp 1434
+          - web-based product SP(SharePoint) over http and https(80, 443 or custome ports)
+      
+      - network service:
+        - point-click-exploit tools to penetrate vulnerable service listening on the network
+      
+      - client vulnerabilities:
+        - client software like IE, office, outlook, adobe flash play, adobe acobat reader and so on;
+
+      - device drivers:
+        - wireless network interfaces;
+        - use memory sticks;
+        - inserted media like cd-rom disk
+
+      - 
+
+  - ahtuenticated attacks:
+    assume previous exploits succeed, the attacker now turns to do following:
+    1. escalating priviledge;
+    2. get remote control of victims;
+    3. extracting passwords and other useful information;
+    4. install backdoors;
+    5. covering attacks;
+
+  - windows security features
+    - built-in os countermeasures and best practive against many exploits

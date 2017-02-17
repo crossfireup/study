@@ -21,6 +21,10 @@
     * schdtasks.exe
       ```
       schtasks /run /tn “TASKNAMEINQUOTES”
+      C:\WINDOWS\SchedLgU.txt
+
+      schtasks.exe /query /tn "start-up"
+      schtasks.exe /change /TN "start-up" /enable
       ```
     * optionalfeatures.exe
 
@@ -70,6 +74,8 @@
       ENVIRONMENT CREATE NAME="TEMP"; VARIABLEVALUE="NEW"
 
       PROCESS WHERE NAME="CALC.EXE" DELETE
+
+      process get name,processid, executablepath
      
       product   --list all installed software
 
