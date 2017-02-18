@@ -1,6 +1,8 @@
 # reference
     Windows NT File System Internals : OSR Classic Reprints
     Troubleshooting with the Windows Sysinternals Tools          
+    https://msdn.microsoft.com/en-us/windows/hardware/drivers/gettingstarted/index
+    https://msdn.microsoft.com/en-us/windows/hardware/drivers/network/roadmap-for-developing-ndis-protocol-drivers
 # windows tools:
     * appwiz.cpl
     * inetcpl.cpl
@@ -226,6 +228,24 @@
       Sound Properties               control mmsys.cpl sounds
       System Properties              control sysdm.cpl
       ```
+
+    * download using command
+      - Powershell:
+        1. Invoke-WebRequest:iwr, wget, curl
+          ```
+          wget -Uri http://www.winhelponline.com/blog/wp-content/uploads/reg/copypath.reg -OutFile copypath.reg
+          ```
+        2. Start-BitsTransfer:
+          ```
+          Start-BitsTransfer -Source http://www.winhelponline.com/blog/wp-content/uploads/reg/copypath.reg
+          ```
+
+      - cmd:
+        1. bitsadmin.exe
+        ```
+        bitsadmin.exe /transfer regdownload /download /priority high ^
+          http://www.winhelponline.com/blog/wp-content/uploads/reg/copypath.reg C:\Users\Dobly\Downloads\cmd_download\bits_copypath.reg
+        ```
 
 * [hook](https://en.wikipedia.org/wiki/Hooking)
      hooking covers a range of techniques used to alter or augment the behavior of an operating system, 
@@ -572,3 +592,7 @@
       HKEY_CURRENT_CONFIG	System, System.alt, System.log, System.sav, Ntuser.dat, Ntuser.dat.log
       HKEY_USERS\DEFAULT	Default, Default.log, Default.sav
       ```
+
+# windows internal
+  1. subsystem
+    * csrss - client/server runtime subsystem

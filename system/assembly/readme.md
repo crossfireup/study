@@ -409,3 +409,12 @@
     cl stdcall_x64.c /Fastdcall_x64.asm
     cl stdcall_x64 /Ob /Fa stdcall_x64.asm
     ```
+
+# IDA pro
+  # why disassebly
+    * analysis of malware
+    * analysis of vulnerabilities
+    * software interoperability
+    * compile validation
+    * debugging display
+    

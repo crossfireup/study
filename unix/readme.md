@@ -1806,13 +1806,6 @@ reader, updater, and reclaimer.
         iso.3.6.1.2.1.1.5.0 = STRING: "centos.dob.com"
         iso.3.6.1.2.1.1.6.0 = STRING: "Unknown (edit /etc/snmp/snmpd.conf)"
         iso.3.6.1.2.1.1.8.0 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.2.1 = OID: iso.3.6.1.6.3.11.2.3.1.1
-        iso.3.6.1.2.1.1.9.1.2.2 = OID: iso.3.6.1.6.3.15.2.1.1
-        iso.3.6.1.2.1.1.9.1.2.3 = OID: iso.3.6.1.6.3.10.3.1.1
-        iso.3.6.1.2.1.1.9.1.2.4 = OID: iso.3.6.1.6.3.1
-        iso.3.6.1.2.1.1.9.1.2.5 = OID: iso.3.6.1.2.1.49
-        iso.3.6.1.2.1.1.9.1.2.6 = OID: iso.3.6.1.2.1.4
-        iso.3.6.1.2.1.1.9.1.2.7 = OID: iso.3.6.1.2.1.50
         iso.3.6.1.2.1.1.9.1.2.8 = OID: iso.3.6.1.6.3.16.2.2.1
         iso.3.6.1.2.1.1.9.1.3.1 = STRING: "The MIB for Message Processing and Dispatching."
         iso.3.6.1.2.1.1.9.1.3.2 = STRING: "The MIB for Message Processing and Dispatching."
@@ -1822,17 +1815,34 @@ reader, updater, and reclaimer.
         iso.3.6.1.2.1.1.9.1.3.6 = STRING: "The MIB module for managing IP and ICMP implementations"
         iso.3.6.1.2.1.1.9.1.3.7 = STRING: "The MIB module for managing UDP implementations"
         iso.3.6.1.2.1.1.9.1.3.8 = STRING: "View-based Access Control Model for SNMP."
-        iso.3.6.1.2.1.1.9.1.4.1 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.2 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.3 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.4 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.5 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.6 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.7 = Timeticks: (67) 0:00:00.67
-        iso.3.6.1.2.1.1.9.1.4.8 = Timeticks: (67) 0:00:00.67
         iso.3.6.1.2.1.25.1.1.0 = Timeticks: (955530) 2:39:15.30
         End of MIB
+     ```
+
+# vpn server 
+  1. install packages 
     ```
+    yum install wget bind-utils
+    ```
+
+  2. install epel repository for xl2tpd package
+    ```
+    yum install openswan xl2tpd ppp lsof
+    ```
+
+  3. firewall and sysctl
+    ```bash
+    iptables -t nat -A POSTROUTING -j MASQUERADE
+
+    enable kernel IP packet forwarding and disable ICP redirects.
+
+    echo "net.ipv4.ip_forward = 1" |  tee -a /etc/sysctl.conf
+    echo "net.ipv4.conf.all.accept_redirects = 0" |  tee -a /etc/sysctl.conf
+    echo "net.ipv4.conf.all.send_redirects = 0" |  tee -a /etc/sysctl.conf
+    for vpn in /proc/sys/net/ipv4/conf/*; do echo 0 > $vpn/accept_redirects; echo 0 > $vpn/send_redirects; done
+    sysctl -p
+
+    iptables -t filter -I INPUT -p udp -m multiport --dports 500,1701 -j ACCEPT   
 
 
     
