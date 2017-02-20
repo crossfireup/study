@@ -247,6 +247,16 @@
           http://www.winhelponline.com/blog/wp-content/uploads/reg/copypath.reg C:\Users\Dobly\Downloads\cmd_download\bits_copypath.reg
         ```
 
+    * Event Tracing for Windows (ETW) 
+      xperf.exe
+      C:\etl> xperf -help start
+      C:\etl> xperf -help stop
+
+    * systrace
+      - logger.exe
+      - wt(trace and watch data) in windbg
+
+
 * [hook](https://en.wikipedia.org/wiki/Hooking)
      hooking covers a range of techniques used to alter or augment the behavior of an operating system, 
      of applications, or of other software components by intercepting function calls or messages or events passed between

@@ -50,6 +50,7 @@
     http://www.unixwiz.net/techtips/iguide-ipsec.html
     https://technet.microsoft.com/en-us/library/cc779919(d=printer,v=ws.10).aspx
     https://tools.ietf.org/pdf/rfc2637.pdf
+
     ```
   - terminology
     - network access server (NAS):
@@ -66,6 +67,28 @@
       A PNS is envisioned to operate on general-purpose computing/server platforms. The PNS handles the server side of the PPTP protocol.
       Since PPTP relies completely on TCP/IP and is independent of the interface hardware, the PNS may use any combination of IP interface 
       hardware including LAN and WAN devices.
+
+    -  L2TP Access Concentrator (LAC)
+
+      A node that acts as one side of an L2TP tunnel endpoint and is a peer to the L2TP Network Server (LNS).  The LAC sits between an
+      LNS and a remote system and forwards packets to and from each. Packets sent from the LAC to the LNS requires tunneling with the
+      L2TP protocol as defined in this document.  The connection from the LAC to the remote system is either local (see: Client LAC) or
+      a PPP link.
+
+    - L2TP Network Server (LNS)
+
+      A node that acts as one side of an L2TP tunnel endpoint and is a peer to the L2TP Access Concentrator (LAC).  The LNS is the
+      logical termination point of a PPP session that is being tunneled from the remote system by the LAC.
+    
+    - Management Domain (MD)
+
+      A network or networks under the control of a single administration, policy or system. For example, an LNS's Management
+      Domain might be the corporate network it serves. An LAC's Management Domain might be the Internet Service Provider that owns
+      and manages it.
+
+    - PSTN (public switched telephone network) 
+      the world's collection of interconnected voice-oriented public telephone networks, both commercial and government-owned. 
+      It's also referred to as the Plain Old Telephone Service (POTS).
 
   - architecture of vpn: over public internet, such as Internet; or over a private intranet
     - remote access VPN connection:
