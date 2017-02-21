@@ -760,15 +760,18 @@
 
   Prefix-Command,tmux default CTRL+b。
   * session:
-
+    ```
     create: tmux new-session -s <session-name> or tmux new -s <session-name>
     detach: prefix d
     attach: tmux attach -t <session-name> or tmux a -t <session-name>
     tmux ls: list sessions
     prefix $: rename sessions
 
-  *window
-
+    tmux -S /tmp/tmux/msf4 attach
+    ```
+Sender MAC address: Shenzhen_57:69:e7 (dc:9c:9f:57:69:e7)
+  * window
+    ```
     tmux new -n <window-name>
     new window: prefix c
     previous: prefix p
@@ -778,9 +781,10 @@
     list: prefix w
     close: prefix &
     rename: prefix ,
+    ```
 
   * panel
-
+    ```
     list panel nmuber: prefix q
     vsplit）：prefix %
     hsplit：prefix "
@@ -794,7 +798,7 @@
     主窗格最大化，其他窗格垂直平分（main-vertical）
     平铺，窗格均等分（tiled）
     ```
-
+    ```
 # nginx
 --------------------------
   * master: 
@@ -1173,6 +1177,19 @@ reader, updater, and reclaimer.
       git stash show -p stash@{0}
       git stash save --keep-index
 
+    * add local repository to github
+      * establishing a relationship between the two 
+        ```
+        git remote add study https://github.com/HuangBR/study.git
+        ```
+      * push to remote 
+        ```
+        git push origin master
+        ```
+      * after all above, just use git push
+        ```
+        git push
+        ```
       
 * service configuration
   * dns server configuration bind
@@ -1996,3 +2013,11 @@ reader, updater, and reclaimer.
     rmmod dummy
     ```
 
+
+  - link-local range
+    ip route add 192.168.1.0/24 dev eth1
+
+
+# ?
+  - no dhcpoffer recived
+  

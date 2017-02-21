@@ -36,6 +36,7 @@
     Now that the PostgreSQL service is up and running and the database is initialized, you can launch msfconsole and verify database connectivity with the db_status command as shown below.
     ```
     msfconsole
+    db_disconnect
     msf > db_status
     [*] postgresql connected to msf3
     msf >
@@ -89,6 +90,16 @@
         msfencode -e x86/countdown -c 5 -t exe -o /var/www/payload3.exe
       ```
 
+    - use external modules
+      ```
+      mkdir -p $HOME/.msf4/modules/exploits/android/shell_reverse_tcp.rb
+
+      msf > reload_all
+      msf > use exploit/android/shell_reverse_tcp
+
+      msf > loadpath
+          
+
   * Nping 0.7.30 ( https://nmap.org/nping )
     EXAMPLES:
     ```
@@ -102,6 +113,35 @@
     ```
     nping --arp --arp-type arp-reply --arp-sender-mac a1:8f:16:54:c2:38 --arp-sender-ip 192.168.43.1 --arp-target-mac 84:4b:f5:85:91:8e --arp-target-ip 192.168.43.206 192.168.43.206
     echo "this is a test from all of you" |  ncat -u 127.0.0.1 4913
+    ```
+
+  * nmap
+    ```
+    nmap -sU -p 67 --script dhcp-discover --script-args 'dchptype=DHCPINFORM' 192.168.1.1
+    ```
+
+  * tcpreplay
+    ```
+    # basic usage:
+    tcpreplay --intf1=eth0 sample.pcap
+
+    # To replay traffic as quickly as possible:
+      tcpreplay --topspeed --intf1=eth0 sample.pcap
+
+    # To replay traffic at a rate of 10Mbps:
+      tcpreplay --mbps=10.0 --intf1=eth0 sample.pcap
+
+    # To replay traffic 7.3 times as fast as it was captured:
+      tcpreplay --multiplier=7.3 --intf1=eth0 sample.pcap
+
+    # To replay traffic at half-speed:
+      tcpreplay --multiplier=0.5 --intf1=eth0 sample.pcap
+
+    # To replay at 25 packets per second:
+      tcpreplay --pps=25 --intf1=eth0 sample.pcap
+
+    # To replay packets, one at a time while decoding it (useful for debugging purposes):
+      tcpreplay --oneatatime --verbose --intf1=eth0 sample.pcap
     ```
 
 * rce

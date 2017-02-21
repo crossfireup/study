@@ -247,15 +247,42 @@
           http://www.winhelponline.com/blog/wp-content/uploads/reg/copypath.reg C:\Users\Dobly\Downloads\cmd_download\bits_copypath.reg
         ```
 
-    * Event Tracing for Windows (ETW) 
+    * [Event Tracing for Windows (ETW)](https://msdn.microsoft.com/en-us/magazine/ee412263.aspx)
       xperf.exe
       C:\etl> xperf -help start
       C:\etl> xperf -help stop
+
+      - logman
+
+      - tracerpt(trace report)
 
     * systrace
       - logger.exe
       - wt(trace and watch data) in windbg
 
+    * assoc and ftype
+      ```
+      C:\>assoc .pcap
+      .pcap=wireshark-capture-file
+
+      C:\>ftype wireshark-capture-file
+      wireshark-capture-file="C:\Program Files\Wireshark\Wireshark.exe" "%1"
+
+      C:\>assoc .dump
+      File association not found for extension .dump
+
+      C:\>assoc .dump=wireshark-capture-file
+      .dump=wireshark-capture-file
+
+      Type:
+        ASSOC .pl=PerlScript FTYPE PerlScript=perl.exe %1 %* 
+
+      To invoke the Perl script, type:
+        script.pl 1 2 3 
+
+      To eliminate the need to type the extensions, type:
+       set PATHEXT=.pl;%PATHEXT% 
+      ```
 
 * [hook](https://en.wikipedia.org/wiki/Hooking)
      hooking covers a range of techniques used to alter or augment the behavior of an operating system, 

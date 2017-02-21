@@ -53,3 +53,16 @@
 
        SLMGR /REARM.
 
+
+* [xxs](https://translate.google.com/translate?sl=auto&tl=en&js=y&prev=_t&hl=en&ie=UTF-8&u=http%3A%2F%2Fmusana.net%2Fxss-detayli-dokuman.html&edit-text=)
+  - reflected XXS
+
+  - DOM-based XXS
+    persistent and reflected xss vulnerabilities can be prevented by server-side filtering, 
+    this is not the case with DOM-based xss;
+    some of the queries served only in user's broswer without being transmited to server side;
+    writen afeter '#'
+
+  - stored(persistent) XXS
+    occurs when the data from the user is not sufficiently filtered before it is recorded in the database, 
+    and then the data that is recorded is to be extracted from the database for use elsewhere.
