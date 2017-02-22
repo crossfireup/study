@@ -1958,12 +1958,57 @@ reader, updater, and reclaimer.
 
     aptitude -r install network-manager-openvpn-gnome network-manager-pptp network-manager-pptp-gnome network-manager-strongswan network-manager-vpnc network-manager-vpnc-gnome
 
+    http://rootmanager.com/ubuntu-ipsec-l2tp-windows-domain-auth/setting-up-openswan-xl2tpd-with-native-windows-clients-lucid.html
 
+
+    https://support.microsoft.com/en-us/help/926179/how-to-configure-an-l2tp-ipsec-server-behind-a-nat-t-device-in-windows-vista-and-in-windows-server-2008
+    enable ipsec nat-t:
+    1.Locate and then click the following registry subkey:
+      ```
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\PolicyAgent
+      ```
+      Note You can also apply the AssumeUDPEncapsulationContextOnSendRule DWORD value to a Microsoft Windows XP Service Pack 2 (SP2)-based VPN client computer. To do this, locate and then click the following registry subkey:
+      ```
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\IPSec
+      ```
+    2. On the Edit menu, point to New, and then click DWORD (32-bit) Value.
+      Type AssumeUDPEncapsulationContextOnSendRule, and then press ENTER.
+      Right-click AssumeUDPEncapsulationContextOnSendRule, and then click Modify.
+      In the Value Data box, type one of the following values:
+        - 0: A value of 0 (zero) configures Windows so that it cannot establish security associations with servers that are located behind NAT devices. 
+            This is the default value.
+        - 1: A value of 1 configures Windows so that it can establish security associations with servers that are located behind NAT devices.
+        - 2: A value of 2 configures Windows so that it can establish security associations when both the server and the Windows Vista-based or 
+            Windows Server 2008-based VPN client computer are behind NAT devices.
+
+    3. Click OK, and then exit Registry Editor.
+    4. Restart the computer.
 
     ipsec newhostkey 
 
     chkconfig --level 2345 ipsec on
     chkconfig --level 2345 xl2tpd on
+
+    openssl rand -base64 48
+
+    ipsec setup start
+    ipsec auto --add L2TP-PSK-noNAT
+    ipsec auto --add L2TP-PSK-NAT
+    ipsec auto --up L2TP-PSK # failed
+    ipsec auto --rereadsecrets
+
+# configure vpn client in ubuntu
+  - add source list
+    ```
+    vim /etc/apt/sources.list.d/openswan-srv.list
+    #deb openswan
+    deb-src http://ftp.debian.org/debian/ sid main
+
+    W: GPG error: http://ftp.debian.org sid InRelease: The following signatures couldn't be verified because the public key is not available: 
+    NO_PUBKEY 8B48AD6246925553 NO_PUBKEY 7638D0442B90D010
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-key 8B48AD6246925553
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-key 7638D0442B90D010
+    ```
 
     
 
@@ -2020,4 +2065,100 @@ reader, updater, and reclaimer.
 
 # ?
   - no dhcpoffer recived
-  
+  - [linux ftrace](https://www.kernel.org/doc/Documentation/trace/ftrace.txt)
+    - reference
+      https://lwn.net/Articles/410200/
+      https://lwn.net/Articles/365835/
+      http://elinux.org/Ftrace
+    - boot config
+      ```
+      /proc/config.gz
+      /boot/config
+      /boot/config-$(uname -r)
+
+      CONFIG_HAVE_FTRACE_NMI_ENTER=y
+      CONFIG_HAVE_FUNCTION_TRACER=y
+      CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
+      CONFIG_HAVE_FUNCTION_GRAPH_FP_TEST=y
+      CONFIG_HAVE_FUNCTION_TRACE_MCOUNT_TEST=y
+      CONFIG_HAVE_DYNAMIC_FTRACE=y
+      CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
+      CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
+      CONFIG_TRACER_MAX_TRACE=y
+
+      for running kernel configured with:
+        CONFIG_IKCONFIG and CONFIG_IKCONFIG_PROC
+      zcat /proc/config.gz > running.config
+      ```
+
+    - mount debugfs
+      ```
+      CONFIG_DEBUG_FS=y
+
+      mount -t debugfs nodev /sys/kernel/debug/
+
+      vim /etc/fstab
+      debugfs       /sys/kernel/debug          debugfs defaults        0       0
+
+      ln -s /sys/kernel/debug /debug
+
+      # fs in use
+        /etc/filesystems
+        /proc/filesystems
+      # all supported fs
+      ls -l  /lib/modules/$(uname -r)/kernel/fs
+
+    - trace system
+      ```
+      # list all event
+      trace-cmd list -e 
+      
+
+      pgrep dhclient
+      1764
+      3668
+      ps -p 1764,3668 -o pid,cmd -www
+      trace-cmd record -p function -e *net* -c -P  1764 -o trace.dat
+      trace-cmd record -p function_graph -e '*net*' -g ip_rcv -o dhclient.dat -F dhclient eth3
+      trace-cmd report -i trace.dat -f irq -F 
+      # permissions denied, can't create new file in debufs,sysfs(https://ubuntuforums.org/archive/index.php/t-2151624.html)
+      ```
+
+    - tracing specific cmd
+      ```
+      #!/bin/sh
+      echo $$ > /debug/tracing/set_ftrace_pid
+      # can set other filtering here
+      echo function > /debug/tracing/current_tracer
+      exec $*
+      ```
+      - trace 
+        ```
+        trace-cmd record -p function -F ls
+        ```
+
+    - trace over network
+      ```
+      # To set up a trace server, simply run something like the following command:
+        trace-cmd listen -p 12345 -D -d /images/tracing/ -l /images/tracing/logfile
+        # while the -d /images/tracing/ tells trace-cmd to output the trace files from the connections 
+        # it receives into the /images/tracing/ directory.
+        
+      # in the client:
+        trace-cmd record -N 192.168.1.131:12345 -e sched_switch -e sched_wakeup -e irq hackbench 50
+      ```
+
+    - for lazy user
+      ``` 
+      # tracing on and start tracing
+       # trace-cmd start -p function_graph -g ip_rcv
+       # sleep 10
+       # trace-cmd stop # same as: echo 0 > /sys/kernel/debug/tracing/tracing_on
+       # trace-cmd show # same as: cat /sys/kernel/debug/tracing/trace
+       
+      # save to file
+       trace-cmd extract -o kernel-buf.dat
+       trace-cmd report kernel-buf.dat
+
+      # To disable all tracing, which will ensure that no overhead is left from using the function tracers or events, the reset command can be used.
+        trace-cmd reset

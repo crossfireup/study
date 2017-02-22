@@ -284,6 +284,10 @@
        set PATHEXT=.pl;%PATHEXT% 
       ```
 
+    * get open files 
+      - handle -u Administrator
+      - handle -p cmd
+
 * [hook](https://en.wikipedia.org/wiki/Hooking)
      hooking covers a range of techniques used to alter or augment the behavior of an operating system, 
      of applications, or of other software components by intercepting function calls or messages or events passed between
