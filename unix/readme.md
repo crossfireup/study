@@ -2200,3 +2200,38 @@ reader, updater, and reclaimer.
 
       # To disable all tracing, which will ensure that no overhead is left from using the function tracers or events, the reset command can be used.
         trace-cmd reset
+
+
+
+# [SELinux](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security-Enhanced_Linux/sect-Security-Enhanced_Linux-Maintaining_SELinux_Labels_-Checking_the_Default_SELinux_Context.html)
+  - introduction
+    selinux checked after DAC, selinux policies won't be used if dac rules denys
+    ```
+    [root@centos test]# ls -aZ selinux.conf 
+    -rw-r--r--. root root unconfined_u:object_r:user_tmp_t:s0 selinux.conf 
+    ```
+    SELinux provides following:
+    - a user (unconfined_u) 
+    - a role (object_r) 
+    - a type(user_home_t)  or domain
+      defines a domain of a process, a type for a file
+    - a level (s0)
+
+    - featues:
+      - a type used for selinux policies to define how process interact with files amd interact with each other;
+      - fine-grained access control, selinux use a user, role, type , level to make decisions;
+      - selinux policies are administrative-defined, system-wide, not just for a user;
+      - reduce PEA ;
+      - can be used to enforce data intergration, confidentiality, and avoid uncontroled input dataflow;
+
+    - state and mode
+      - enforcing: selinux denys access based on selinux policies;
+      - permissive: selinux is not enforing, selinux does not deny access, but denies are logged for actions that 
+                    would deny if selinux is enforcing;
+    
+    - 
+
+    - tools
+      - Install semanage tools: sudo yum -y install policycoreutils-python
+      - Allow port 88 for httpd: sudo semanage port -a -t http_port_t -p tcp 88
+      - Allow port 8445 for httpd: sudo semanage port -a -t http_port_t -p tcp 8445

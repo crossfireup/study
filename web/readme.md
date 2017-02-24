@@ -75,6 +75,39 @@
           Connection: close
           X-Powered-By: PHP/7.0.13
 
+          nc 192.168.2.131 80
+            PUT / HTTP/1.0
+
+            HTTP/1.1 405 Not Allowed
+            Server: nginx/1.11.6
+            Date: Fri, 24 Feb 2017 15:52:08 GMT
+            Content-Type: text/html
+            Content-Length: 173
+            Connection: close
+
+
+        nc 192.168.1.3 8080
+          PUT / HTTP/1.0
+
+          HTTP/1.1 405 Method Not Allowed
+          Server: Apache-Coyote/1.1
+          Content-Type: text/html;charset=utf-8
+          Content-Language: en
+          Content-Length: 1086
+          Date: Fri, 24 Feb 2017 07:49:49 GMT
+          Connection: close
+
+        nc 192.168.1.3 8080
+          HEAD / HTTP/1.0
+
+          HTTP/1.1 200 OK
+          Server: Apache-Coyote/1.1
+          Content-Type: text/html;charset=UTF-8
+          Date: Fri, 24 Feb 2017 07:53:56 GMT
+          Connection: close
+
+
+
       - advanced http fingerprinting
         - Unexpected http method
         - 
