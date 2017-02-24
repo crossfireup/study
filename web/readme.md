@@ -53,6 +53,34 @@
 
        SLMGR /REARM.
 
+  - profiling
+    - infrastracture profiling  
+      - footprinting and scanning
+        - Internet register research
+        - DNS
+        - general organization research
+        - server discovery
+        - nerwork service(port scanning)
+
+      - banner grabbing
+        ```
+        nc 192.168.2.131 80
+          HEAD / HTTP/1.0
+          HOST: 192.168.2.131
+
+          HTTP/1.1 200 OK
+          Server: nginx/1.11.6
+          Date: Thu, 23 Feb 2017 18:01:56 GMT
+          Content-Type: text/html; charset=UTF-8
+          Connection: close
+          X-Powered-By: PHP/7.0.13
+
+      - advanced http fingerprinting
+        - Unexpected http method
+        - 
+
+    - application profiling
+
 
 * [xxs](https://translate.google.com/translate?sl=auto&tl=en&js=y&prev=_t&hl=en&ie=UTF-8&u=http%3A%2F%2Fmusana.net%2Fxss-detayli-dokuman.html&edit-text=)
   - reflected XXS

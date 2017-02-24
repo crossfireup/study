@@ -175,4 +175,8 @@
       - EAP-md5
       - EAP-TLS
 
-
+    - ISAKMP is an older implementation of what is known now as IKE. 
+      IKE is a combination of ISAKMP, Oakley, SKEME and used for distribution and how to generated of public keys.
+      - ISAKMP is a protocol to establish framework authentication and key exchange
+      - Oakley (which describes a series of key exchange defining in detail the services provided by them)
+      - SKEME (a key exchange technique that provides anonymity, reputability, and quick key refreshment)

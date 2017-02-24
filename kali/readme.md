@@ -54,7 +54,10 @@
   * wireshare
       ip.src == 192.168.11.1
       udp.port==68 or udp.port==67
-
+  
+  * HSM
+    A hardware security module (HSM) is a physical computing device that safeguards and manages digital keys 
+    for strong authentication and provides cryptoprocessing
 
   * Metasploit
       [-] Meterpreter Exception: Rex::Post::Meterpreter::RequestError stdapi_registry_open_key: Operation failed: Access is denied.

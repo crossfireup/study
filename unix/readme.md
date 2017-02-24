@@ -219,210 +219,240 @@
 
 
 * vim 
+  - configure
+    ```vimrc
+      windows :_vimrc
+      set tabstop=4
+      set nu
+      set autoindent
+      set shiftwidth=4
+      set cindent
+      set smartindent
+      set expandtab
+      syntax on
 
-    * case convert 
-        ~    : Changes the case of current character
+      # vim set backup and swp file position 
+      # for windows
+      :e $VIM/_vimrc
+      " set nowrite
+      " set nobackup
+      " set noundofile
+      set backupdir=~/.vim/backup/
+      set directory=~/.vim/swap/
+      set undodir=~/.vim/undo/
+    ```
 
-        guu  : Change current line from upper to lower.
-
-        gUU  : Change current LINE from lower to upper.
-
-        guw  : Change to end of current WORD from upper to lower.
-
-        guaw : Change all of current WORD to lower.
-
-        gUw  : Change to end of current WORD from lower to upper.
-
-        gUaw : Change all of current WORD to upper.
-
-        g~~  : Invert case to entire line
-
-    * windows control
-
-        :sp filename for a horizontal split
-
-        :vsp filename or :vs filename for a vertical split
-
-        Ctrl+W, S (upper case) for horizontal splitting
-
-        Ctrl+W, v (lower case) for vertical splitting
-
-        Ctrl+W, Q to close one
-
-        Ctrl+W, Ctrl+W to switch between windows
-
-        Ctrl+W, J (xor K, H, L) to switch to adjacent window (intuitively up, down, left, right)
-
-    * configure
-      ```vimrc
-        windows :_vimrc
-        set tabstop=4
-        set nu
-        set autoindent
-        set shiftwidth=4
-        set cindent
-        set smartindent
-        set expandtab
-        syntax on
+  - join two lines
       ```
-    * paste from outside
-      ```
-        Do this before:
+      hostname: 
+      output
+      hostname2:
+      output2
 
-        :set paste
+      :%v/:$/-1j
+      hostname: output
+      hostname2: output2
 
-        Then after:
+  - write current content to disk
+    ```
+    :%!xxd
 
-        :set nopaste
-      ```
-        set pastetoggle=<F2>
+    da" Delete around quotes. Removes quoted text along with the quotes.
+    ci( Change inside parentheses. Removes anything inside the parentheses, but leaves the parentheses there, while dropping you into insert mode.
+    ```
 
-        in normal and visual modes, "xp pastes the contents of the register x.
+  * case convert 
+      ~    : Changes the case of current character
 
-        This works with special registers as well: "+p (or "*p) pastes the contents of the clipboard,
-         "/p pastes the last search, and ":p pastes the last command. 
-        For example, you might want to save a complex search and replace (:%s///g) that you have just used, which you can do by pasting with ":p. 
+      guu  : Change current line from upper to lower.
 
-    * paste to/from clipboard
+      gUU  : Change current LINE from lower to upper.
 
-        +y
+      guw  : Change to end of current WORD from upper to lower.
 
-        +p
+      guaw : Change all of current WORD to lower.
 
-        copy to system clipboard
-        gg
-        :%y+
+      gUw  : Change to end of current WORD from lower to upper.
 
-        g g " + y G 
+      gUaw : Change all of current WORD to upper.
 
-        ggVG
+      g~~  : Invert case to entire line
 
-    * save files as sudo
+  * windows control
 
-        :w !sudo dd of=%
+      :sp filename for a horizontal split
 
-        Making this trick easy
+      :vsp filename or :vs filename for a vertical split
 
-        You can add this to your .vimrc to make this trick easy-to-use: just type :w!!.
+      Ctrl+W, S (upper case) for horizontal splitting
 
-        " Allow saving of files as sudo when I forgot to start vim using sudo.
-        cmap w!! w !sudo tee > /dev/null %
+      Ctrl+W, v (lower case) for vertical splitting
 
-        The > /dev/null part explicitly throws away the standard output, since, as I said, we don't need to pass anything to another piped command.
+      Ctrl+W, Q to close one
 
-    * comment/uncomment
+      Ctrl+W, Ctrl+W to switch between windows
 
-      * press Esc (to leave editing or other mode)
-      * hit ctrl+v (visual block mode)
-      * use the up/down arrow keys to select lines you want (it won't highlight everything - it's OK!)
-      * Shift+i (capital I)
-      * insert the text you want, i.e. '% '
-      * press Esc
+      Ctrl+W, J (xor K, H, L) to switch to adjacent window (intuitively up, down, left, right)
 
-    * swap char/line
-      1. Swap the current character (the character under the cursor) with the next:
+  
+  * paste from outside
+    ```
+      Do this before:
 
-            xp
+      :set paste
 
-      2. Swap the current character with the previous:
+      Then after:
 
-            Xp
+      :set nopaste
+    ```
+      set pastetoggle=<F2>
 
-      3. Swap the current line with the next (but see below for a better method):
+      in normal and visual modes, "xp pastes the contents of the register x.
 
-            ddp
+      This works with special registers as well: "+p (or "*p) pastes the contents of the clipboard,
+        "/p pastes the last search, and ":p pastes the last command. 
+      For example, you might want to save a complex search and replace (:%s///g) that you have just used, which you can do by pasting with ":p. 
 
-            ddP
+  * paste to/from clipboard
 
-      4. swap words
-            dwwp
-            dwbP
-    
-    * format code
+      +y
 
-        gg=G
+      +p
 
-        Explanation:
-         gg goes to the top of the file, 
-         = is a command to fix the indentation
-         G tells it to perform the operation to the end of the file.
-        
-        :!indent %
-    
-    * highlight
+      copy to system clipboard
+      gg
+      :%y+
 
-        To turn off highlighting until the next search:
+      g g " + y G 
 
-        :nohl
+      ggVG
 
-        Or turn off highlighting completely:
+  * save files as sudo
 
-        set nohlsearch
+      :w !sudo dd of=%
 
-        Or, to toggle it:
+      Making this trick easy
 
-        set hlsearch!
+      You can add this to your .vimrc to make this trick easy-to-use: just type :w!!.
 
-        nnoremap <F3> :set hlsearch!<CR>
+      " Allow saving of files as sudo when I forgot to start vim using sudo.
+      cmap w!! w !sudo tee > /dev/null %
 
-     * delete
-        
-        d63G # delete from cursor to line 63
-        
-        :a,bd # delete from a to b
-        
-        :,bd # delete from current to d 
+      The > /dev/null part explicitly throws away the standard output, since, as I said, we don't need to pass anything to another piped command.
 
-        :g/^/+d # delete every other line
+  * comment/uncomment
+
+    * press Esc (to leave editing or other mode)
+    * hit ctrl+v (visual block mode)
+    * use the up/down arrow keys to select lines you want (it won't highlight everything - it's OK!)
+    * Shift+i (capital I)
+    * insert the text you want, i.e. '% '
+    * press Esc
+
+  * swap char/line
+    1. Swap the current character (the character under the cursor) with the next:
+
+          xp
+
+    2. Swap the current character with the previous:
+
+          Xp
+
+    3. Swap the current line with the next (but see below for a better method):
+
+          ddp
+
+          ddP
+
+    4. swap words
+          dwwp
+          dwbP
+  
+  * format code
+
+      gg=G
+
+      Explanation:
+        gg goes to the top of the file, 
+        = is a command to fix the indentation
+        G tells it to perform the operation to the end of the file.
       
-      * tab pages
-        gt
-        gT
+      :!indent %
+  
+  * highlight
 
-      * map
-        n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
-        i  Insert mode map. Defined using ':imap' or ':inoremap'.
-        v  Visual and select mode map. Defined using ':vmap' or ':vnoremap'.
-        x  Visual mode map. Defined using ':xmap' or ':xnoremap'.
-        s  Select mode map. Defined using ':smap' or ':snoremap'.
-        c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
-        o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
-        
-        <Space>  Normal, Visual and operator pending mode map. Defined using
-                 ':map' or ':noremap'.
-        !  Insert and command-line mode map. Defined using 'map!' or
-           'noremap!'.
-      * show tab whitespace
-        :set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
-        :set list
+      To turn off highlighting until the next search:
 
-        autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+      :nohl
 
-      * file name  
-      ```
-      :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
-      :echo expand('%:t') 	my.txt 	name of file ('tail')
-      :echo expand('%:p') 	/abc/def/my.txt 	full path
-      :echo expand('%:p:h') 	/abc/def 	directory containing file ('head')
-      :echo expand('%:p:h:t') 	def 	First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
-      :echo expand('%:r') 	my 	name of file less one extension ('root')
-      :echo expand('%:e') 	txt 	name of file's extension ('extension') 
-      ```
+      Or turn off highlighting completely:
 
-      * mark
-        ```
-        ma 	set mark a at current cursor location
-        'a 	jump to line of mark a (first non-blank character in line)
-        `a 	jump to position (line and column) of mark a
-        d'a 	delete from current line to line of mark a
-        d`a 	delete from current cursor position to position of mark a
-        c'a 	change text from current line to line of mark a
-        y`a 	yank text to unnamed buffer from cursor to position of mark a
-        :marks 	list all the current marks
-        :marks aB 	list marks a, B
-        ```
+      set nohlsearch
+
+      Or, to toggle it:
+
+      set hlsearch!
+
+      nnoremap <F3> :set hlsearch!<CR>
+
+    * delete
       
-      * reverse lines
+      d63G # delete from cursor to line 63
+      
+      :a,bd # delete from a to b
+      
+      :,bd # delete from current to d 
+
+      :g/^/+d # delete every other line
+    
+    * tab pages
+      gt
+      gT
+
+    * map
+      n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
+      i  Insert mode map. Defined using ':imap' or ':inoremap'.
+      v  Visual and select mode map. Defined using ':vmap' or ':vnoremap'.
+      x  Visual mode map. Defined using ':xmap' or ':xnoremap'.
+      s  Select mode map. Defined using ':smap' or ':snoremap'.
+      c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
+      o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
+      
+      <Space>  Normal, Visual and operator pending mode map. Defined using
+                ':map' or ':noremap'.
+      !  Insert and command-line mode map. Defined using 'map!' or
+          'noremap!'.
+    * show tab whitespace
+      :set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
+      :set list
+
+      autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
+
+    * file name  
+    ```
+    :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
+    :echo expand('%:t') 	my.txt 	name of file ('tail')
+    :echo expand('%:p') 	/abc/def/my.txt 	full path
+    :echo expand('%:p:h') 	/abc/def 	directory containing file ('head')
+    :echo expand('%:p:h:t') 	def 	First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
+    :echo expand('%:r') 	my 	name of file less one extension ('root')
+    :echo expand('%:e') 	txt 	name of file's extension ('extension') 
+    ```
+
+    * mark
+      ```
+      ma 	set mark a at current cursor location
+      'a 	jump to line of mark a (first non-blank character in line)
+      `a 	jump to position (line and column) of mark a
+      d'a 	delete from current line to line of mark a
+      d`a 	delete from current cursor position to position of mark a
+      c'a 	change text from current line to line of mark a
+      y`a 	yank text to unnamed buffer from cursor to position of mark a
+      :marks 	list all the current marks
+      :marks aB 	list marks a, B
+      ```
+    
+    * reverse lines
       ```
       help 12.4
       1. set a marker at the last line you want reverse (I name the marker 'a' using ma), 
@@ -435,9 +465,9 @@
       3. :g/^/m <Line number from step 1>.
       ```
 
-      * replace words
-        :%s/a/b/g
-        :3,9s/a/b/g # 3-9 line
+    * replace words
+      :%s/a/b/g
+      :3,9s/a/b/g # 3-9 line
 
 
 
@@ -1178,7 +1208,7 @@ reader, updater, and reclaimer.
       git stash save --keep-index
 
     * add local repository to github
-      * establishing a relationship between the two 
+      * create a short name for use
         ```
         git remote add study https://github.com/HuangBR/study.git
         ```
@@ -1190,6 +1220,10 @@ reader, updater, and reclaimer.
         ```
         git push
         ```
+
+    - add remote repository 
+      - git remote
+      -  
       
 * service configuration
   * dns server configuration bind
@@ -1960,6 +1994,10 @@ reader, updater, and reclaimer.
 
     http://rootmanager.com/ubuntu-ipsec-l2tp-windows-domain-auth/setting-up-openswan-xl2tpd-with-native-windows-clients-lucid.html
 
+    # ipsec and ike
+    https://libreswan.org/wiki/
+
+    https://wiki.strongswan.org/projects/strongswan/wiki/IpsecStandards
 
     https://support.microsoft.com/en-us/help/926179/how-to-configure-an-l2tp-ipsec-server-behind-a-nat-t-device-in-windows-vista-and-in-windows-server-2008
     enable ipsec nat-t:

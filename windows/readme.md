@@ -3,7 +3,18 @@
     Troubleshooting with the Windows Sysinternals Tools          
     https://msdn.microsoft.com/en-us/windows/hardware/drivers/gettingstarted/index
     https://msdn.microsoft.com/en-us/windows/hardware/drivers/network/roadmap-for-developing-ndis-protocol-drivers
+
 # windows tools:
+    - package
+      - sysinternals
+      - windows resource tool
+      - SUA
+      - cygwin
+      - mingwin
+      - support tools
+      - sdk
+      - ddk
+    
     * appwiz.cpl
     * inetcpl.cpl
     * resmon
@@ -27,6 +38,8 @@
 
       schtasks.exe /query /tn "start-up"
       schtasks.exe /change /TN "start-up" /enable
+
+      schtask /create -ru 
       ```
     * optionalfeatures.exe
 
@@ -125,6 +138,10 @@
       net share admin$ /users:3
       net share
       net use
+
+      net user administrator /active:yes
+      net user administrator <passwd>
+      net user administrator /active:no
       ```
 
     * netsh
@@ -185,6 +202,14 @@
 
       net user \\192.168.2.128\admin$ /user:dolphin-xp-sp3\dolphin
       ```
+
+    * doskey
+      ```
+      doskey /histroy 
+      where ls
+      C:\Windows\SUA\common\ls.exe
+      doskey /overstrike ll=C:\Windows\SUA\common\ls -l
+      ll 
     
     * vs code
       ```
@@ -284,9 +309,47 @@
        set PATHEXT=.pl;%PATHEXT% 
       ```
 
+    - packege
+      ```
+      pkgmgr
+      msiexec
+      ```
+    - cmd 
+      ```
+      setx - Set environment variables permanently, SETX can be used to set Environment Variables for the machine (HKLM) or currently logged on user (HKCU).
+      subst - Substitute a drive letter for a network or local path.
+      ```
+
+# sysinternals
     * get open files 
       - handle -u Administrator
       - handle -p cmd
+
+    * procexp
+      ```
+      # run as administrator
+      "C:\Program Files\SysInternals\procexp.exe" /e /t
+
+
+      # registry
+      Windows Registry Editor Version 5.00
+
+      [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe]
+      "Debugger"="\"C:\\PROGRAM FILES\\SYSINTERNALS\\PROCEXP.EXE\" /e"
+      ```
+
+    - regjump
+      ```
+      regjump HKLM\SOFTWARE\MICROSOFT\WINDOWS NT\CURRENTVERSION\DIGITALPRODUCTID
+      reg query "HKLM\SOFTWARE\MICROSOFT\WINDOWS NT\CURRENTVERSION" /v DIGITALPRODUCTID
+
+# common useful gui 
+  - godmod
+    ```
+    mkdir .{ED7BA470-8E54-465E-825C-99712043E01C}
+    rmdir ".{ED7BA470-8E54-465E-825C-99712043E01C}"
+    ```
+    
 
 * [hook](https://en.wikipedia.org/wiki/Hooking)
      hooking covers a range of techniques used to alter or augment the behavior of an operating system, 
@@ -613,6 +676,8 @@
           - 
         - 1 32-bit status  register dr6: high 32 reserved on 64-bit system
         - 1 32-bit control register dr7: high 32 reserved on 64-bit system
+
+(3b34.294c): Access violation - code c0000005 (!!! second chance !!!)
 
 
 # registry
