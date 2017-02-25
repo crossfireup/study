@@ -769,7 +769,110 @@
   # tools
     - Service Trace Viewer Tool (SvcTraceViewer.exe)
     - Windows and SQL Server Network Monitor Parsers 
-  
+
+# [software tracing](https://msdn.microsoft.com/en-us/windows/hardware/drivers/devtest/survey-of-software-tracing-tools)
+  1. tracing related concept
+    - trace provider: a user-mode application or kernel-mode driver that uses Event Tracing for Windows (ETW) technology to 
+      generate trace messages or trace events
+
+    - trace log: event trace log(.etl) stores the trace message generated during one or more trace sessions
+
+  2. tools in Windows driver kits or windows software kits
+    - controlling trace sessions(trace controller)
+      - traceview.exe is GUI-base __trace-controller__ and __trace-consumer__ especially for real-time display of trace messages,
+        It enables, configures, starts, updates, and stops trace session. This tool also formats, filters, and displays trace messages 
+        from real-time trace sessions and trace logs.
+
+      - tracelog.exe is command-line __trace controller__ that enables, configures, starts, updates, and stops real-time and log sessions and supports :
+        - user-mode sessions
+        - kernel-mode trace sessions
+        - NT Kernel Logger trace sessions 
+        - the Global Logger (boot) trace session. 
+        - tracing to measure time spent in deferred procedure calls (DPCs) and interrupt service routines (ISRs).
+      
+      - Logman (Logman.exe) is a fully functional, command-based trace controller that is designed especially to control the logging of 
+        performance counters and event traces.
+
+    - creating tmf files
+      - Tracepdb (Tracepdb.exe) is a command-line support tool that creates trace message format (TMF) files from the trace message 
+        formatting instructions in PDB symbol files.
+
+      - Tracefmt can create TMF files from PDB symbol files.
+
+    - formating and display trace messages(trace consummers)
+      - Tracefmt:
+        - command-line trace consumer
+        - formats real-time __trace sessions__ or __trace logs__
+        - writes them to files or displays them in the Command Prompt window.
+      
+      - Tracerpt (Tracerpt.exe) 
+        - command-line trace consumer 
+        - formats __trace events (TraceEvent)__ and __performance counters__
+        - writes them to CSV or XML files. 
+        - analyzes the events and generates summary reports.
+
+      - traceview 
+        - GUI-based tool, both trace controller and trace consumer
+        - formats and displays  real-time trace sessions or trace logs
+        - displays in a tabular form, easier to filter and browse.
+
+    - Viewing trace events in a debugger
+      - !wmitrace: debugger extension displays the trace message in trace session buffer before write to log files or delivery for display
+      
+      - tracelog -kd to redirect trace message to KD
+
+      - traceview -kd redirect trace message to Windbg
+
+    - Analyzing DPC and ISR execution times
+      - windows xp sp2 or later 
+        - tracelog to log DPC or ISR in the NT kernel log session;
+        - tracerpt to create summery from logs;
+
+
+
+# Troubleshooting technics
+  - perfmon 
+    cpu not accurate
+
+  - resmon
+    cannot save file
+
+  - WPA(windows performance analyzer)
+    - windows performance recorder:
+      wprui: UI
+      wpr.exe: command-line-based
+
+
+  - windbg
+    - crash dmp file
+    - sysmbols path set 
+
+  - poolmon
+    ```
+    P - Sorts tag list by Paged, Non-Paged, or mixed. Note that P cycles through each one.
+    B - Sorts tags by max byte usage.
+    M - Sorts tags by max byte allocation.
+    T - Sort tags alphabetically by tag name.
+    E - Display Paged, Non-paged total across bottom. Cycles through.
+    A - Sorts tags by allocation size.
+    F - Sorts tags by "frees".
+    S - Sorts tags by the differences of allocs and frees.
+    E - Display Paged, Non-paged total across bottom. Cycles through.
+    Q - Quit.
+    ```
+
+  - verifier.exe (driver verifier)
+    - remember to turn off when not needed
+
+    crash and hangs --> memory, driver
+
+  - kernel or application
+    kernel  -> blue screen -> get crash
+    hangs -> force crash -> blue screen
+
+  - 
+
+
 
 # windows internal
   1. subsystem
