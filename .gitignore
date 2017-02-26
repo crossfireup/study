@@ -200,3 +200,8 @@ ENV/
 # Rope project settings
 .ropeproject
 
+# ignore files docs and bin 
+*/docs/*
+*/*/docs/*
+*/bin/*
+*/*/bin/*
