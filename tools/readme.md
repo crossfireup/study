@@ -8,7 +8,38 @@
     http://ports.su/security
 
 3. git 
-  - 
+  - 3 states
+    - commited: 
+      - data is safely stored in your local database
+      - file in git directory
+    - modified:
+      - file changed but not commited to local database yet
+      - working directory
+
+    - staged: 
+      - modified file are marked to go into next commit snapshot
+      - staging area
+
+    - flow
+
+      working direcotry       add       staging area      commit      git directory
+
+      modified files     ------------> snapshot of them ------------> permenently stored
+
+    - 
+
+  - git repository
+    ```
+    git init
+
+    git clone
+    ```
+
+  - status
+    ```
+    git status 
+
+
 
 
 4. ocr tools for linux 
