@@ -431,7 +431,7 @@
     
     * dbg command
       * regular cmd used to __debug process__
-        
+        ```
         k lm g
 
       * mata or dot-commands __control the behavior of debugger__
@@ -446,10 +446,12 @@
         - !analyze !address !handle, !ped 
     
       * _NT_SOURCE_PATH environment variable
-        
+        ```
         .srcpath
         .srcpath+ xy
-    
+        .syspath+ c:\symblos\
+        ```
+
       * processed and thread on nt
         * each process is represented by executive process block(EPROCESS) in kernel-mode in system address space
         * each process has one or more thread represented by executables thread block(ETHREAD) in kernel-mode in system address space
@@ -468,21 +470,241 @@
           - stack information (stack-base and stack-limit)
           - TLS (Thread Local Storage) array
           - Display it: !teb, dt nt!_TEB
+    
+    * common usage
+      - remote debugging through tcp
+        - server:
+          ```
+          .server tcp:port=5555
+
+          dbgsvc -t tcp:port=5555
+          ```
+        
+        - client:
+          ```
+          windbg -remote tcp:port=5555,server=192.168.1.1
+          ```
+
+    * breakpoints 
+      - Viewing Set Breakpoints
+        ```
+        To view each of the breakpoints that have been set, you can use the bl (Breakpoint List) command.
+
+        0:000> bl
+        0 e 00523689 e 1 0001 (0001)  0:**** notepad!WinMainCRTStartup
+
+        Here we have one breakpoint defined, the entry is broken into a few columns:
+
+            0 - Breakpoint ID
+            e - Breakpoint Status - Can be enabled or disabled.
+            00523689 - Memory Address
+            e 1 - Memory address access flags (execute) and size - For hardware breakpoints only
+            0001 (0001) - Number of times the breakpoint is hit until it becomes active with the total passes in parentheses (this is for a special use case)
+            0:**** - Thread and process information, this defines it is not a thread-specific breakpoint
+            notepad!WinMainCRTStartup - The corresponding module and function offset associated with the memory address
+        ```
+
+      - break on access
+        – bl – List existing breakpoints. Each breakpoint listed has a number in the list.
+        – bc * : Clear all breakpoints.
+        – bc number : Clear breakpoint identified by number.
+        – be number : Enable breakpoint identified by number.
+        – bd number : Disable breakpoint identified by number.
+        – bp `module!source.c:20` : Set breakpoint at source.c line 20 in module.
+        – bm module!pattern* : Set a breakpoint on symbols starting with pattern in module.
+        – bu module!function : Set a breakpoint on function as soon as module is loaded.
+        – ba r4 variable : Set a breakpoint for read access on 4 bytes of variable.
+        – ba w4 address : Set a breakpoint for write access on 4 bytes at address.
+        – bp @@(class::method) : Break on method defined in class. Useful if the same method is overloaded and thus present on several addresses.
+        – bp module!function /1 : Trigger only once a breakpoint at function in module.
+        – bp module!function k : Hit breakpoint at function in module after k-1 passes.
+        – ba w4 address “k;g” : Display call stack every write access on 4 bytes at address.
+        – bu module!function “.dump C:\Dump.dmp; g” : Create a dump in C:\Dump.dmp every time breakpoint at function in module is hit.
+        – bp /t thread : Set a kernel mode breakpoint that only triggers when hit in the context of the associated thread.
+        – bp /p process : Set a kernel mode breakpoint that only triggers when hit in the context of the associated process.
+        -.logopen FilePath; .bpcmds; .logclose : Save breakpoints to FilePath.
+        – $<FilePath : Reload breakpoints from FilePath.
+        ```
+        ba e 1 0x7c234ef
+
+        be 
+        bd
+        bc
+        ```
+
+    * excpetions: sx
+      - excepion or event occurs
+
+      - breaking on module load
+        ```
+        sxe ld IMM32.dll
+        ```
+      - ignore exceptions enabled
+        ```
+        sxi ld IMM32.dll
+        ```
+
+      - Display Exception Record
+	      ```
+        .exr -1
+        ```
+
+    *  trace and stepping
+      - go
+        – g : Start executing the given process or thread.
+        – g `:number`; ? poi(variable); g : Executes the current program to source line number, print the value of variable then resume execution.
+        – gc : Resume execution from a conditional breakpoint.
+        – gu : Execute until the current function is complete.
+        – gh : Go with Exception Handled.
+        – gn : Go with Exception Not Handled.
+
+      - step into
+        ```
+        tc
+        tt
+        tr
+        ```
+      - step over
+        – pr : Toggle displaying of registers.
+        – p count “kb” : Step through count source lines then execute “kb”.
+        – pc : Step to next CALL instruction.
+        – pt – Steps through until the next return instruction.
+        – pa address : Step until address is reached.
+
+      - step out
+        ```
+        gu # go util functions return
+        ```
+
+    * Call stack
+      – k : Display call stack.
+      – kn : Display call stack with frame numbers.
+      – kb : Display call stack with first three parameters passed to each function.
+      – kb FrameCount : Display first FrameCount frames only.
+      – kp : Display all of the parameters for each function that is called in the stack trace.
+      – kn : Display frame numbers.
+
+      – !findstack symbol 2 : Display all stacks that contain symbol.
+
+      – .frame : Show current frame.
+      – .frame FrameNumber : Set frame FrameNumber for the local context.
+      – .frame /r FrameNumber : Display registers in frame FrameNumber.
+
+      – !running -ti : Dump the stacks of each thread that is running on all processors.
+      – !stacks : Give a brief summary of the state of every thread.
+
+    * Heap
+      – dt ntdll!_HEAP : Dump _HEAP structure.
+      – !heap : List all heaps with index and Heap address.
+      – !heap -h : List all of the current process heap with start and end addresses.
+      – !heap -h HeapIndex : Display detailed heap information for heap with index HeapIndex.
+      – !heap -s 0 : Display summary for all heaps including reserved and committed memory …
+      – !heap -flt s 0x50 : Display all of the allocations of size 0x50.
+      – !heap -stat -h address : Display heap usage statistics for HeapHandle is equal to address.
+      – !heap -b alloc tag HeapIndex : Breakpoint in heap with index HeapIndex on HeapAlloc calls with TAG equal to tag.
+      – !heap -p -all : Display details of all allocations in all heaps in the process.
+      – !heap -l : Make the debugger detect leaked heap blocks.
+
+    * registers
+      – rm ? : Show possible Mask bits.
+      – rm 1 : Enable integer registers only.
+      – r : Display the integer registers.
+      – r eax, edx : Display only eax and edx.
+      – r eax=5, edx=6 : Assign new values to eax and edx.
+      – r eax:1ub : Display only the first byte from eax.
+      – rF : Display the floating-point register.
+
+    * variables 
+      – dv /t /i /V : Dump local variables with type information, addresses and EBP offsets and classify them into categories.
+      – dt module!pattern* -v -s Length : List with verbose output all variables that begin with pattern in module that have Length bytes size.
+
+      – dt ntdll!_PEB : Dump _PEB structure.
+      – dt module!struct : Show fields of the structure struct defined in module with their offsets and types.
+      – dt module!struct -rCount : Dump fields of the structure struct defined in module recursively for Count levels.
+
+      – dt module!struct var. : Dump var defined in strcut in module and expand its subfields.
+      – dt module!struct var.. : Expand subfields of var defined in strcut in module for 2 levels.
+
+    * memory
+      – dd address : Display double-words at address.
+      – dd address LLength: Display Length double-words at address.
+      – du address : Display unicode chars at address.
+      – du address LLength : Display Length unicode chars at address.
+      – !mapped_file address : Display name of file that contains address.
+      – !address : Show all memory regions of our process.
+      – !address address : Retreive inforamation about a region of memory at address.
+
+      – eb address value : Set byte at address to value.
+      – ew address value : Set word at address to value.
+      – ed address value : Set double-word at address to value.
+
+      – ds /c width address : Display width chars at address.
+      – dS /c width address : Display width unicode chars at address.
+
+      – c address1 LLength address2 : Compare Length bytes at address1 with address2.
+      – m address1 LLength address2 : Move Length bytes at address1 to address2.
+      – f address LLength ‘A’ ‘B’ ‘C’ – Fill memory location from address to address + Length – 1 with the pattern “ABC”, repeated as many times as necessary.
+
+      – s -a address LLength “pattern” : Search memory location from address to address + Length – 1 for pattern.
+      – s -wa address LLength “pattern” : Search only writable memory from address to address + Length – 1 for pattern.
+
+      – !poolused : Display memory use summaries, based on the tag used for each pool allocation.
+      – !vm : Display summary information about virtual memory use statistics on the target system.
+
+      – u address : Unassemble code at address.
+
+    * Memory dump
+      – .dump FileName : Dump small memory image into FileName.
+      – .dump /ma FileName : Dump complete memory image into FileName.
+
+    * Locks
+      – !locks : Display all kernel mode locks held on resources by threads.
+      – !qlocks : Display the state of all queued spin locks.
+
+    * Extension DLLs
+      – .load ExtensionDLL : Load the extension DLL ExtensionDLL into the debugger.
+      – .unload ExtensionDLL : Unload the extension DLL ExtensionDLL.
+      
+      – .chain : List all extensions that the debugger has loaded.
+      – .unloadall : Unload all extension DLLs from the debugger.
+      – .setdll ExtensionDLL : Change the default extension DLL to ExtensionDLL for the debugger
+
+    * Application Verifier
+      – !avrf : Display a variety of output produced by Application Verifier. If a Stop has occurred, reveal the its nature and what caused it.
+      – !verifier 0xf : Display the status of Driver Verifier and its actions.
+      – !verifier 0x80 address : Display log associated with the specified address within the kernel pool Allocate and Free operations.
+      – !verifier 0x100 address : Display log associated with the IRP at address.
+
+    * calculator
+      ```
+      ?bc28 + cdf234e * 2
+      ```
+
+    * analyze
+      – !analyse -v : Display verbose information about the current exception or bug check.
+      – !analyze -show BugCheckCode : Display information about BugCheckCode bug check code.
+
+    * debug info
+      ```
+      # a unofficial undocumented command
+      .dumpdebug 
+
+
 
     
     * set remote debug using vmware
-        1. Installation
-            http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx
+        1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
+
         2. Setting the symbol file path
+            ```
             _NT_SYMBOL_PATH=srv*C:\Windows\Symbols*https://msdl.microsoft.com/download/symbols
 
-            If you want to observe the process of symbol matching, you can enable verbose symbol matching by executing the command
-
+            # If you want to observe the process of symbol matching, you can enable verbose symbol matching by executing the command
             !sym noisy 
 
-            Afterwards, you can force windbg to reload the symbols by typing
-
+            # Afterwards, you can force windbg to reload the symbols by typing
             .reload /f
+            ```
         3. configure environment in vmware
             * windows xp:
             ```
@@ -541,6 +763,7 @@
             * reference:
                 http://stackoverflow.com/questions/33820520/kernel-debug-with-a-vmware-machine
                 https://blogs.msdn.microsoft.com/iliast/2006/12/11/windbg-tutorials/
+  
     * use windbg debug a process in kernel debug [https://blogs.msdn.microsoft.com/iliast/2008/02/01/debugging-user-mode-processes-using-a-kernel-mode-debugger/]
         * !process 0 0
             ```
@@ -564,7 +787,7 @@
         * .process /i 81ea9da8  # After you press “g”, you have to wait for the windows scheduler to do the context switch.
            .process /r /p 85709738 #  the debugger does the context switch immediately (as opposed to the windows scheduler) and there is no waiting time.  
 
-        * lm 
+        * lm v m calc*
         
         * x calc!gpsz*
           01014db0 calc!gpszNum = <no type information>
@@ -577,6 +800,177 @@
         * pr # step over
         * pc, pt, pct # step to next call or return
         * q, qd # quit, detach
+    
+    - BSOD debugging using windbg
+      - set windows to enable full memory dump on crash
+        ```
+        sysdm.cpl
+        advanced -> startup and recovery ->  settings 
+          automate restart 
+          kernel memory dump
+          dump file :%SystemRoot%\MEMORY.DMP
+        ```
+
+      - set _NT_SYMBOLS_PATH
+        ```
+        setx /m _NT_SYMBOL_PATH "srv*C:\Windows\Symbols*https://msdl.microsoft.com/download/symbols"
+        ```
+      
+      - open dump file in windbg
+
+      - analyze
+        ```
+        2: kd> !analyze -v
+         *******************************************************************************
+         *                                                                             *
+         *                        Bugcheck Analysis                                    *
+         *                                                                             *
+         *******************************************************************************
+         
+         SYSTEM_THREAD_EXCEPTION_NOT_HANDLED (7e)
+         This is a very common bugcheck.  Usually the exception address pinpoints
+         the driver/function that caused the problem.  Always note this address
+         as well as the link date of the driver/image that contains this address.
+         Arguments:
+         Arg1: ffffffffc0000005, The exception code that was not handled
+         Arg2: fffff880034422bf, The address that the exception occurred at
+         Arg3: fffff8801ad237c8, Exception Record Address
+         Arg4: fffff8801ad23020, Context Record Address
+         
+         Debugging Details:
+         ------------------
+         DUMP_CLASS: 1
+         DUMP_QUALIFIER: 401
+         BUILD_VERSION_STRING:  7601.23572.amd64fre.win7sp1_ldr.161011-0600
+         DUMP_TYPE:  1
+         BUGCHECK_P1: ffffffffc0000005
+         BUGCHECK_P2: fffff880034422bf
+         BUGCHECK_P3: fffff8801ad237c8
+         BUGCHECK_P4: fffff8801ad23020
+         EXCEPTION_CODE: (NTSTATUS) 0xc0000005 - The instruction at 0x%08lx referenced memory at 0x%08lx. The memory could not be %s.
+         FAULTING_IP: 
+         nm3!NetmonOidRequestComplete+53
+         fffff880`034422bf 894734          mov     dword ptr [rdi+34h],eax
+         
+         EXCEPTION_RECORD:  fffff8801ad237c8 -- (.exr 0xfffff8801ad237c8)
+         ExceptionAddress: fffff880034422bf (nm3!NetmonOidRequestComplete+0x0000000000000053)
+            ExceptionCode: c0000005 (Access violation)
+           ExceptionFlags: 00000000
+         NumberParameters: 2
+            Parameter[0]: 0000000000000000
+            Parameter[1]: ffffffffffffffff
+         Attempt to read from address ffffffffffffffff
+         
+         CONTEXT:  fffff8801ad23020 -- (.cxr 0xfffff8801ad23020)
+         rax=0000000000000000 rbx=fffffa801d577fb0 rcx=0000000073656c74
+         rdx=fffffa801d577fb0 rsi=00000000c000000d rdi=7665442820352066
+         rip=fffff880034422bf rsp=fffff8801ad23a00 rbp=fffffa8014a1aa10
+          r8=00000000c000000d  r9=0000000000000000 r10=fffff88002257fa0
+         r11=0000000000000000 r12=fffffa80162411c0 r13=00000000c0000001
+         r14=0000000000000000 r15=fffff88001ac9110
+         iopl=0         nv up ei pl nz na po nc
+         cs=0010  ss=0018  ds=002b  es=002b  fs=0053  gs=002b             efl=00010206
+         nm3!NetmonOidRequestComplete+0x53:
+         fffff880`034422bf 894734          mov     dword ptr [rdi+34h],eax ds:002b:76654428`2035209a=????????
+         Resetting default scope
+         
+         CPU_COUNT: 4
+         CPU_MHZ: 9be
+         CPU_VENDOR:  GenuineIntel
+         CPU_FAMILY: 6
+         CPU_MODEL: 3a
+         CPU_STEPPING: 9
+         CPU_MICROCODE: 6,3a,9,0 (F,M,S,R)  SIG: 12'00000000 (cache) 12'00000000 (init)
+         DEFAULT_BUCKET_ID:  WIN7_DRIVER_FAULT
+         PROCESS_NAME:  System
+         CURRENT_IRQL:  0
+         ERROR_CODE: (NTSTATUS) 0xc0000005 - The instruction at 0x%08lx referenced memory at 0x%08lx. The memory could not be %s.
+
+         EXCEPTION_CODE_STR:  c0000005
+         EXCEPTION_PARAMETER1:  0000000000000000
+         EXCEPTION_PARAMETER2:  ffffffffffffffff
+
+         FOLLOWUP_IP: 
+         nm3!NetmonOidRequestComplete+53
+         fffff880`034422bf 894734          mov     dword ptr [rdi+34h],eax
+         READ_ADDRESS:  ffffffffffffffff 
+         
+         STACK_TEXT:  
+         fffff880`1ad23a00 fffff880`0344224c : 00000000`00000103 00000000`105469a0 fffffa80`14a1aa10 fffff880`1ad23a60 : nm3!NetmonOidRequestComplete+0x53
+         fffff880`1ad23a30 fffff880`01aee582 : fffffa80`1d577fb0 fffffa80`14a71c80 00000000`0001010e fffffa80`14b4f870 : nm3!NetmonOidRequest+0x124
+         fffff880`1ad23a60 fffff880`01a6d44c : fffffa80`00000000 fffff880`01ac9110 fffffa80`14b4f870 fffffa80`14a71c80 : ndis!ndisFDoOidRequest+0x222
+         fffff880`1ad23b30 fffff800`01ece355 : fffff880`01a6d400 fffff800`0206e280 fffffa80`11985460 fffffa80`00000002 : ndis!ndisDoOidRequests+0x4c
+         fffff880`1ad23b70 fffff800`02160236 : 00000000`00000000 fffffa80`11985460 00000000`00000080 fffffa80`0cdceb10 : nt!ExpWorkerThread+0x111
+         fffff880`1ad23c00 fffff800`01eb6706 : fffff880`02257180 fffffa80`11985460 fffffa80`11cecb50 fffff880`1c91e380 : nt!PspSystemThreadStartup+0x5a
+         fffff880`1ad23c40 00000000`00000000 : fffff880`1ad24000 fffff880`1ad1e000 fffff880`1ad238a0 00000000`00000000 : nt!KxStartSystemThread+0x16
+         
+         
+         SYMBOL_STACK_INDEX:  0
+         
+         SYMBOL_NAME:  nm3!NetmonOidRequestComplete+53
+         
+         FOLLOWUP_NAME:  MachineOwner
+         
+         MODULE_NAME: nm3
+         
+         IMAGE_NAME:  nm3.sys
+         
+         DEBUG_FLR_IMAGE_TIMESTAMP:  4c102c5f
+         
+         STACK_COMMAND:  .cxr 0xfffff8801ad23020 ; kb
+         
+         FAILURE_BUCKET_ID:  X64_0x7E_nm3!NetmonOidRequestComplete+53
+         
+         BUCKET_ID:  X64_0x7E_nm3!NetmonOidRequestComplete+53
+         
+         PRIMARY_PROBLEM_CLASS:  X64_0x7E_nm3!NetmonOidRequestComplete+53
+      ```
+    
+    # get thread info
+      ```
+      2: kd> !thread
+        THREAD fffffa8011985460  Cid 0004.1828  Teb: 0000000000000000 Win32Thread: 0000000000000000 RUNNING on processor 2
+        Not impersonating
+        DeviceMap                 fffff8a000008540
+        Owning Process            fffffa800cdceb10       Image:         System
+        Attached Process          N/A            Image:         N/A
+        Wait Start TickCount      176719         Ticks: 0
+        Context Switch Count      440176         IdealProcessor: 1             
+        UserTime                  00:00:00.000
+        KernelTime                00:00:05.397
+        Win32 Start Address nt!ExpWorkerThread (0xfffff80001ece244)
+        Stack Init fffff8801ad23c70 Current fffff8801ad238a0
+        Base fffff8801ad24000 Limit fffff8801ad1e000 Call 0000000000000000
+        Priority 13 BasePriority 13 PriorityDecrement 0 IoPriority 2 PagePriority 5
+        Child-SP          RetAddr           : Args to Child                                                           : Call Site
+        fffff880`1ad227f8 fffff800`0223bf24 : 00000000`0000007e ffffffff`c0000005 fffff880`034422bf fffff880`1ad237c8 : nt!KeBugCheckEx
+        fffff880`1ad22800 fffff800`021f9745 : fffff800`0206e298 fffff800`01ebae42 000067ef`269255d6 fffffa80`11985460 : nt!PspUnhandledExceptionInSystemThread+0x24
+        fffff880`1ad22840 fffff800`01ef0cb4 : 00000000`00000000 00000000`00000000 fffffa80`14dea000 fffff800`02058580 : nt! ?? ::NNGAKEGL::`string'+0x21dc
+        fffff880`1ad22870 fffff800`01ef072d : fffff800`0202b3d0 fffff880`1ad23c00 00000000`00000000 fffff800`01e55000 : nt!_C_specific_handler+0x8c
+        fffff880`1ad228e0 fffff800`01eef505 : fffff800`0202b3d0 fffff880`1ad22958 fffff880`1ad237c8 fffff800`01e55000 : nt!RtlpExecuteHandlerForException+0xd
+        fffff880`1ad22910 fffff800`01f00a05 : fffff880`1ad237c8 fffff880`1ad23020 fffff880`00000000 76654428`00000007 : nt!RtlDispatchException+0x415
+        fffff880`1ad22ff0 fffff800`01ec4a82 : fffff880`1ad237c8 fffffa80`1d577fb0 fffff880`1ad23870 00000000`c000000d : nt!KiDispatchException+0x135
+        fffff880`1ad23690 fffff800`01ec338a : 00000000`00000005 fffff880`01aee7c1 fffffa80`14b4e820 00000000`00000005 : nt!KiExceptionDispatch+0xc2
+        fffff880`1ad23870 fffff880`034422bf : ffff0000`1b7ea80e 00000000`00000001 00000000`00000000 fffffa80`14a1aa10 : nt!KiGeneralProtectionFault+0x10a (TrapFrame @ fffff880`1ad23870)
+        fffff880`1ad23a00 fffff880`0344224c : 00000000`00000103 00000000`105469a0 fffffa80`14a1aa10 fffff880`1ad23a60 : nm3!NetmonOidRequestComplete+0x53
+        fffff880`1ad23a30 fffff880`01aee582 : fffffa80`1d577fb0 fffffa80`14a71c80 00000000`0001010e fffffa80`14b4f870 : nm3!NetmonOidRequest+0x124
+        fffff880`1ad23a60 fffff880`01a6d44c : fffffa80`00000000 fffff880`01ac9110 fffffa80`14b4f870 fffffa80`14a71c80 : ndis!ndisFDoOidRequest+0x222
+        fffff880`1ad23b30 fffff800`01ece355 : fffff880`01a6d400 fffff800`0206e280 fffffa80`11985460 fffffa80`00000002 : ndis!ndisDoOidRequests+0x4c
+        fffff880`1ad23b70 fffff800`02160236 : 00000000`00000000 fffffa80`11985460 00000000`00000080 fffffa80`0cdceb10 : nt!ExpWorkerThread+0x111
+        fffff880`1ad23c00 fffff800`01eb6706 : fffff880`02257180 fffffa80`11985460 fffffa80`11cecb50 fffff880`1c91e380 : nt!PspSystemThreadStartup+0x5a
+        fffff880`1ad23c40 00000000`00000000 : fffff880`1ad24000 fffff880`1ad1e000 fffff880`1ad238a0 00000000`00000000 : nt!KxStartSystemThread+0x16
+      
+      #display words and symbos
+      - dds displays double-word (4 byte) values like the dd command. 
+      - dqs displays quad-word (8 byte) values like the dq command. 
+      - dps displays pointer-sized values (4 byte or 8 byte, depending on the target computer's architecture) like the dp command.
+
+      # Base fffff8801ad24000 Limit fffff8801ad1e000 Call 0000000000000000
+      dps fffff8801ad1e000 fffff8801ad24000
+      ```
+
+    - 
+
 
 * software debugging
     * catagory
