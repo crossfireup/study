@@ -2201,7 +2201,111 @@ reader, updater, and reclaimer.
       # To disable all tracing, which will ensure that no overhead is left from using the function tracers or events, the reset command can be used.
         trace-cmd reset
 
+# [sudoers](https://help.ubuntu.com/community/Sudoers)
+  - https://www.sudo.ws/man/1.8.13/sudoers.man.html
+  - file:/etc/sudoers 
+	  control user for a machine with specific operations
+  
+  - contains following:
+    - alias 
+      Alias_Type NAME1 = item1, item2 : NAME2 = item3 
+      - User_Alias:  specify groups of users including usernames, system groups(%), netgroups(+)
+        ```
+        # Everybody in the system group "admin" is covered by the alias ADMINS
+        User_Alias ADMINS = %admin
+        # The users "tom", "dick", and "harry" are covered by the USERS alias
+        User_Alias USERS = tom, dick, harry
+        # The users "tom" and "mary" are in the WEBMASTERS alias
+        User_Alias WEBMASTERS = tom, mary
+        # You can also use ! to exclude users from an alias
+        # This matches anybody in the USERS alias who isn't in WEBMASTERS or ADMINS aliases
+        User_Alias LIMITED_USERS = USERS, !WEBMASTERS, !ADMINS
+        ```
+            
+      - Runas_Alias: same as user aliases except  specify users by uid's are allowed
+        ```
+        # UID 0 is normally used for root
+        # Note the hash (#) on the following line indicates a uid, not a comment.
+        Runas_Alias ROOT = #0
+        # This is for all the admin users similar to the User_Alias of ADMINS set earlier 
+        # with the addition of "root"
+        Runas_Alias ADMINS = %admin, root
+        ```
+        
+      - Host_Alias: a list of hostname, ip addresses, networks and netgroups (prefixed with +),
+              hosts ethernet interface(s) will be used when matching if no netmask giving
+        ```
+        # This is all the servers
+        Host_Alias SERVERS = 192.168.0.1, 192.168.0.2, server1
+        # This is the whole network
+        Host_Alias NETWORK = 192.168.0.0/255.255.255.0
+        # And this is every machine in the network that is not a server
+        Host_Alias WORKSTATIONS = NETWORK, !SERVER
+        # This could have been done in one step with 
+        # Host_Alias WORKSTATIONS = 192.168.0.0/255.255.255.0, !SERVERS
+        # but I think this method is clearer.
+        ```
+        
+      - Cmnd_Alias: lists of commands and directories(only include files in it no subdirectories included)
+              following need to be escaped with a backslash (\): ",", "\", ":", "="
+          ```
+        # All the shutdown commands
+        Cmnd_Alias SHUTDOWN_CMDS = /sbin/poweroff, /sbin/reboot, /sbin/halt
+        # Printing commands
+        Cmnd_Alias PRINTING_CMDS = /usr/sbin/lpc, /usr/sbin/lprm
+        # Admin commands
+        Cmnd_Alias ADMIN_CMDS = /usr/sbin/passwd, /usr/sbin/useradd, /usr/sbin/userdel, /usr/sbin/usermod, /usr/sbin/visudo
+        # Web commands
+        Cmnd_Alias WEB_CMDS = /etc/init.d/apache2
+        ```
+	
+	  - User Specifications: where the sudoers file sets who can run what as who
+		  <user list> <host list> = <operator list> <tag list> <command list>
+      ```
+      # This lets the webmasters run all the web commands on the machine 
+      # "webserver" provided they give a password
+      WEBMASTERS webserver= WEB_CMDS
+      # This lets the admins run all the admin commands on the servers
+      ADMINS SERVERS= ADMIN_CMDS
+      # This lets all the USERS run admin commands on the workstations provided 
+      # they give the root password or and admin password (using "sudo -u <username>")
+      USERS WORKSTATIONS=(ADMINS) ADMIN_CMDS
+      # This lets "harry" shutdown his own machine without a password
+      harry harrys-machine= NOPASSWD: SHUTDOWN_CMDS
+      # And this lets everybody print without requiring a password
+      ALL ALL=(ALL) NOPASSWD: PRINTING_CMDS
+      ```
+	
+    - configuration:
+      ```
+      vim /etc/sudoers.d/dolphin:
+      # dolphin ALL=(ROOT:ROOT)  ALL
 
+      Host_Alias DOLPHIN_M = 192.168.2.135
+
+      Cmnd_Alias SHUTDOWN_CMNDS = /sbin/poweroff, /sbin/halt, /sbin/reboot
+      Cmnd_Alias DOLPHIN_CMNDS = /usr/sbin, /usr/bin
+
+      dolphin DOLPHIN_M= NOPASSWD: SHUTDOWN_CMDNS, DOLPHIN_CMDNS
+      # dolphin ALL= NOPASSWD: SHUTDOWN_CMDNS, DOLPHIN_CMDNS
+      ```
+
+# network
+  - cache
+    ```
+		nscd is the Name Service Caching Daemon
+		nscd -g
+		
+    ip route show cache
+		route -CFee
+		Kernel IP routing table
+		Destination     Gateway         Genmask         Flags Metric Ref    Use Iface    MSS   Window irtt
+		default         gateway         0.0.0.0         UG    0      0        0 eth0     0     0      0
+		192.168.1.0     0.0.0.0         255.255.255.0   U     0      0        0 eth1     0     0      0
+		192.168.2.0     0.0.0.0         255.255.255.0   U     0      0        0 eth0     0     0      0
+		Kernel IP routing cache
+		Source          Destination     Gateway         Flags Metric Ref    Use Iface    MSS   Window irtt  TOS HHRef HHUptod     SpecDst
+    ```
 
 # [SELinux](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security-Enhanced_Linux/sect-Security-Enhanced_Linux-Maintaining_SELinux_Labels_-Checking_the_Default_SELinux_Context.html)
   - introduction
