@@ -259,5 +259,25 @@ nginx config:
         Accept-Ranges: bytes
       ```
 
-# gcc #
-    The compiler option -D can be used to define the macro MY_MACRO from command line.
+# nginx
+--------------------------
+  * master: 
+    * reading and validating configuration
+    * creating, binding and closing sockets
+    * starting, terminating and maintaining the configured number of worker processes
+    * reconfiguring without service interruption
+    * controlling non-stop binary upgrades (starting new binary and rolling back if necessary)
+    * re-opening log files
+    * compiling embedded Perl scriptss
+  * worker:
+     * accept, handle and process connections from clients
+     * provide reverse proxying 
+     * filtering functionality
+     * etc
+  * cache loader process
+    * repares nginx instances to work with files already stored on disk in a specially allocated directory structure
+    * It traverses the directories, checks cache content metadata, 
+      updates the relevant entries in shared memory and 
+      then exits when everything is clean and ready for use.
+  * cache manager : stay in memory and is restarted by master when fails
+    * responsible for cache expiration and invalidation

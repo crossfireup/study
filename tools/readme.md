@@ -38,10 +38,13 @@
   - status
     ```
     git status 
-
+    ```
 
   - usage
     - [remove large files committed](https://git-scm.com/docs/git-rm)
+      - refferences
+        https://git-scm.com/docs/git-rm
+        http://blog.jessitron.com/2013/08/finding-and-removing-large-files-in-git.html
       ```
       # delete cached files
       git rm --cached /\*.exe

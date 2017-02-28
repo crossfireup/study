@@ -163,6 +163,8 @@ Rootkit Programming
 
       gcc -fno-builtin/-fno-builtin-function
 
+    * The compiler option -D can be used to define the macro MY_MACRO from command line.
+
 # io
 -----
   * file

@@ -348,6 +348,7 @@
       ```
       regjump HKLM\SOFTWARE\MICROSOFT\WINDOWS NT\CURRENTVERSION\DIGITALPRODUCTID
       reg query "HKLM\SOFTWARE\MICROSOFT\WINDOWS NT\CURRENTVERSION" /v DIGITALPRODUCTID
+      ```
 
 # common useful gui 
   - godmod
@@ -683,14 +684,15 @@
     * analyze
       – !analyse -v : Display verbose information about the current exception or bug check.
       – !analyze -show BugCheckCode : Display information about BugCheckCode bug check code.
+      - !analyze -v -hang
 
     * debug info
       ```
       # a unofficial undocumented command
       .dumpdebug 
 
-
-
+      !ready
+      ```
     
     * set remote debug using vmware
         1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
@@ -763,6 +765,76 @@
             * reference:
                 http://stackoverflow.com/questions/33820520/kernel-debug-with-a-vmware-machine
                 https://blogs.msdn.microsoft.com/iliast/2006/12/11/windbg-tutorials/
+    
+    * enable local kernel debug 
+      - add a new boot entry
+        ```
+        bcdedit /v
+          Windows Boot Loader
+          -------------------
+          identifier              {b8b48bdb-0c8d-11e6-9f5f-b012a345769a}
+          device                  partition=C:
+          path                    \Windows\system32\winload.exe
+          description             Windows 7 Enterprise
+          locale                  en-US
+          inherit                 {6efb52bf-1766-41db-a6b3-0ee5eff72bd7}
+          recoverysequence        {2acc94f3-0d0c-11e6-a124-936c4ff2683c}
+          recoveryenabled         Yes
+          osdevice                partition=C:
+          systemroot              \Windows
+          resumeobject            {b8b48bda-0c8d-11e6-9f5f-b012a345769a}
+          nx                      OptIn
+          bootlog                 Yes
+          sos                     Yes
+
+        bcdedit /copy {b8b48bdb-0c8d-11e6-9f5f-b012a345769a} -d "Windows 7 Enterprise With Debug On"
+          The entry was successfully copied to {9ee65318-1029-11e6-bdc5-d24cbb4066ca}.
+
+        bcdedit /v
+          Windows Boot Loader
+          -------------------
+          identifier              {9ee65318-1029-11e6-bdc5-d24cbb4066ca}
+          device                  partition=C:
+          path                    \Windows\system32\winload.exe
+          description             Windows 7 Enterprise With Debug On
+          locale                  en-US
+          inherit                 {6efb52bf-1766-41db-a6b3-0ee5eff72bd7}
+          recoverysequence        {2acc94f3-0d0c-11e6-a124-936c4ff2683c}
+          recoveryenabled         Yes
+          osdevice                partition=C:
+          systemroot              \Windows
+          resumeobject            {b8b48bda-0c8d-11e6-9f5f-b012a345769a}
+          nx                      OptIn
+          bootlog                 Yes
+          sos                     Yes
+        ```
+
+      - set debug on new boot entry and make it as default boot entry
+        ```
+        bcdedit /debug  {9ee65318-1029-11e6-bdc5-d24cbb4066ca} on
+        # windows 10
+        bcdedit /set {9ee65318-1029-11e6-bdc5-d24cbb4066ca} local 
+        
+        bcdedit /default {9ee65318-1029-11e6-bdc5-d24cbb4066ca}
+        bcdedit /timeout 16
+
+        bcdedit /v
+        ```
+
+      - restart computer
+        ```
+        shutdown /g
+        ```
+      
+      - start local debuggin
+        ```
+        windgb -kl
+        kd -kl      
+        ```
+
+      - referrence
+        http://www.microsoft.com/whdc/system/platform/firmware/bcd.mspx
+        Local Kernel-Mode Debugging - windbg help documentation
   
     * use windbg debug a process in kernel debug [https://blogs.msdn.microsoft.com/iliast/2008/02/01/debugging-user-mode-processes-using-a-kernel-mode-debugger/]
         * !process 0 0
@@ -1266,6 +1338,184 @@
 
   - 
 
+# 1. windows kernel research
+  1. fork code
+  2. download book
+  3. windows via c/c++
+    # [kernel object](https://msdn.microsoft.com/en-us/library/windows/desktop/ms724515(v=vs.85).aspx)
+      * The system provides three categories of objects: user, graphics device interface (GDI), and kernel
+        - user objects support window management:
+          - Accelerator: table	Keyboard Accelerators
+          - Caret
+          - Cursor
+          - DDE conversation: Dynamic Data Exchange Management Library
+          - Hook
+          - Icon
+          - Menu
+          - windows
+            - Window
+            - Window position
+        - gdi objects support graphics
+          - bitmap
+          - brush
+          - pen and extend pen
+          - colors
+          - font
+          - device contexts
+            - DC (device context)
+            - Memory DC
+          - region
+          - metafiles
+            - Enhanced metafile
+            - Enhanced metafile DC
+            - metafile
+
+        - kernel objects support memory management, process execution, and interprocess communications (IPC)        
+          - Access: token	Access Control
+          - Change: notification	Directory Change Notifications
+          - Communications device
+          - Applications
+            - Console input	Character-Mode 
+            - Console screen buffer	Character-Mode 
+          - Desktop	
+          - Event	Synchronization
+          - Event log	Event Logging
+          - File	Files and Clusters
+          - File mapping	File Mapping
+          - Heap	Memory Management
+          - Job	
+          - Mailslot	Mailslots
+          - Module	Dynamic-Link Libraries
+          - Mutex	Synchronization
+          - Pipe	Pipes
+          - Process	Processes and Threads
+          - Semaphore	Synchronization
+            - Semaphore	Synchronization
+            - Timer	Synchronization
+            - Timer queue	Synchronization
+            - Timer-queue timer	Synchronization
+          - Socket	Windows Sockets 2
+          - Thread	Processes and Threads
+          - Update resource	Resources
+          - Window station	Window Stations             
+        
+      * kernel object has SECURITY_ATTRIBUTES in parameters when created;
+
+      * kernel object is managed by handle table created by os;
+
+        index | pointer to kernel object | access mask | sign
+        [handle table entry](http://www.alex-ionescu.com/?p=196)
+        # get handle using procexp
+          Ctrl+h #show object handles
+          ```
+          explore.exe  pid: 1952
+          0xD50	Mutant	\Sessions\1\BaseNamedObjects\DBWinMutex	0x00160001	0xFFFFFA8012063FC0		READ_CONTROL | SYNCHRONIZE | WRITE_DAC | QUERY_STATE
+
+        # livekd:
+          - show object info
+            ```
+            0: kd> !object \Sessions\1\BaseNamedObjects\DBWinMutex
+            Object: fffffa8012063fc0  Type: (fffffa800cde53c0) Mutant
+                ObjectHeader: fffffa8012063f90 (new version)
+                HandleCount: 17 PointerCount: 18
+                Directory Object: fffff8a0012b2230  Name: DBWinMutex
+            ```
+
+          - show handle info
+            ```
+            # !handle [Handle [KMFlags [Process [TypeName]]]]
+            # Bit 0 (0x1) :Displays handle type information.
+            # Bit 1 (0x2): Displays basic handle information.
+            # Bit 2 (0x4): Displays handle name information.
+            # Bit 3 (0x8): Displays object-specific handle information, when available.
+            # handle_index: 0xd50 kmflags: 0x2 pid: 1952 
+            # 0x prefix (hexadecimal), the 0n prefix (decimal), the 0t prefix (octal), or the 0y prefix (binary).
+            0: kd> !handle 0xd50 2 0n1952 
+            PROCESS fffffa8010f0b2f0
+                SessionId: 1  Cid: 07a0    Peb: 7fffffde000  ParentCid: 0630
+                DirBase: 3e053b000  ObjectTable: fffff8a0030984e0  HandleCount: 1439.
+                Image: explorer.exe
+
+            Handle table at fffff8a0030984e0 with 1439 entries in use
+
+            0d50: Object: fffffa8012063fc0  GrantedAccess: 00160001 Entry: fffff8a004cd2540
+            Object: fffffa8012063fc0  Type: (fffffa800cde53c0) Mutant
+                ObjectHeader: fffffa8012063f90 (new version)
+                    HandleCount: 17 PointerCount: 18
+                    Directory Object: fffff8a0012b2230  Name: DBWinMutex
+            ```
+
+          - show handle table
+            ```
+            dt nt!_HANDLE_TABLE fffff8a0030984e0
+            +0x000 TableCode        : 0xfffff8a0`039cd001
+            +0x008 QuotaProcess     : 0xfffffa80`10f0b2f0 _EPROCESS
+            +0x010 UniqueProcessId  : 0x00000000`000007a0 Void
+            +0x018 HandleLock       : _EX_PUSH_LOCK
+            +0x020 HandleTableList  : _LIST_ENTRY [ 0xfffff8a0`030ea540 - 0xfffff8a0`0301d7d0 ]
+            +0x030 HandleContentionEvent : _EX_PUSH_LOCK
+            +0x038 DebugInfo        : (null)
+            +0x040 ExtraInfoPages   : 0n0
+            +0x044 Flags            : 0
+            +0x044 StrictFIFO       : 0y0
+            +0x048 FirstFreeHandle  : 0x104c
+            +0x050 LastFreeHandleEntry : 0xfffff8a0`05500ff0 _HANDLE_TABLE_ENTRY
+            +0x058 HandleCount      : 0x59f
+            +0x05c NextHandleNeedingPool : 0x1c00
+            +0x060 HandleCountHighWatermark : 0x689
+            ```
+
+          - show table entry
+            ```
+            0: kd> dt nt!_HANDLE_TABLE_ENTRY  fffff8a004cd2540
+            +0x000 Object           : 0xfffffa80`12063f91 Void
+            +0x000 ObAttributes     : 0x12063f91
+            +0x000 InfoTable        : 0xfffffa80`12063f91 _HANDLE_TABLE_ENTRY_INFO
+            +0x000 Value            : 0xfffffa80`12063f91
+            +0x008 GrantedAccess    : 0x160001
+            +0x008 GrantedAccessIndex : 1
+            +0x00a CreatorBackTraceIndex : 0x16
+            +0x008 NextFreeTableEntry : 0x160001
+            ```
+
+            dt nt!_KMUTANT <addr> will show you the layout of the mutex itself. 
+            There's also an nt!_OBJECT_HEADER that precedes it
+          (!object displays the address of the header).
+
+      * thread, file, metux, filemapping
+        CreateXXX
+        return:
+           NULL(0) error, but CreateFile needs to check for INVALID_HANDLE_VALUE(-1)
+      
+      * terminal service namespace
+        * session 0(inactive terminal service)
+        * Global
+        * Local
+        * Private
+
+      - process
+        * Environments
+          ```
+          HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment
+
+          HKEY_CURRENT_USER\Environment
+
+          SendMessage(HWND_BROADCAST, WM_SETTINGCHANGE, 0, (LPARAM)_T("Environment"));
+          ```
+
+      - FileMapping
+        ```
+        * HANDLE hFile = CreateFile();
+        * HANDLE hFileMapping = CreateFileMapping(hFile, ...);
+          CloseHandle(hFile);
+        * PVOID pvFile = MapViewOfFile(hFileMapping, ...); 
+          // increase ref count of file object and filemapping object
+          CloseHandle(hFileMapping);
+        * UnmapViewOfFile(pvFile, ...);
+          // CloseHandle(hFileMapping);
+          // CloseHandle(hFile);
+
+      - 
 
 
 # windows internal

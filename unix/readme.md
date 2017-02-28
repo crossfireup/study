@@ -108,6 +108,13 @@
     service rsyslog restart
     ```
 
+* tcpdump
+   - get tcpdump info
+      ```
+      tcpdump -i any -vvv 'host 192.168.2.1 and (tcp port 67 or 68)'
+      tcpdump -lnni any 'udp port 180' -s0 -w - | strings
+      ```      
+
 * bash shortcut
   * Moving the cursor:
 
@@ -685,7 +692,24 @@
       save breakpoints brks.gdb
       source -s brks.gdb   # If -s is specified, then gdb searches for filename on the search path even if filename specifies a directory
       
-
+    * usage:
+      - debug daemon
+        - vim non-stop.gdb
+          ```
+          set target-async on
+          set pagination off
+          set non-stop on
+          ```
+        
+        - run gdb
+          ```
+          gdb -x non-stop.gdb
+          (gdb) !pgrep YOUR-DAEMON
+          1234
+          (gdb) attach 1234
+          (gdb) continue -a &
+          (gdb)
+          ```
 
 # file system #
     
@@ -696,7 +720,6 @@
     2. __Pooled storage__: physical storage devices are added to a pool, and storage space is allocated from that shared pool. Space is available to all file systems, and can be increased by adding new storage devices to the pool.
 
     3. __Performance__: multiple caching mechanisms provide increased performance. ARC is an advanced memory-based read cache. A second level of disk-based read cache can be added with L2ARC, and disk-based synchronous write cache is available with ZIL.
-
 
 # network #
  * ppp
@@ -736,7 +759,6 @@
     write stdout and stderr to logfie and stderr to stdout:
     /a.out < /etc/services 2>&1 >>stderr.out | tee --append stderr.out
     
-
   * [anonymize ssh traffic](http://tor.stackexchange.com/questions/123/how-can-i-anonymize-my-ssh-traffic-using-the-tor-network/127#127)
 
     1. For SSH you can do something like the following:
@@ -829,28 +851,6 @@ Sender MAC address: Shenzhen_57:69:e7 (dc:9c:9f:57:69:e7)
     平铺，窗格均等分（tiled）
     ```
     ```
-# nginx
---------------------------
-  * master: 
-    * reading and validating configuration
-    * creating, binding and closing sockets
-    * starting, terminating and maintaining the configured number of worker processes
-    * reconfiguring without service interruption
-    * controlling non-stop binary upgrades (starting new binary and rolling back if necessary)
-    * re-opening log files
-    * compiling embedded Perl scriptss
-  * worker:
-     * accept, handle and process connections from clients
-     * provide reverse proxying 
-     * filtering functionality
-     * etc
-  * cache loader process
-    * repares nginx instances to work with files already stored on disk in a specially allocated directory structure
-    * It traverses the directories, checks cache content metadata, 
-      updates the relevant entries in shared memory and 
-      then exits when everything is clean and ready for use.
-  * cache manager : stay in memory and is restarted by master when fails
-    * responsible for cache expiration and invalidation
 
 # makefile
   * order 
