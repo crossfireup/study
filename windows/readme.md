@@ -350,6 +350,51 @@
       reg query "HKLM\SOFTWARE\MICROSOFT\WINDOWS NT\CURRENTVERSION" /v DIGITALPRODUCTID
       ```
 
+    - sysmon
+      - config.xml
+        ```
+        <?xml version="1.0"?>
+        <Sysmon schemaversion="3.20">
+        <EventFiltering>
+            <!-- <HashAlgorithms>*</HashAlgorithms> -->
+        <NetworkConnect onmatch="include">
+            <Image condition="contains">chrome.exe</Image>
+            <Image condition="contains">iexplore.exe</Image>
+            <Image condition="contains">firefox.exe</Image>
+            <Image condition="contains">MicrosoftEdgeCP.exe</Image>
+            <Image condition="contains">MicrosoftEdge.exe</Image>
+            <Image condition="contains">explorer.exe</Image>
+            <DestinationPort condition="is">80</DestinationPort>
+            <DestinationPort condition="is">443</DestinationPort>
+            <DestinationPort condition="is">8080</DestinationPort>
+        </NetworkConnect>
+
+        <ProcessCreate onmatch="include">
+            <Image condition="contains">procexp.exe</Image>
+        </ProcessCreate>
+        <ProcessTerminate onmatch="exclude">
+        </ProcessTerminate>
+
+        </EventFiltering>
+        </Sysmon>
+        ```
+
+      - Management 
+        ``` 
+        # install
+        sysmon -i -accepteula config.xml
+        # update
+        sysmon -c config.xml
+        # uninstall
+        sysmon -u 
+        ```
+
+      - query event log
+        ```
+        wevtutil qe Microsoft-Windows-Sysmon/Operational /f:text
+        eventvwr.msc
+        ```
+
 # common useful gui 
   - godmod
     ```
@@ -693,6 +738,11 @@
 
       !ready
       ```
+
+    * peb(Prototype Debugger Extension)
+      ```
+      # grep filter
+      !grep exe !peb
     
     * set remote debug using vmware
         1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
@@ -1173,6 +1223,31 @@
       HKEY_USERS\DEFAULT	Default, Default.log, Default.sav
       ```
 
+  * [add ida association](https://msdn.microsoft.com/en-us/library/windows/desktop/cc144171(v=vs.85).aspx)
+    ```
+    Windows Registry Editor Version 5.00
+
+    [HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x86]
+    @="Open with IDA pro(x&86)"
+
+    [HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x86\Icon]
+    @="\"C:\\Program Files (x86)\\IDA 6.8\\idaq.exe\",0"
+
+    [HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x86\command]
+    @="\"C:\\Program Files (x86)\\IDA 6.8\\idaq.exe\" \"%1\" "
+
+
+    [HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x64]
+    @="Open with IDA pro(x&64)"
+
+    [HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x64\Icon]
+    @="\"C:\\Program Files (x86)\\IDA 6.8\\idaq64.exe\",0"
+
+    [HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x64\command]
+    @="\"C:\\Program Files (x86)\\IDA 6.8\\idaq64.exe\" \"%1\" "
+    ```
+  
+
 # [network tracing in windows](https://msdn.microsoft.com/en-us/library/windows/desktop/dd569136(v=vs.85).aspx)
   - network tracing architecture
     - ![architecture](img/network_tracing_architecture.png)
@@ -1523,3 +1598,5 @@
     * csrss - client/server runtime subsystem
 
 
+# MS15-050
+  - 

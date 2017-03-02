@@ -100,3 +100,85 @@
     ```
     cuneiform - multi-language OCR system
     ```
+
+5. regex
+  - delete space between tow characters
+    - groups: Regular expressions quick reference.pdf
+      ```
+      use                 | description
+      ---                 | -----------
+      (exp) Indexed       |  group
+      (?<name>exp)        |  Named group
+      (?<name1-name2>exp) |  Balancing group
+      (?:exp)             |  Noncapturing group
+      (?=exp)             |  Zero-width positive lookahead
+      (?!exp)             |  Zero-width negative lookahead
+      (?<=exp)            |  Zero-width positive lookbehind
+      (?<!exp)            |  Zero-width negative lookbehind
+      (?>exp)             |  Non-backtracking (greedy)
+      ```
+
+    - usage:
+      ```
+      (?<=[-\w])\s(?=\w)
+      # orignal
+      - C l e a r I c o n C a c h e   - R e m o v e B a s e S e t t i n g s   - B a s e S e t t i n g s   
+      # after regex used
+      -ClearIconCache   -RemoveBaseSettings   -BaseSettings
+      # all 
+      -ClearIconCache
+      -RemoveBaseSettings
+      -BaseSettings
+      -UserIconConfigDelayed
+      -UserIconConfig
+      -UserConfig
+      -ShowQLIcon
+      -apply
+      -reinstall
+      -show
+      -hide
+      ie4uinit.exe -ClearIconCache
+      taskkill /IM explorer.exe /F
+      DEL "%localappdata%\IconCache.db" /A
+      DEL "%localappdata%\Microsoft\Windows\Explorer\iconcache*" /A
+      shutdown /r /f /t 00
+      ```
+
+# ida 
+  - change view
+    spacebar
+
+  - functions
+    ```
+    F A regular function. These are functions that IDA does not recognize as library functions.
+    L A library function. IDA recognizes library functions through the use of signature-matching algorithms.
+      If a signature does not exist for a given library function, the function will be labeled as a regular function instead.
+    I An imported name, most commonly a function name imported from a shared library. The difference between this and a library
+      function is that no code is present for an imported name, while the body of a library function will be present in the disassembly.
+    C Named code. possible when IDA finds a name in a program’s symbol table but never sees a call to the corresponding
+       program location.
+    D Data. Named data locations typically represent global variables.
+    A ASCII String data. This is a referenced data location containing a sequence of characters that conform to one of IDA’s 
+      known string data types, such as a null-terminated ASCII C string
+    ```
+    The only stack variables that IDA will automatically generate names for are those that are directly referenced within a function.
+    ```
+    arg_xxxx : function args
+    var_xxxx : local variables
+
+    n : to rename a name
+    ```
+
+  - name
+    ```
+    sub_xxxxxx A subroutine at address xxxxxx
+    loc_xxxxxx An instruction location at address xxxxxx
+    byte_xxxxxx 8-bit data at location xxxxxx
+    word_xxxxxx 16-bit data at location xxxxxx
+    dword_xxxxxx 32-bit data at location xxxxxx
+    unk_xxxxxx Data of unknown size at location xxxxxx
+    ```
+
+  - comment
+    regular: ":"
+    repeatable:  ';' 

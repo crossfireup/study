@@ -1,0 +1,24 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x86]
+@="Open with IDA pro(x&86)"
+
+[HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x86\Icon]
+@="\"C:\\Program Files (x86)\\IDA 6.8\\idaq.exe\",0"
+
+[HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x86\command]
+@="\"C:\\Program Files (x86)\\IDA 6.8\\idaq.exe\" \"%1\" "
+
+
+[HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x64]
+@="Open with IDA pro(x&64)"
+
+[HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x64\Icon]
+@="\"C:\\Program Files (x86)\\IDA 6.8\\idaq64.exe\",0"
+
+[HKEY_CLASSES_ROOT\exefile\shell\IDA_pro_x64\command]
+@="\"C:\\Program Files (x86)\\IDA 6.8\\idaq64.exe\" \"%1\" "
+
+
+
+
