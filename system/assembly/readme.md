@@ -15,6 +15,15 @@
     2. places its operand into the contents of the 32-bit location at address [ESP]
 
   * call, ret — Subroutine call and return 
+    ```
+    ; enter
+    push ebp
+    mov ebp, esp
+
+    ; leave
+    mov esp, ebp
+    pop eb
+    ```
 
   * Calling Convention
 
@@ -250,6 +259,8 @@
     2. compile use inter
       ```
       gcc -nasm=intel intel_syntax.c
+
+      
 
 * nasm
   * macro

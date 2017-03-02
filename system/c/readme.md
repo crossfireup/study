@@ -165,6 +165,62 @@ Rootkit Programming
 
     * The compiler option -D can be used to define the macro MY_MACRO from command line.
 
+    * inline
+      * -finline-functions: direct GCC to try to integrate all “simple enough” functions into their callers
+      * GCC implements three diﬀerent semantics of declaring a function inline:
+        1. ‘-std=gnu89’ or ‘-fgnu89-inline’
+        2.  gnu_inline attribute is present on all inline declarations
+        3.  ‘-std=c99’, ‘-std=c11’, ‘-std=gnu99’ or ‘-std=gnu11’(without ‘-fgnu89-inline’)
+      * writing a header fle to be included in ISO C90 programs, write __inline__ instead of inline
+      * two important cases:
+        1. inline keyword is used on a static function
+          ```c
+          static inline int
+          inc (int *a)
+          {
+          return (*a)++;
+          }
+          ```
+        2.  first declared without using the inline keyword and then is defned with inline
+          ```c
+          extern int inc (int *a);
+          inline int
+          inc (int *a)
+          {
+          return (*a)++;
+          }
+          ```
+        * gcc generate no assembler code for function(options '-fkeep-inline-functions' not used) if:
+          1. all calls to the function are integrated into the caller
+          2. the function's address is never used
+          3. functions own's assembler code never used
+        * unsuitable for inline substitution(‘-Winline’ warns show failure detail):
+          1. variadic functions:
+            myprintf(fmt, ...)
+          2. use of alloca
+          3. use of computed goto
+          4. use of nonlocal goto
+          5. use of nested functions
+          6. use of setjmp
+          7. use of __builtin_longjmp, __builtin_return or __builtin_apply_args
+        * no inline when no optimizing unless use 'always-inline':
+          ```c
+          /* Prototype. */
+          inline void foo (const char) __attribute__((always_inline));   
+          ```
+        * a non-static inline function is always compiled on its own in the usual fashion for that:
+          * the compiler must assume that there may be calls from other source fles
+          * a global symbol can be defned only once in any program, the function must not be 
+            defned in the other source files,so the calls therein cannot be integrated.
+        * inline and extern in the function defnition,then the defnition is used only for inlining
+          * function never compiled to its own, not even if you refer to its address explicitly.Such an address 
+            becomes an external reference, as if you had only declared the function, and had not defned it.
+          * This combination of inline and extern has almost the eﬀect of a macro. 
+            * function definition in a header file with inline and extern keywords,
+              causes most calls to the function to be inlined
+            * put another copy of definition (lack inline and extern) in a library file, 
+              any uses of the function refer to single copy in librar
+
 # io
 -----
   * file

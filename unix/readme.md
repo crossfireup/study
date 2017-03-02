@@ -691,6 +691,16 @@
 
       save breakpoints brks.gdb
       source -s brks.gdb   # If -s is specified, then gdb searches for filename on the search path even if filename specifies a directory
+
+    * frame
+      ```
+      frame
+
+      info f[rame]
+      frame n     select frame
+      up n    up n frames
+      down n 
+      ```
       
     * usage:
       - debug daemon
