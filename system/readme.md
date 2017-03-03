@@ -258,6 +258,20 @@ __os development__
                   interrupt -----------> IMR --> IRR -------------------------------------------------------------> IS
 
       * memory management
+        * Physical memory layout of the PC
+          ```
+          linear address range | real-mode address range | memory type |      use
+          0- 3FF 	             | 0000:0000-0000:03FF 	   |             |   real-mode interrupt vector table (IVT)
+          400- 4FF             | 0040:0000-0040:00FF 	   |     RAM     |   BIOS data area (BDA)
+          500- 9FBFF 	         | 0050:0000-9000:FBFF 	   |             |   free conventional memory (below 1 meg)
+          9FC00- 9FFFF 	       | 9000:FC00-9000:FFFF 	   |             |   extended BIOS data area (EBDA)
+          A0000- BFFFF 	       | A000:0000-B000:FFFF 	   |             |   video RAM 	VGA framebuffers
+          C0000- C7FFF 	       | C000:0000-C000:7FFF 	   |     ROM 	   |  video BIOS (32K is typical size)
+          C8000- EFFFF 	       | C800:0000-E000:FFFF 	   |     NOTHING |
+          F0000- FFFFF 	       | F000:0000-F000:FFFF 	   |     ROM 	   |  motherboard BIOS (64K is typical size)
+          100000- FEBFFFFF 		 |                         |     RAM 	   |  free extended memory (1 meg and above)
+          FEC00000- FFFFFFFF 	 |                         |    various  | motherboard BIOS, PnP NVRAM, ACPI, etc.
+          ```
 
         * physical addressing 
           a linear address is treated as a physical address.
