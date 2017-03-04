@@ -1600,3 +1600,17 @@
 
 # MS15-050
   - 
+
+# visual studio
+  - create project from sources
+    // Disable warning messages 4507 and 4034.  
+    #pragma warning( disable : 4507 34 )  
+      
+    // Issue warning 4385 only once.  
+    #pragma warning( once : 4385 )  
+      
+    // Report warning 4164 as an error.  
+    #pragma warning( error : 164 )  
+
+  - error scheme definition
+    https://social.msdn.microsoft.com/Forums/en-US/31f52b76-b0de-406d-9c25-2f329dd7cf1c/microsoftcommontargetserrors-and-over-a-hundred-warnings?forum=Vsexpressvb
