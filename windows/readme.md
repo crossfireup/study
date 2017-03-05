@@ -323,7 +323,10 @@
     - cmd 
       ```
       setx - Set environment variables permanently, SETX can be used to set Environment Variables for the machine (HKLM) or currently logged on user (HKCU).
+      setx /M PATH "%PATH%;<your-new-path>"
       subst - Substitute a drive letter for a network or local path.
+
+      pathman
       ```
 
 # sysinternals
@@ -1294,8 +1297,9 @@
 
       - show provider filter
         ```
-          # specific provider can be found by typing netsh trace show provider 
-          netsh trace show provider Microsoft-Windows-TCPIP
+        # specific provider can be found by typing netsh trace show provider 
+        netsh trace show provider Microsoft-Windows-TCPIP
+        ```
 
       - packet filtering capability
         ```
@@ -1614,3 +1618,75 @@
 
   - error scheme definition
     https://social.msdn.microsoft.com/Forums/en-US/31f52b76-b0de-406d-9c25-2f329dd7cf1c/microsoftcommontargetserrors-and-over-a-hundred-warnings?forum=Vsexpressvb
+    close all opened text editor in vs
+
+  - error open hlpviewer
+    - open procmon
+      ```
+      include PrcessName hlpviewer.exe
+      
+      monitor registry and file
+      ```
+    - result
+      ```
+      8:51:57.0637073	9296	HlpViewer.exe	9324	CreateFile	C:\Users\Dobly\AppData\Local\Microsoft\HelpViewer2.1\VisualStudio12_en-US\catalogType.xml	__NAME NOT FOUND__	Desired Access: Read Attributes, Disposition: Open, Options: Open Reparse Point, Attributes: n/a, ShareMode: Read, Write, Delete, AllocationSize: n/a
+      ```
+      catalogType.xml 
+
+    - install catalog
+      ```
+      C:\ProgramData\Microsoft\HelpLibrary2\Catalogs\VisualStudio12\
+
+      hlpctntMgr /operation install /catalogName VisualStudio12 /locale en-US /sourceUri C:\Users\Dobly\AppData\Local\Microsoft\HelpViewer2.1\VisualStudio12_en-US\helpcontentsetup.msha
+      ```
+
+    - [driver sign](https://technet.microsoft.com/en-us/library/dd919238(v=ws.10).aspx)
+      - create a digital certificate for signing
+        ```
+        C:\WinDDK\7600.16385.1\bin\x86\makecert -$ individual -r -pe -n "CN=Dobly - for test use only" -ss "self-signing store" -sr LocalMachine "DDK.cer"
+        ```
+
+      - Add the certificate to the Trusted Root Certification Authorities store
+        This step is required for locally created certificates, such as those created by using MakeCert, which are not directly traceable to a Trusted Root Certification Authority certificate.
+        ```
+        C:\WinDDK\7600.16385.1\bin\x86\CertMgr.Exe /add "DDK.cer" /s /r localMachine root
+        ```
+
+      - Add the certificate to the per machine Trusted Publishers store
+        To use your new certificate to confirm the valid signing of device drivers, it must also be installed in the per computer Trusted Publishers store.
+        ```
+        C:\WinDDK\7600.16385.1\bin\x86\CertMgr /add "DDK.cer" /s /r localMachine trustedpublisher
+        ```
+      
+      - Enable the Kernel-Mode Test-Signing Boot Configuration Option
+        ```
+        bcdedit /set testsigning on
+        ```
+
+      - Sign the device driver package with the certificate
+        ```
+        C:\WinDDK\7600.16385.1\bin\x86\signtool.exe sign /a /v /s "self-signing store" /n "Dobly" /t http://timestamp.verisign.com/scripts/timestamp.dll "protector.sys"
+
+        C:\WinDDK\7600.16385.1\bin\x86\signtool.exe verify /pa /v "protector.sys"
+        ```
+
+      - [Viewing Code Integrity Events](https://msdn.microsoft.com/en-us/windows/hardware/drivers/install/enabling-the-system-event-audit-log)
+        - Enable Security Audit Policy
+          ```
+          Auditpol /set /Category:System /failure:enable
+          ```
+        - Enable Verbose Logging of Code Integrity Diagnostic Events
+          ```
+          eventvwr.msc  
+            Applications and Services Logs -> Microsoft -> Windows ->  CodeIntegrity
+          ```
+    - create kernel driver service and start it
+      ```
+      sc create genport type= kernel binpath= "c:\driver\genport.sys" start= auto
+      sc start protectorservice 
+      ```
+  
+- [64-bit application](https://msdn.microsoft.com/en-us/library/hb5z4sxd.aspx)
+  ```
+  Inline ASM is not supported for x64. Use MASM or compiler intrinsics (x64 Intrinsics).
+  
