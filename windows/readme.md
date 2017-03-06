@@ -1685,6 +1685,33 @@
       sc create genport type= kernel binpath= "c:\driver\genport.sys" start= auto
       sc start protectorservice 
       ```
+
+  - driver
+    - driver support routines
+      - Object Manager Routines
+
+  
+  - kernel api
+    prefix  | description
+    ------  | ------------
+    Aux     | Auxiliary Library
+    Clfs    | Common Log File System
+    Cc      | Cache Manager
+    Cm      | Configuration Manager
+    Ex      | Executive (Memory Allocation wrappers, etc)
+    Flt     | Filter Manager
+    Hal     | Hardware Abstraction Layer
+    Io      | I/O Manager
+    Ke      | Kernel Core
+    Mm      | Memory Manager
+    Nt      | Native Services (User Mode)
+    Ob      | Object Manager
+    Po      | PnP/Power Manager
+    Ps      | Processes and Threads
+    Rtl     | Run Time Library
+    Se      | Security Reference Monitor
+    Wmi     | Windows Management Instrumentation
+    Zw      | Kernel Mode Wrappers for Nt*
   
 - [64-bit application](https://msdn.microsoft.com/en-us/library/hb5z4sxd.aspx)
   ```

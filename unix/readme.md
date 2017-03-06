@@ -260,6 +260,13 @@
       hostname: output
       hostname2: output2
 
+      :g/$/j
+      :g/$/j3 # join every 3 lines
+
+      1.start recording a macro 'q': qqJjq
+      2.replay the macro 'q' 500 times: 500@q
+      ```
+
   - write current content to disk
     ```
     :%!xxd

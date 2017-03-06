@@ -119,6 +119,7 @@
       ```
 
     - usage:
+      - remove spaces
       ```
       (?<=[-\w])\s(?=\w)
       # orignal
@@ -143,6 +144,34 @@
       DEL "%localappdata%\Microsoft\Windows\Explorer\iconcache*" /A
       shutdown /r /f /t 00
       ```
+
+      - add char between words
+        - find with:
+          ```
+          ^(\w+\s)(.*)
+
+          Aux Auxiliary Library
+          Clfs Common Log File System
+          Cc Cache Manager
+          Cm Configuration Manager
+          Ex Executive (Memory Allocation wrappers, etc)
+          Flt Filter Manager
+          Hal Hardware Abstraction Layer
+          Io I/O Manager
+          ```
+        - replace with:
+          ```
+          $1 | $2
+
+          Aux  | Auxiliary Library
+          Clfs  | Common Log File System
+          Cc  | Cache Manager
+          Cm  | Configuration Manager
+          Ex  | Executive (Memory Allocation wrappers, etc)
+          Flt  | Filter Manager
+          Hal  | Hardware Abstraction Layer
+          Io  | I/O Manager
+          ```
 
 # ida 
   - change view
@@ -182,3 +211,12 @@
   - comment
     regular: ":"
     repeatable:  ';' 
+
+- write hex data and disassmble
+  ```
+  # write to a file as raw data
+  echo -n 'E80000000058050F000000FFE0E80000000058C3558BEC81EC5402000' | xxd -r -ps > code.bin
+  # disasseble it
+  ndisasm -b 32 code.bin > code.asm
+  ```
+  
