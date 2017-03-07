@@ -204,7 +204,7 @@
       secpol.msc security-setting -> local policies -> security options -> "network access: sharing and security mode for local account"
         set it to "classical local user loggin as themselves"
 
-      net user \\192.168.2.128\admin$ /user:dolphin-xp-sp3\dolphin
+      net use \\192.168.2.128\admin$ /user:dolphin-xp-sp3\dolphin
       ```
 
     * doskey
@@ -328,6 +328,12 @@
 
       pathman
       ```
+
+    - cacls
+      ```
+      cacls c:\windows /G guest:RW
+      icacls
+
 
 # sysinternals
     * get open files 
@@ -1690,6 +1696,13 @@
     - driver support routines
       - Object Manager Routines
 
+    - trace log 
+      ```
+      trace message header (TMH) 
+      trace level
+      trace flags
+      ```
+
   
   - kernel api
     prefix  | description
@@ -1712,8 +1725,13 @@
     Se      | Security Reference Monitor
     Wmi     | Windows Management Instrumentation
     Zw      | Kernel Mode Wrappers for Nt*
+
+    wrappers:
+    Csq     | Cancel-Safe IRP Queue
   
 - [64-bit application](https://msdn.microsoft.com/en-us/library/hb5z4sxd.aspx)
   ```
   Inline ASM is not supported for x64. Use MASM or compiler intrinsics (x64 Intrinsics).
+  intrin.h __lidt
+  ```
   
