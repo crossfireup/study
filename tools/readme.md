@@ -219,4 +219,9 @@
   # disasseble it
   ndisasm -b 32 code.bin > code.asm
   ```
+
+# other
+  # ROPC
+    - BAP (Binary Analysis Platform)
+    - stp(simple theorem prover) is a smp(satisfiability modulo theories) solver
   

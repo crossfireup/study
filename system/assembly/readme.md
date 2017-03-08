@@ -362,6 +362,17 @@
         1. internal hardware
         2. an external interrupt controller
         3. software by means of an INT, INTO, INT 3, or BOUND instruction
+          ```
+          INT detail in real mode
+            Push (EFLAGS[15:0]);
+            IF ← 0; (* Clear interrupt flag *)
+            TF ← 0; (* Clear trap flag *)
+            AC ← 0; (* Clear AC flag *)
+            Push(CS);
+            Push(IP);
+          IRET: do the same in reverse direction as INT 
+          ```
+            
 
   * memory management
 

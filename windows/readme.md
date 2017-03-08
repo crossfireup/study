@@ -327,13 +327,22 @@
       subst - Substitute a drive letter for a network or local path.
 
       pathman
+
+      # return a value
+      exit /B 1
       ```
 
     - cacls
       ```
       cacls c:\windows /G guest:RW
       icacls
+      findstr /m /l tag *.sys 
+      ```
 
+    - fliter driver unload
+      ```
+      fltmc.exe unload device
+      ```
 
 # sysinternals
     * get open files 
@@ -395,7 +404,7 @@
         # update
         sysmon -c config.xml
         # uninstall
-        sysmon -u 
+        sysmon -u
         ```
 
       - query event log
@@ -746,12 +755,16 @@
       .dumpdebug 
 
       !ready
+      # create dumpfile
+      .crash
       ```
 
-    * peb(Prototype Debugger Extension)
+    * pde(Prototype Debugger Extension)
       ```
+      !pde.help
       # grep filter
       !grep exe !peb
+      ```
     
     * set remote debug using vmware
         1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
@@ -1328,6 +1341,43 @@
 
     - trace log: event trace log(.etl) stores the trace message generated during one or more trace sessions
 
+    - trace session:  a period during which a trace provider is generating trace messages
+      - three basic types 
+        - trace log sessions: shared, standard and default type of trace session
+          ```
+          trace message ---> strace buffers --------> log file
+          ```
+        - real-time trace sessions: shared
+          ```
+          trace messages -------> trace consumer(traceview, tracefmt)
+                |________________ log file
+          ```
+        - buffered trace sessions: exclusive
+          ```
+          trace messages ---------> trace buffer(when full newest override old messages in the buffer)
+
+          # to log file
+          tracelog -flush 
+          start a buffered trace session
+          # reset the registry entries, use the following command
+          tracelog -start -buffering
+          ```
+
+      - private trace sessions(user-mode trace sessions or process trace sessions) and reserved trace sessions
+         one private trace session <------------> one process
+        - NT Kernel Logger trace session: trace windows kernel events, reserved trace session that is built into Windows
+        
+        - Global Logger trace session : trace kernel events during system boot to an NT Kernel Logger trace session
+          - only one Global Logger session at a time.
+          - not send enable notification to providers.
+          ```
+          tracelog -start GlobalLogger
+          tracelog -stop GlobalLogger
+          # reset the registry entries, use the following command
+          #  HKLM\SYSTEM\CurrentControlSet\Control\WMI\GlobalLogger
+          tracelog -remove GlobalLogger
+          ```
+
   2. tools in Windows driver kits or windows software kits
     - controlling trace sessions(trace controller)
       - traceview.exe is GUI-base __trace-controller__ and __trace-consumer__ especially for real-time display of trace messages,
@@ -1379,6 +1429,16 @@
         - tracelog to log DPC or ISR in the NT kernel log session;
         - tracerpt to create summery from logs;
 
+    - usage
+      - watch HookSSDT driver event 
+        - using traceview: Locate the PDB symbol file for the source code that includes the provider or providers
+          ```
+          HookSSDK.pdb
+          ```
+
+        - locate 
+          "C:\WinDDK\7600.16385.1\tools\tracing\i386\tracepdb.exe -f HookSSDK.pdb -o HookSSDK.tmf"
+        
 
 
 # Troubleshooting technics
@@ -1702,6 +1762,8 @@
       trace level
       trace flags
       ```
+
+    - WPP(windows software trace )
 
   
   - kernel api
