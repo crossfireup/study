@@ -147,6 +147,50 @@
       net user administrator <passwd>
       net user administrator /active:no
       ```
+      net use can't resolve a computer name but can use its ip address
+      System error 53 has occurred.
+      The network path was not found.
+
+      - ping win7x64_test # can get return message 
+      - nbtstat -a win7x64_test # can resolve the name
+      - sc \\win7x64_test\ qeury # can resolve the name
+      - set netbios over tcp/ip
+
+      * net use *  \\127.0.0.1
+        System error 67 has occurred.
+
+        The network name cannot be found.
+
+      * wireshare
+        net user \\DOLPHIN7-PC\admin$
+
+        # filter
+        ip.host==192.168.2.146
+        3	4.858162	192.168.2.1	54313	224.0.0.252	5355	71	LLMNR	Standard query 0x5e06 A dolphin7-pc
+        212	1237.304663	192.168.2.146	137	192.168.2.255	137	92	NBNS	Name query NB DOLPHIN7-PC<1c>
+        192.168.2.1	65059	192.168.2.146	80	74	TCP	65059 → 80 [SYN] Seq=0 Win=8192 Len=0 MSS=1460 WS=256 SACK_PERM=1 TSval=3209213 TSecr=0
+
+        net use port 80(WebDav) after get ip addr instead of 445(NetBIOS over tcp)
+
+      * solution
+        - Open Network Connections
+          ```
+          ncpa.cpl
+          ```
+        - ensure you network adapter properties had "Client for Microsotf Network" installed
+
+        - Advanced menu ->  Advanced settings... ->   Provider Order tab
+          Ensure Microsoft Windows Network is higher than Web Client Network
+
+        - disable network adapter and eable it agian (reboot is perferred)
+          ```
+          net use \\dolphin7-pc\IPC$
+          The password or user name is invalid for \\dolphin7-pc\IPC$.
+
+          Enter the user name for 'dolphin7-pc': administrator
+          Enter the password for dolphin7-pc:
+          The command completed successfully.
+          ```
 
     * netsh
       ```
@@ -764,6 +808,21 @@
       !pde.help
       # grep filter
       !grep exe !peb
+      ```
+
+    * debug with src
+      ```
+      cl set_hotkey.c /debug
+      windbg set_hotkey.exe
+      lsf set_hotkey.c 
+      # set source debug mode
+      .lines        enable source line information
+      bp main       set initial breakpoint
+      l+t           stepping will be done by source line
+      l+s           source lines will be displayed at prompt
+      g             run program until "main" is entered
+      pr            execute one source line, and toggle register display off
+      p             execute one source line 
       ```
     
     * set remote debug using vmware
@@ -1765,6 +1824,15 @@
 
     - WPP(windows software trace )
 
+    - deploy driver
+      - set test environment in vmware
+      - Provision a computer for driver deployment and testin (Visual Studio help documentation)
+
+      - driver install in comand line
+        ```
+        devcon
+        C:\WinDDK\7600.16385.1\tools\devcon\i386\devcon -r install hookssdk.ini root\hookssdt
+        ```
   
   - kernel api
     prefix  | description
@@ -1790,7 +1858,26 @@
 
     wrappers:
     Csq     | Cancel-Safe IRP Queue
+
+  - hook SSDT
+    - disable write protect
+      - CR0
+        clear CR0.WP
+      - MDL(Memory Descriptor List)
+        map ssdt memory to our own mdl and change the permission
+
+    - hook ssdt
+      - get the function index need to be hooked
+        index = function addr + 1b 
+      - write new function address to the index in ssdt
+
+    - in our new function
+      - get the info we want
+      - call orignal function
   
+    - Unhook ssdt
+      - mov original function address to the ssdt
+
 - [64-bit application](https://msdn.microsoft.com/en-us/library/hb5z4sxd.aspx)
   ```
   Inline ASM is not supported for x64. Use MASM or compiler intrinsics (x64 Intrinsics).
