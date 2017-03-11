@@ -1183,8 +1183,92 @@
       dps fffff8801ad1e000 fffff8801ad24000
       ```
 
-    - 
+    - usage:
+      - debugging enable?
+        ```
+        0:000> uf kernel32!IsDebuggerPresent
+          KERNELBASE!IsDebuggerPresent:
+          75161f8f 64a118000000    mov     eax,dword ptr fs:[00000018h]
+          75161f95 8b4030          mov     eax,dword ptr [eax+30h]
+          75161f98 0fb64002        movzx   eax,byte ptr [eax+2]
+          75161f9c c3              ret
 
+         0:000> dd fs:[18h]
+          003b:00000018  7ffdf000 00000000 00000e04 00000264
+          003b:00000028  00000000 7ffdf02c 7ffd9000 00000000
+
+        0:000> dd 7ffdf000+30
+          7ffdf030  7ffd9000 00000000 00000000 00000000
+
+        0:000> !peb
+          PEB at 7ffd9000
+              InheritedAddressSpace:    No
+              ReadImageFileExecOptions: No
+              BeingDebugged:            Yes
+
+        0:000> dt nt!_PEB   ; eax,byte ptr [eax+2]
+          ntdll!_PEB
+            +0x000 InheritedAddressSpace : UChar
+            +0x001 ReadImageFileExecOptions : UChar
+            +0x002 BeingDebugged    : UChar
+            +0x003 BitField         : UChar
+            +0x003 ImageUsesLargePages : Pos 0, 1 Bit
+
+        0:000> dt nt!_PEB 7ffd9000
+          ntdll!_PEB
+            +0x000 InheritedAddressSpace : 0 ''
+            +0x001 ReadImageFileExecOptions : 0 ''
+            +0x002 BeingDebugged    : 0x1 ''
+        ```
+        - IsDebuggerPressent() to verify
+          - modify peb.BeingDebugged
+
+        - NTQueryInformationProcess() to verify
+          - modify EPROCESS.DebugPort in kernel mode
+          ```
+          0:000> dt _EPROCESS -y Debug
+            ntdll!_EPROCESS
+              +0x0ec DebugPort : Ptr32 Void
+          ```
+
+        - use SEH, when debugged exceptions will be handled by debugger rather than the app
+          ```c
+          bool isDebugged = TRUE;
+
+          __try{
+            __asm int 0x03
+          } __except(EXCEPTION_EXECUTE_HANDLER) {
+            isDebugged = FALSE;
+          }
+          ```
+
+        - kernel mode
+          ```
+          if( KdRefreshDebuggerNotPresent() == FALSE){
+            /* debugger is attached */
+          }
+
+          KD_DEBUGGER_NOT_PRESENT == FALSE /* debugger is ataching */
+          ```
+
+        - EFLAGS TF(Trap Flag)
+          ```
+          __try {
+            __asm {
+              pushfd;
+              pop flagsReg;
+            }
+            /* set TF */
+            flagsReg = flagsReg | 0x00000100;
+            __asm {
+              push flagsReg;
+              popfd;
+            }
+          } __except (EXCEPTION_EXECUTE_HANDLER) {
+            /* debbuger not pressent */
+          }
+          ```
+        - GetThreadContext
 
 * software debugging
     * catagory
