@@ -557,7 +557,7 @@
         ```
         .srcpath
         .srcpath+ xy
-        .syspath+ c:\symblos\
+        .srcpath+ c:\symblos\
         ```
 
       * processed and thread on nt
@@ -952,12 +952,23 @@
         bcdedit /v
         ```
 
+      - [enable boot debug](https://msdn.microsoft.com/en-us/library/windows/hardware/ff542183(v=vs.85).aspx)
+         target computer will break into the debugger three times: 
+          - Windows Boot Manager loads
+          - when the boot loader loads
+          - when the operating system starts up. 
+          ```
+          bcdedit /bootdebug {bootmgr} on 
+          bcdedit /bootdebug {9ee65318-1029-11e6-bdc5-d24cbb4066ca} on 
+          bcdedit /debug {9ee65318-1029-11e6-bdc5-d24cbb4066ca} on
+          ```
+
       - restart computer
         ```
         shutdown /g
         ```
       
-      - start local debuggin
+      - start local debugging
         ```
         windgb -kl
         kd -kl      
@@ -1830,9 +1841,43 @@
 
       - driver install in comand line
         ```
-        devcon
+        [devcon](http://www.robvanderwoude.com/devcon.php)
         C:\WinDDK\7600.16385.1\tools\devcon\i386\devcon -r install hookssdk.ini root\hookssdt
+          : Install driver package onto device
+          - Query("HardwareIDs='Root\HookSSDK' OR CompatIDs='Root\HookSSDK'")
+                  Target: ROOT\SAMPLE\0000
+          - GetInterfaces("DriverSetup")
+                  Target: ROOT\SAMPLE\0000
+
+        "C:\Program Files (x86)\Windows Kits\8.1\Tools\x64\devcon" classes * | grep -i non
+        LegacyDriver        : Non-Plug and Play Drivers  
+
+        devcon hwids =LegacyDriver | grep -i iobit -A 4
+          ROOT\LEGACY_IOBITUNLOCKER\0000
+          Name: IObitUnlocker
+          No hardware/compatible IDs found for this device.
+
+        devcon listclass LegacyDriver | grep -i iobit
+          ROOT\LEGACY_IOBITUNLOCKER\0000                              : IObitUnlocker
+
+        devcon driverfiles =LegacyDriver ROOT\LEGACY_IOBITUNLOCKER\0000
+
+        "C:\WinDDK\7600.16385.1\tools\devcon\i386\devcon.exe"  install HookSSDK.inf Root\HookSSDK
         ```
+
+    - debug
+      ```
+      
+      .lines        enable source line information
+      bu HookSSDK!DriverEntry       set initial breakpoint
+      bp `driver.c:31` 
+      l+t           stepping will be done by source line
+      l+s           source lines will be displayed at prompt
+      g             run program until "main" is entered
+      pr            execute one source line, and toggle register display off
+      p             execute one source line
+      g
+      ```
   
   - kernel api
     prefix  | description
@@ -1858,6 +1903,35 @@
 
     wrappers:
     Csq     | Cancel-Safe IRP Queue
+  
+  - concepts
+    - Paged pool and Nonpaged pool 
+      - user space
+        all physical memory pages can be paged out to a disk file as needed
+      
+      - system space
+        - paged pool 
+          can be paged out to a disk file as needed
+        - nonpaged pool
+          can never be paged out to a disk file
+
+    - user mode and kernel mode
+      - user mode
+        - The process provides the application with a private virtual address space and a private handle table
+        - application runs in isolation
+        - application's virtual address space is private, one application cannot alter data that belongs to another
+        - the virtual address space of a user-mode application is limited
+
+      - kernel mode 
+        - All code running shares a single virtual address space
+        - kernel-mode driver is not isolated from os or other driver
+        - kernel-mode driver accidentally writes to the wrong virtual address, data belongs to os or driver will be damaged
+        - kernel-mode driver crashes, the entire operating system crashes.
+
+    - Device objects and device stacks
+      - A device object is an instance of a DEVICE_OBJECT structure
+      - Each device node in the PnP device tree has an ordered list of device objects associated with a driver
+      - ordered list of device objects, along with their associated drivers, is called the device stack for the device node.
 
   - hook SSDT
     - disable write protect
@@ -1877,6 +1951,23 @@
   
     - Unhook ssdt
       - mov original function address to the ssdt
+
+    - pragma
+      alloc_text limitations are as follows:
+        - It is applicable only to functions declared with C linkage 
+        - It cannot be used inside a function.
+        - It must be used after the function has been declared, but before the function has been defined.
+      ```
+      #pragma alloc_text(PAGE, Initialization)
+      #pragma alloc_text(INIT, InitializationDiscard)
+      ```
+
+    - PatchGuard
+      - SSDT (System Service Descriptor Table)
+      - GDT (Global Descriptor Table)
+      - IDT (Interrupt Descriptor Table)
+      - System images (ntoskrnl.exe, ndis.sys, hal.dll)
+      - Processor MSRs (syscall)
 
 - [64-bit application](https://msdn.microsoft.com/en-us/library/hb5z4sxd.aspx)
   ```
