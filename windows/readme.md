@@ -388,6 +388,13 @@
       fltmc.exe unload device
       ```
 
+    - query
+      ```
+      query session
+      net session
+      query user
+      ```
+
 # sysinternals
     * get open files 
       - handle -u Administrator
@@ -1820,6 +1827,8 @@
 # windows internal
   1. subsystem
     * csrss - client/server runtime subsystem
+      
+    * conhost - console window host
 
 
 # MS15-050
