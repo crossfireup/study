@@ -227,4 +227,8 @@
 
 # code
   # when use '\' concaternate multiple lines no space after it
+  # be extremely careful when using 3rd-party api, notice their every word
+    ```
+    PAGE_CODE();
+    ```
   

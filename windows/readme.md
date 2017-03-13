@@ -399,6 +399,14 @@
     * get open files 
       - handle -u Administrator
       - handle -p cmd
+      - close
+        ```
+        handle hookssdt.pdb
+
+        windbg.exe         pid: 4820   type: File           180: C:\Users\Dobly\Documents\Visual Studio 2013\Projects\HookSSDT\Win7Debug\HookSSDT.pdb
+
+        handle -c 180 -y -p 4820
+        ```
 
     * procexp
       ```
@@ -1994,6 +2002,7 @@
     Wmi     | Windows Management Instrumentation
     Zw      | Kernel Mode Wrappers for Nt*
 
+    [NTxxx vs Zwxxx](https://msdn.microsoft.com/en-us/library/ff559860(VS.85).aspx)
     wrappers:
     Csq     | Cancel-Safe IRP Queue
   
@@ -2067,4 +2076,48 @@
   Inline ASM is not supported for x64. Use MASM or compiler intrinsics (x64 Intrinsics).
   intrin.h __lidt
   ```
-  
+
+  - pcr prcb
+    - prcb  processor control block 
+      ```
+      !prcb
+      0: kd> !prcb
+        PRCB for Processor 0 at 81b7fd20:
+        Current IRQL -- 28
+        Threads--  Current 81b89280 Next 842c2a90 Idle 81b89280
+        Processor Index 0 Number (0, 0) GroupSetMember 1
+        Interrupt Count -- 00007e3a
+        Times -- Dpc    000000bf Interrupt 0000004a 
+                Kernel 00002b67 User      000000d4 
+      ```
+
+    - Processor Control Region (PCR)
+      ```
+      !pcr
+      0: kd> !pcr
+        KPCR for Processor 0 at 81b7fc00:
+            Major 1 Minor 1
+          NtTib.ExceptionList: 81b7c32c
+              NtTib.StackBase: 00000000
+            NtTib.StackLimit: 00000000
+          NtTib.SubSystemTib: 801b1000
+                NtTib.Version: 000368d7
+            NtTib.UserPointer: 00000001
+                NtTib.SelfTib: 00000000
+
+                      SelfPcr: 81b7fc00
+                        Prcb: 81b7fd20
+                        Irql: 0000001f
+                          IRR: 00000000
+                          IDR: ffffffff
+                InterruptMode: 00000000
+                          IDT: 817b7400
+                          GDT: 817b7000
+                          TSS: 801b1000
+
+                CurrentThread: 81b89280
+                  NextThread: 842c2a90
+                  IdleThread: 81b89280
+
+                    DpcQueue: 
+      ```
