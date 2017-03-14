@@ -371,6 +371,15 @@
             Push(CS);
             Push(IP);
           IRET: do the same in reverse direction as INT 
+
+          # enable TF
+           __asm__ ("pushl %ebx            \n"
+                    "pushf                  \n"
+                    "movl %esp, %ebx        \n"
+                    "orl $0x0100, (%ebx)    \n"
+                    "popf                   \n"
+                    "popl %ebx                "
+                    );
           ```
             
 

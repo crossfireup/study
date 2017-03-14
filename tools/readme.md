@@ -231,4 +231,11 @@
     ```
     PAGE_CODE();
     ```
+
+# qemu
+  - commands
+    ```
+    info pic 
+    info registers
+    ```
   
