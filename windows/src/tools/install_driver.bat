@@ -22,15 +22,24 @@ md "%driver_dest_dir%"
 goto err
 )
 
-@echo delete old driver
-@devcon remove Root\HookSSDT
+@echo check driver status
+@devcon hwids Root\HookSSDT | findstr "Root"
+@set ret=%errorlevel%
 
-@echo install driver
 @pushd "%driver_dest_dir%"
+@if %ret% equ 0 (
+@echo update driver
+devcon -r update HookSSDT.inf Root\HookSSDT
+) else (
+@echo install driver
 devcon -r install HookSSDT.inf Root\HookSSDT
+)
+@set ret=%errorlevel%
 @popd
 
-@if errorlevel 0 goto ok
+@endlocal
+
+if "%ret%" gtr 1 goto ok
 
 :err 
 @echo "install failed!"
@@ -39,5 +48,3 @@ devcon -r install HookSSDT.inf Root\HookSSDT
 :ok
 @echo "install finished!"
 @exit /B 0
-
-@endlocal

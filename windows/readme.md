@@ -2035,6 +2035,16 @@
       - Each device node in the PnP device tree has an ordered list of device objects associated with a driver
       - ordered list of device objects, along with their associated drivers, is called the device stack for the device node.
 
+    - driver files
+      - %SystemRoot%\Driver Cache\i386\drivers.cab
+      - %SystemRoot%\Driver Cache\i386\service_pack.cab
+      - .inf files under %windir%inf
+      - .sys files under %SystemRoot%\System32\Drivers
+      - Support DLLs under %SystemRoot%\System32
+
+    - [reboot or not](https://msdn.microsoft.com/en-us/library/windows/hardware/dn653568(v=vs.85).aspx)
+
+
   - hook SSDT
     - disable write protect
       - CR0
