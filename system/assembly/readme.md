@@ -258,9 +258,19 @@
     ```
     2. compile use inter
       ```
-      gcc -nasm=intel intel_syntax.c
+      gcc -masm=intel intel_syntax.c
+      ```
 
-      
+# [as](https://sourceware.org/binutils/docs/as/)
+  - concepts
+    - CFI and CFA
+      ```
+      CFI call frame information
+      CFA call frame address
+      .L<num> denotes labels    
+      BF<num> indicates Function-Begin 
+      EF<num> indicates FUNCTION-END   
+      ```
 
 * nasm
   * macro
