@@ -2035,6 +2035,34 @@
       - Each device node in the PnP device tree has an ordered list of device objects associated with a driver
       - ordered list of device objects, along with their associated drivers, is called the device stack for the device node.
 
+    - IRQL(Interrupt Request Lever)[IRQ_thread.doc]
+       
+      - PASSIVE_LEVEL             
+        - None                         
+        - DriverEntry, AddDevice, Reinitialize, Unload routines, most dispatch routines, driver-created threads,                worker-thread callbacks
+        - can be suspended
+
+      - APC_LEVEL             
+        - APC_LEVEL interrupts            
+        - dispatch routines 
+        - cannot be suspended
+
+      - DISPATCH_LEVEL   
+        - DISPATCH_LEVEL and APC_LEVEL interrupts  
+        - StartIo, AdapterControl, AdapterListControl, ControllerControl, IoTimer, Cancel (while holding the cancel spin lock)  , DpcForIsr, CustomTimerDpc, CustomDpc routines
+        - cannot be suspended
+      
+      - DIRQL
+        - All interrupts at IRQL<= DIRQL of driver's interrupt object. a higher DIRQL value can occur, along with clock and     power failure interrupts.
+        -  InterruptService, SynchCritSection routines.
+        - cannot be suspended
+
+      - APC_LEVEL and PASSIVE_LEVEL
+        - a process executing at APC_LEVEL cannot get APC interrupts
+        - both imply a thread context 
+        - both imply the code can be paged out
+        - threads scheduled by system runs bellow APC_LEVEL and systme schduler runs in DISPATCH_LEVEL
+
     - driver files
       - %SystemRoot%\Driver Cache\i386\drivers.cab
       - %SystemRoot%\Driver Cache\i386\service_pack.cab

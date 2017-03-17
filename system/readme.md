@@ -156,9 +156,58 @@ __os development__
             * External interrupts, software interrupts and exceptions are handled through the interrupt descriptor table (IDT).
             * The IDT stores a collection of gate descriptors that provide access to interrupt and exception handlers. 
               * gate descriptors contains:
-                1. interrupt gate : the associated handler procedure is accessed in a manner similar to calling a procedure through a call gate  
-                2. trap gate : the associated handler procedure is accessed in a manner similar to calling a procedure through a call gate   
+                1. interrupt gate : 
+                  - similar to calling a procedure through a call gate  
+                  - clear IF when called, disable interrrupt
+                  ```
+                  push eflags
+                  push cs;
+                  push eip;
+                  push errorCode;
+                  load cs:eip from interrupt gate
+                  execute the handler
+                  ```
+
+                2. trap gate : 
+                  - similar to calling a procedure through a call gate   
+                  - IF not changed
+                  
+
                 3. task gate: the handler is accessed through a task switch.
+                 
+                - no stack switch when handles trap or interrupt:
+                  ```
+                  push eflags
+                  push cs;
+                  push eip;
+                  
+                  push errorCode;
+                  
+                  load cs:eip from trap/interrupt gate
+                  
+                  if call throught interrupt gate
+                    clear IF
+
+                  execute the handler procedure
+                  ```
+                
+                - stack switch occurs when handles trap or interrupt:
+                  ```
+                  push ss;
+                  push esp;
+                  push eflags;
+                  push cs;
+                  push ip;
+
+                  push errorCode;
+
+                  load cs:eip from trap/interrupt gate
+
+                  if call throught interrupt gate 
+                    clear IF
+
+                  execute handle procedure
+                  ```
             * IDT is not a segment, like GDT, base adress of idt is in IDTR
             * interrupt vector provides an index into the IDT coming from:
               1. internal hardware
@@ -171,16 +220,14 @@ __os development__
           2. exceptions: handle conditions detected by the processor itself in the course of executing instructions
             * Processor detected. These are further classified as 
               1. faults: 
-                - before the instruction execute
-                  - the fault is reported 
-                  - the machine restored to a state 
-                  - the instruction can be restarted.
-                - during execution of the instruction.
+                - during the start of the instruction.
+                - store the instruction caused fault in eip, after being handled, execute the instruction again
                 - return address of handle ----> faulting instruction
 
               2. traps: 
                 - instruction boundary immediately after the instruction
                 - reported at the in which the exception was detected. 
+                - store the instruction need to be executed after trap occurs in eip, after handle returns, execute next instruction 
                 - return address of handler ----> instruction need to be executed after trap occurs
 
               3. aborts: 
@@ -211,7 +258,7 @@ __os development__
                       "popl %ebx                "
                       );
             ```
-          - int 3 : debug exception 3
+          - INT 3 : debug exception 3
             - cc in byte code
             - Interrupt redirection does not happen when in VME mode; the interrupt is handled by a protected-mode handler.
             - The virtual-8086 mode IOPL checks do not occur. The interrupt is taken without faulting at any IOPL level
@@ -291,12 +338,6 @@ __os development__
                                         
                           not masked                Priority Resolver simply selects the IRQ of highest priority.
                 interrupt -----------> IMR --> IRR -------------------------------------------------------------> IS
-
-
- 
-          
-  
- 
 
       * memory management
         * Physical memory layout of the PC

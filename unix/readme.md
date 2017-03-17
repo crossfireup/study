@@ -792,6 +792,8 @@
         (usually just print <var>)
 
     * debug
+      ```
+       gdb -ex r --args python <programname>.py <arguments>
       print x=4 # set and print x
       set {int}0x83040 = 4 # set memory in 0x8304
       whatis $ebp
@@ -801,8 +803,11 @@
 
       break *0x7c00 if 
 
+      delete breakpoints 1
+
       save breakpoints brks.gdb
       source -s brks.gdb   # If -s is specified, then gdb searches for filename on the search path even if filename specifies a directory
+      ```
 
     * frame
       ```
@@ -813,6 +818,16 @@
       up n    up n frames
       down n 
       ```
+
+    * Convenience Variables
+      gdb provides convenience variables that you can use within gdb to hold on to a value and refer to it later
+      - exist entirely within gdb
+      - not part of your program
+      - has no direct eﬀect on further execution of your program
+      - any name preceded by ‘$’ can be used for a convenience variable, unless it is one of the predefned 
+        machine-specifc register names 
+      ```
+
       
     * usage:
       - debug daemon
