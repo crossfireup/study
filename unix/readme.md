@@ -579,7 +579,27 @@
       :%s/a/b/g
       :3,9s/a/b/g # 3-9 line
 
+    - registers
+      ```
+      There are nine types of registers:			*registers* *E354*
+      1. The unnamed register ""
+      2. 10 numbered registers "0 to "9
+      3. The small delete register "-
+      4. 26 named registers "a to "z or "A to "Z
+      5. four read-only registers ":, "., "% and "#
+      6. the expression register "=
+      7. The selection and drop registers "*, "+ and "~ 
+      8. The black hole register "_
+      9. Last search pattern register "/
 
+      ["x]yy			Yank [count] lines [into register x] |linewise|.
+      							*Y*
+      ["x]Y			yank [count] lines [into register x] (synonym for	yy, 
+
+      # delete the black hole register 
+      "_d
+      "_x
+      ```
 
 * linux
   * runlevel

@@ -44,6 +44,7 @@
     - [remove large files committed](https://git-scm.com/docs/git-rm)
       - refferences
         https://git-scm.com/docs/git-rm
+        https://help.github.com/articles/removing-sensitive-data-from-a-repository/
         http://blog.jessitron.com/2013/08/finding-and-removing-large-files-in-git.html
       ```
       # delete cached files
@@ -63,12 +64,17 @@
         del_names=`git log --all --pretty=format: --name-only --diff-filter=D | sort -u`
 
         for f in ${del_names}; do 
-          echo git filter-branch --index-filter "git rm --cached --ignore-unmatch \"${f}\"" --prune-empty t -- --all
+          echo git filter-branch --index-filter "git rm --cached --ignore-unmatch \"${f}\"" --prune-empty --force -- --all
         done
 
-        git filter-branch --index-filter 'git rm --cached --ignore-unmatch "work/4.doc"' --prune-empty t -- --all
+        git filter-branch --index-filter 'git rm --cached --ignore-unmatch "work/4.doc"' --prune-empty --force -- --all
 
         git filter-branch --index-filter 'git rm --cached --ignore-unmatch "system/c/docs/*.pdf" ' --force --prune-empty -- --all
+
+        # you can force all objects in your local repository to be dereferenced and garbage collected with the following commands 
+        git for-each-ref --format='delete %(refname)' refs/original | git update-ref --stdin
+        git reflog expire --expire=now --all
+        git gc --prune=now
       ```
 
     - ignore files and exclude some
@@ -219,6 +225,19 @@
   # disasseble it
   ndisasm -b 32 code.bin > code.asm
   ```
+
+- find
+  ```
+  -print0
+              True; print the full file name a null character (instead of the newline character
+              that -print uses).  This allows file names that contain
+              newlines or other types of white space to be correctly
+              interpreted by programs that process the find output.  This
+              option corresponds to the -0 option of xargs.
+  # handle whitespace
+  find -type f -print0 | xargs -0 grep _NT_
+
+  find -type f -exec echo '{}' +
 
 # other
   # ROPC

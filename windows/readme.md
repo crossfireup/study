@@ -1968,7 +1968,6 @@
 
     - debug
       ```
-      
       .lines        enable source line information
       bu HookSSDK!DriverEntry       set initial breakpoint
       bp `driver.c:31` 
@@ -2063,6 +2062,64 @@
         - both imply the code can be paged out
         - threads scheduled by system runs bellow APC_LEVEL and systme schduler runs in DISPATCH_LEVEL
 
+    - Device Extensions
+      - why
+        - Device driver execute in an arbitrary thread context,
+        - A device extension is each driver's primary place to 
+          - maintain device state
+          - all other device-specific data the driver needs.
+
+      - what 
+        - Maintain device state information.
+        - Provide storage for any kernel-defined objects or other system resources, such as spin locks, used by the driver.
+        - Hold any data the driver must have resident and in system space to carry out its I/O operations.
+
+      - how
+        - Every driver that has an ISR must provide storage for a pointer to a set of kernel-defined interrupt objects
+        - most device drivers store this pointer in a device extension
+
+      - when
+        - when it creates a device object, each driver defines the contents and structure of its own device extensions.
+
+      - The I/O manager's IoCreateDevice and IoCreateDeviceSecure routines 
+          allocate memory for the device object and extension from the __nonpaged memory pool__.
+
+    - I/O Transfer Types
+      - Buffered I/O operates on a copy of the user's data.
+      - Direct I/O directly accesses the user's data through memory descriptor lists (MDLs) and kernel-mode pointers.
+      - Neither buffered nor direct I/O-called "neither I/O" or METHOD_NEITHER-accesses the user's data 
+        - a security risk, I/O manager cannot validate the input and output buffer lengths, thus leaving the driver
+          open to attack.
+        - through user-mode pointers.
+
+    - using remove locks
+      - what 
+        - provide a way to track the number of outstanding I/O operations on a device
+        - to determine when it is safe to detach and delete a driver's device object
+
+      - when
+        - ensure that the driver's DispatchPnP routine will not complete an IRP_MN_REMOVE_DEVICE request while the 
+          lock is held (for example, while another driver routine is accessing the device).
+
+        - To count the number of reasons why the driver should not delete its device object, and to set an event 
+          when that count goes to zero.
+
+      - how 
+        - a driver should allocate an IO_REMOVE_LOCK structure in its device extension
+        - call IoInitializeRemoveLock
+        - call IoAcquireRemoveLock each time it __starts__ an I/O operation, increments the count
+        - call IoReleaseRemoveLock each time it __finishes__ an I/O operation, decrements the count
+        - call IoAcquireRemoveLock when it passes out a reference to its code (for timers, DPCs, callbacks, and so on)
+        - call IoReleaseRemoveLock when the event has returned
+        - dispatch code for IRP_MN_REMOVE_DEVICE, the driver must acquire the lock once more and then 
+          call IoReleaseRemoveLockAndWait, it returns after all outstanding acquisitions of the lock have been released
+        - To allow queued I/O operations to complete, each driver should call IoReleaseRemoveLockAndWait after it passes 
+          the IRP_MN_REMOVE_DEVICE request to the next-lower driver, and before it releases memory, calls IoDetachDevice, or calls IoDeleteDevice.
+
+      - note
+        - calls IoReleaseRemoveLockAndWait, it is ready to be removed and cannot perform I/O operations,    
+          calls IoInitializeRemoveLock to re-initialize the remove lock
+
     - driver files
       - %SystemRoot%\Driver Cache\i386\drivers.cab
       - %SystemRoot%\Driver Cache\i386\service_pack.cab
@@ -2070,7 +2127,29 @@
       - .sys files under %SystemRoot%\System32\Drivers
       - Support DLLs under %SystemRoot%\System32
 
+    - common routines
+      - DriverEntry
+
+      - AddDevice
+
+      - DispatchXXX
+        - OpenClose
+
+      - Cleanup and close
+        - app call CloseHandle 
+        - IO manager decrease handle count 
+        - handle counts==0 --> IO manager calls Cleanup request
+        - in response to the cleanup request, driver cancles all outstanding I/O request for the file object
+          (outstanding references might still exist on the file object, such as those caused by a pending IRP)
+        - object's reference count == 0, all I/O completes --> IO manager send close request to driver 
+      - Unload
+
+    - [target application](https://msdn.microsoft.com/en-us/library/windows/desktop/dn481241(v=vs.85).aspx)
+
     - [reboot or not](https://msdn.microsoft.com/en-us/library/windows/hardware/dn653568(v=vs.85).aspx)
+
+    - [Driver-Driver and Driver-application communication](https://blogs.msdn.microsoft.com/iliast/2007/10/06/driver-driver-and-driver-application-communication/)
+
 
 
   - hook SSDT
@@ -2101,6 +2180,9 @@
       #pragma alloc_text(PAGE, Initialization)
       #pragma alloc_text(INIT, InitializationDiscard)
       ```
+
+    - DeviceControl
+      - handle IRQ
 
     - PatchGuard
       - SSDT (System Service Descriptor Table)
