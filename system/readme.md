@@ -174,6 +174,22 @@ __os development__
                   
 
                 3. task gate: the handler is accessed through a task switch.
+                  - Stack Switch on a Call to a Different Privilege Level
+                    - call
+                      - privilege check
+                      - internally save SS, ESP, CS, EIP temporarily
+                      - load segment selector and stack pointer from TSS into SS and ESP  --> switch to new stack
+                      - push calling stack SS, ESP --> callee new stack
+                      - copy calling paramters -> callee new stack
+                      - new CS and EIP from call gate to CS EIP register
+                      - begin execution of called procedure at new privilege level
+                    - return
+                      - privilige check
+                      - restore cs and eip for prior calling
+                      - if ret with n, esp++ to release parameters from stack for both stacks(caller and callee)
+                      - restore ss,esp for prior calling --> switch back to prior call
+                      - RET instruction has an optional n argument, increate sp to release caller's parameters
+                      - resume excution of calling procedure                    
                  
                 - no stack switch when handles trap or interrupt:
                   ```
@@ -258,7 +274,7 @@ __os development__
                       "popl %ebx                "
                       );
             ```
-          - INT 3 : debug exception 3
+          - INT 3 : breakpoint exception (#BP)
             - cc in byte code
             - Interrupt redirection does not happen when in VME mode; the interrupt is handled by a protected-mode handler.
             - The virtual-8086 mode IOPL checks do not occur. The interrupt is taken without faulting at any IOPL level

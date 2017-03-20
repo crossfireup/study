@@ -174,6 +174,8 @@
     * ‘m’ A memory operand is allowed, with any kind of address that the machine supports in general.
     * ‘o’ A memory operand is allowed, but only if the address is offsettable. 
     * ‘p’ An operand that is a valid memory address is allowed
+    * ‘i’ An immediate integer operand (one with constant value) is allowed including symbolic constants 
+          whose values will be known only at assembly time or later
 
     Constraint Modifier Characters:
         When the compiler fixes up the operands to satisfy the constraints, it needs to

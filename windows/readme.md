@@ -395,6 +395,36 @@
       query user
       ```
 
+    - fsutil
+      ```
+      fsutil handlink list read.txt
+      ```
+
+    - mklink
+      - A junction (also called a soft link) 
+        - differs from a hard link in that the storage objects it references are separate directories
+        - a junction can link directories located on different local volumes on the same computer. 
+        - junctions operate identically to hard links. Junctions are implemented through reparse points.
+      ```
+      mklink /J c:\dir d:\dir
+      mklink /H file.txt f.txt
+      ```
+
+    - attrib
+      ```
+      R = READONLY
+      H = HIDDEN
+      S = SYSTEM
+      A = ARCHIVE 
+      C = COMPRESSED
+      N = NOT INDEXED
+      L = Reparse Points
+      O = OFFLINE
+      P = Sparse File
+      I = Not content indexed
+      T = TEMPORARY
+      E = ENCRYPTED
+      ```
 # sysinternals
     * get open files 
       - handle -u Administrator
@@ -2091,6 +2121,23 @@
         - a security risk, I/O manager cannot validate the input and output buffer lengths, thus leaving the driver
           open to attack.
         - through user-mode pointers.
+
+    - Buffer Descriptions for I/O Control Codes
+      - METHOD_BUFFERED :Irp->AssociatedIrp.SystemBuffer
+        - represents both the input buffer and the output buffer that are specified in calls to DeviceIoControl and IoBuildDeviceIoControlRequest. The driver transfers data out of, and then into, this buffer.
+        - buffer size is specified by Parameters.DeviceIoControl.InputBufferLength or Parameters.DeviceIoControl.OutputBufferLength
+      
+      - METHOD_IN_DIRECT or METHOD_OUT_DIRECT 
+        - supply a pointer to a buffer at Irp->AssociatedIrp.SystemBuffer
+
+          buffer size is specified by __Parameters.DeviceIoControl.InputBufferLength__
+
+        - supply a pointer to an MDL at Irp->MdlAddress
+          - METHOD_IN_DIRECT: MDL describes an input buffer, and specifying METHOD_IN_DIRECT ensures that the executing thread has read-access to the buffer.
+
+          - METHOD_OUT_DIRECT: MDL describes an output buffer, and specifying METHOD_OUT_DIRECT ensures that the executing thread has write-access to the buffer.
+
+          For both, __Parameters.DeviceIoControl.OutputBufferLength__ specifies buffer size described by the MDL.
 
     - using remove locks
       - what 
