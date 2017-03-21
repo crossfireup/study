@@ -339,7 +339,7 @@ Rootkit Programming
     
   * preprocess
     * [variadic macro](https://en.wikipedia.org/wiki/Variadic_macro)
-    ```
+      ```
       #define PRINT_ERR(fmt, ...) fprintf(stderr, fmt, __VA_ARGS__)
       # define dbgprintf(...) realdbgprintf (__FILE__, __LINE__, __VA_ARGS__)
       for gcc:
@@ -351,7 +351,15 @@ Rootkit Programming
 
         fprintf(stderr, "hello c %s\n", "world");
         fprintf(stderr, "hello c \n");
-    ```
+      ```
+
+    - #define macro
+      ```c
+      /* ensures that the code acts like a statement (function call) http://stackoverflow.com/questions/1644868/c-define-macro-for-debug-printing*/
+      #define debug_print(fmt, ...) \
+            do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
+
+      ```
 
 # macros
   * # and ##

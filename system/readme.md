@@ -183,6 +183,7 @@ __os development__
                       - copy calling paramters -> callee new stack
                       - new CS and EIP from call gate to CS EIP register
                       - begin execution of called procedure at new privilege level
+
                     - return
                       - privilige check
                       - restore cs and eip for prior calling
@@ -190,6 +191,31 @@ __os development__
                       - restore ss,esp for prior calling --> switch back to prior call
                       - RET instruction has an optional n argument, increate sp to release caller's parameters
                       - resume excution of calling procedure                    
+
+                  - near call and ret
+                    - call
+                      - push eip
+                      - load called procedure to eip
+                      - begin excution called procedure
+
+                    - ret
+                      - pop top-of-stack -> eip
+                      - ret with a number n, increase sp to release parameters in the stack
+                      - resume excution of calling procedure
+
+                  - far call and ret
+                    - call
+                      - push CS 
+                      - push EIP
+                      - load segment selector of called procedure to CS
+                      - load offset of called procedure to EIP
+                      - begin execution called procedure
+                      
+                    - ret
+                      - pop top-of-stack -> eip
+                      - pop top-of-stack -> cs
+                      - if ret with a number n, increase sp to release parameters in stack
+                      - resume execution of calling procedure
                  
                 - no stack switch when handles trap or interrupt:
                   ```
