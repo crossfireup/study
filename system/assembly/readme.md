@@ -6,8 +6,20 @@
   http://beefchunk.com/documentation/sys-programming/bootstraps/PC_Bootstrap_Loader_Programming_Tutorial.html
 
 # linux
+  ```
   nasm -f elf hello.asm
+  as --32 test.s -o test.o
   ld -m efl_i386 -s hello.o -o hello
+  
+  c/c++ sources ----+          +<-----gcc---->-----------------------+     glibc
+                    |        +                +                        +    library(so, a)
+                    |      +                    +                        +   |
+                complier +                      as ----->                  ld
+                    |     +                    +         +                +  |
+                    |       +                +             +            +    |
+  headers from: ----+       assembler source                elf relocable     elf executable
+  glibc, linux, gcc
+  ```
 
 # basics
   * push 
