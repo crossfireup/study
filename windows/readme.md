@@ -590,10 +590,12 @@
     * regular cmd used to __debug process__
       ```
       k lm g
+      ```
 
     * mata or dot-commands __control the behavior of debugger__
-      
+      ```
       .sympath  .cls  .lastevent  .detach  .if
+      ```
   
     * extention cmd 
       - implemented as export functions in extension dlls
@@ -629,6 +631,19 @@
         - Display it: !teb, dt nt!_TEB
   
   * common usage
+    - module and sysmbols
+      ```
+      .reload /f
+      .reload /f /s ntdll
+
+      # ignore mismatch
+      .reload /f /s /i ntdll  
+
+      # force reload a module with pdb file
+      ld ntdll /f ntdll.pdb
+
+      .reload /u hal
+      ```
     - remote debugging through tcp
       - server:
         ```
@@ -843,6 +858,64 @@
     – !analyse -v : Display verbose information about the current exception or bug check.
     – !analyze -show BugCheckCode : Display information about BugCheckCode bug check code.
     - !analyze -v -hang
+
+  * module info
+    ```
+    lm 
+      start    end        module name
+      00f50000 00f9e000   create_file C (private pdb symbols)  d:\test\windows\create_file.pdb
+      755b0000 755f7000   KERNELBASE   (pdb symbols)          c:\windows\symbols\wkernelbase.pdb\E2ED940FA8B44386BECE7660544D12B31\wkernelbase.pdb
+      76460000 76570000   kernel32   (pdb symbols)          c:\windows\symbols\wkernel32.pdb\8637E33E087D453EA4D662D28322AF802\wkernel32.pdb
+      779e0000 77b60000   ntdll      (pdb symbols)          c:\windows\symbols\wntdll.pdb\611AE48A538F4C0B82726D75DE80A6A92\wntdll.pdb
+
+    !lmi create_file
+      Loaded Module Info: [create_file] 
+              Module: create_file
+        Base Address: 00f50000
+          Image Name: d:\test\windows\create_file.exe
+        Machine Type: 332 (I386)
+          Time Stamp: 58d37860 Thu Mar 23 00:25:20 2017
+                Size: 4e000
+            CheckSum: 0
+      Characteristics: 102  
+      Debug Data Dirs: Type  Size     VA  Pointer
+                  CODEVIEW    38, 465b0,   455b0 RSDS - GUID: {DD230232-B8FC-48F9-ABD3-496C2717E650}
+                    Age: 1, Pdb: d:\test\windows\create_file.pdb
+                        ??    14, 465e8,   455e8 [Data not mapped]
+          Image Type: FILE     - Image read successfully from debugger.
+                      d:\test\windows\create_file.exe
+          Symbol Type: PDB      - Symbols loaded successfully from image path.
+                      d:\test\windows\create_file.pdb
+            Compiler: C - front end [19.0 bld 24215] - back end [19.0 bld 24215]
+          Load Report: private symbols & lines, not source indexed 
+                      d:\test\windows\create_file.pdb
+
+    !dh -f create_file  # !dh -stat
+          File Type: EXECUTABLE IMAGE
+          FILE HEADER VALUES
+              14C machine (i386)
+                7 number of sections
+          58D37860 time date stamp Thu Mar 23 00:25:20 2017
+
+                0 file pointer to symbol table
+                0 number of symbols
+                E0 size of optional header
+              102 characteristics
+                      Executable
+                      32 bit word machine
+            ......
+          00f50000 image base
+              1000 section alignment
+              200 file alignment
+                3 subsystem (Windows CUI)
+              6.00 operating system version
+              0.00 image version
+              6.00 subsystem version
+            4E000 size of image
+              400 size of headers
+                0 checksum
+    ```
+      
 
   * debug info
     ```
@@ -1974,11 +2047,107 @@
       
     * conhost - console window host
 
+  - namespace
+    - NT namespaces: designed to be the lowest level namespace on which other subsystems and namespaces could exist
+      - Win32 subsystem, Win32 namespaces
+      - POSIX
+      - Early versions of Windows still supported in current versions of Windows for backward compatibility
+        - communications (serial and parallel) ports 
+        - the default display console 
+    - Win32 namespaces: 
+      ```
+       use with the Windows API functions, do not all work with Windows shell applications such as Windows Explorer
+       should use the "\\.\" prefix to access devices only and not files.
+       \ or root -->NT namespace begins
+          |
+          |_____"Global??" -->Win32 namespace
+          |
+          |_____"Device" --->Named device objects 
+      ```
+
+      - Win32 File Namespaces
+        - File I/O: the "\\?\" prefix to a path string 
+          - the Windows APIs disable all string parsing
+          - send the string that follows it straight to the file system
+
+        -  "\\?\" prefix also allows the use of ".." and "." in the path names as relative path specifiers 
+
+        -  not all file I/O APIs support "\\?\"
+      
+      - Win32 Device Namespaces: "\\.\" prefix
+        - access the Win32 device namespace instead of the Win32 file namespace, 
+
+        - access to physical disks and volumes directly, without going through the file system
+
+      - NT Namespaces
+        - winobjs: NT namespace beginning at the root, or "\". 
+
+        - To make these device objects accessible by Windows applications
+          -  the device drivers create a symbolic link (symlink) in the Win32 namespace("Global??")
+            ```
+            COM0 and COM1 under the "Global??" subdirectory are simply symlinks to Serial0 and Serial1
+            "C:" is a symlink to HarddiskVolume1, "Physicaldrive0" is a symlink to DR0
+            ```
+
+        - Without a symlink, a specified device can't be accessed by any Windows application using Win32 namespace convention
+          
+        - a handle could be opened to that device using any APIs that support the NT namespace absolute path of the format "\Device\Xxx".
+
+        - multi-user support via Terminal Services and virtual machines, virtualize the system-wide root device within the Win32 namespace
+          ```
+          \\?\GLOBALROOT
+           /-+
+             |
+             |___ Global?? +
+                           |
+                           |___ GLOBALROOT
+          ```
+
 
 # MS15-050
   - 
 
 # visual studio
+  - compile option
+    - /ENTRY:function
+      - mainCRTStartup (or wmainCRTStartup): 
+        - An application using /SUBSYSTEM: CONSOLE;
+        - calls main (or wmain)
+
+      - WinMainCRTStartup (or wWinMainCRTStartup): 
+        - An application using /SUBSYSTEM: WINDOWS; 
+        - calls WinMain (or wWinMain), which must be defined with __stdcall
+
+      - DllMainCRTStartup:
+        - A DLL 
+        - calls DllMain, which must be defined with __stdcall, if it exists
+
+      - usage
+        - C Run-Time Libraries (CRT)[https://msdn.microsoft.com/en-us/library/abx4dbyh.aspx]
+          - libucrt.lib	
+            - Statically links the UCRT into your code.
+            -	/MT	  # cl option
+            - _MT   # Preprocessor directives
+          - libucrtd.lib
+            - Debug version of the UCRT for static linking. Not redistributable.	
+            - /MTd	        
+            - _DEBUG, _MT   
+          - ucrt.lib
+            -	ucrtbase.dll	DLL import library for the UCRT.	
+            - /MD	
+            - _MT, _DLL
+          - ucrtd.lib	
+            - ucrtbased.dll	DLL import library for the Debug version of the UCRT. Not redistributable.	
+            - /MDd	
+            - _DEBUG, _MT, _DLL
+        ```
+        cl /c /D _X86_=1 /D i386=1 /D _WIN32_WINNT=0x0601 /D WINVER=0x0601 /D WINNT=1 /Od /MTd /Fo /Fa /EHsc /nologo create_file.c  
+
+        # link /VERBOSE[:{ICF|INCR|LIB|REF|SAFESEH|UNUSEDLIBS}]
+        link /Entry:mainCRTStartup create_file.obj libucrt.lib /OUT:create_file.exe /DEBUG /PDB:create_file.pdb /MACHINE:x86 /SUBSYSTEM:CONSOLE /NOLOGO /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed
+        /RELEASE (Set the Checksum)
+        ```
+
   - create project from sources
     // Disable warning messages 4507 and 4034.  
     #pragma warning( disable : 4507 34 )  
