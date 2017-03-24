@@ -71,6 +71,9 @@
 
         git filter-branch --index-filter 'git rm --cached --ignore-unmatch "system/c/docs/*.pdf" ' --force --prune-empty -- --all
 
+        #  force-push your local changes to overwrite your GitHub repository
+        git push --force --all
+
         # you can force all objects in your local repository to be dereferenced and garbage collected with the following commands 
         git for-each-ref --format='delete %(refname)' refs/original | git update-ref --stdin
         git reflog expire --expire=now --all

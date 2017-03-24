@@ -915,7 +915,6 @@
               400 size of headers
                 0 checksum
     ```
-      
 
   * debug info
     ```
@@ -925,6 +924,18 @@
     !ready
     # create dumpfile
     .crash
+    [Forcing a System Crash from the Keyboard](https://msdn.microsoft.com/en-us/library/windows/hardware/ff545499(v=vs.85).aspx)
+    https://channel9.msdn.com/Shows/Defrag-Tools/DefragTools-137-Debugging-kernel-mode-dumps
+    
+    PS/2 Keyboard
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters
+      DWORD CrashOnCtrlScroll 1
+
+    USB Keyboard
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdhid\Parameters
+      DWORD CrashOnCtrlScroll 1
+
+     Right Ctrl + Scroll Lock + Scroll Lock will generate a nice looking real blue screen. 
     ```
 
   * pde(Prototype Debugger Extension)
@@ -948,6 +959,58 @@
     pr            execute one source line, and toggle register display off
     p             execute one source line 
     ```
+
+  - system hanle
+    ```
+    .echocpunum  # enable cpu number show up
+    !cpuid
+    !cpuinfo
+    ~0s     #change to cpu0
+    !running it 
+    !analyze -v -hang
+    !locks
+    !qlocks
+
+    .process 0 0 
+    .process 0 0 sc.exe
+
+    !devnode 1 # lists all pending removals of device objects.
+    !devnode 2 # lists all pending ejects of device objects.
+
+    !devnod 0 1  # show entire device tree
+    ```
+
+  * Controlling the User-Mode Debugger from the Kernel Debugger
+    - redirect the input and output from a user-mode debugger to a kernel debugger
+
+    - start the debugging session 
+      - Start NTSD or CDB on the target computer as the user-mode debugger, with the -d command-line option. 
+        ```
+        ntsd -d [-y UserSymbolPath] -p PID
+
+        ntsd -d [-y UserSymbolPath] ApplicationName
+
+        If you are installing this as a postmortem debugger, you would use the following syntax.
+
+        ntsd -d [-y UserSymbolPath]
+        ```
+
+      - Start WinDbg or KD on the host computer as the kernel debugger
+        ```
+        windbg [-y KernelSymbolPath] [-k ConnectionOptions]
+        ```
+
+      - Switching Modes
+        ```                           g
+           User-mode debugging    ----------------->  target application execution
+                             +      !bpid 
+                  |           +                               |
+            .wake | .sleep      +   .breakin                  | Ctrl+C
+                  |               +----------->               |
+                  |                           ++++           \ /
+              Sleep mode ---------------------->    kernel-mode debugging
+              
+        ```
   
   * set remote debug using vmware
     1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
@@ -1725,6 +1788,15 @@
 
   - resmon
     cannot save file
+    Registry path
+    ```
+    # cpu high write thumbcache_xxx.db file
+    [HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Explorer]
+
+    "DisableThumbsDBOnNetworkFolders"
+    Type:REG_DWORD
+    Value:1
+    ```
 
   - WPA(windows performance analyzer)
     - windows performance recorder:
@@ -2148,6 +2220,23 @@
         /RELEASE (Set the Checksum)
         ```
 
+  - Format of a C decorated name
+    - A decorated name for a C++ function contains the following information:
+      - function name
+      - The class that the function is a member of
+      - The namespace the function belongs to, if it is part of a namespace.
+      - The types of the function parameters.
+      - The calling convention.
+      - The return type of the function.
+      ```
+      Calling convention |        	Decoration
+      ---------------- - | -----------------------
+          __cdecl	       |  Leading underscore (_)
+          __stdcall	     |  Leading underscore (_) and a trailing at sign (@) followed by the number of bytes in the parameter list in decimal
+          __fastcall	   |  Leading and trailing at signs (@) followed by a decimal number , the number of bytes in the parameter list
+          __vectorcall	 |  Two trailing at signs (@@) followed by a decimal number of bytes in the parameter list
+      ```
+
   - create project from sources
     // Disable warning messages 4507 and 4034.  
     #pragma warning( disable : 4507 34 )  
@@ -2477,6 +2566,29 @@
 
 
   - hook SSDT
+    - call procedure
+      ```                 ntdll
+      ReadFile()  ----> NtReadFile
+      kernel32.dll      KiFastSysytemCall                         ntoskrnl.exe
+                        SYSENTER  --------------------------> KiSystermService()
+                                             ntoskrnl.exe       SSDT
+                      ntfs.sys <----------->I/O manager  <--  NtReadFile() 
+                      disk.sys <----------->
+                        |
+                      disk
+
+      .foreach /ps 1 /pS 1 ( offset {dd /c 1 nt!KiServiceTable L poi(nt!KeServiceDescriptorTable+10)}){ .printf "%y\n", ( offset >>> 4) + nt!KiServiceTable }
+
+      dd SharedUserData!SystemCallStub
+      7ffe0300  772d64f0 772d64f4 00000000 00000000
+
+      uf 772d64f0 
+      ntdll!KiFastSystemCall:
+      772d64f0 8bd4            mov     edx,esp
+      772d64f2 0f34            sysenter
+      772d64f4 c3              ret
+      ```
+
     - disable write protect
       - CR0
         clear CR0.WP
