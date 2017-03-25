@@ -2532,6 +2532,14 @@
         - calls IoReleaseRemoveLockAndWait, it is ready to be removed and cannot perform I/O operations   
         - calls IoInitializeRemoveLock to re-initialize the remove lock
 
+    - [driver to driver communication](http://www.osronline.com/article.cfm?id=24)
+      - IoGetDeviceObjectPointer 
+
+      - IoRegisterPlugPlayNotification
+
+      - Callbacks
+        ExCreateCallback
+
     - driver files
       - %SystemRoot%\Driver Cache\i386\drivers.cab
       - %SystemRoot%\Driver Cache\i386\service_pack.cab

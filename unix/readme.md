@@ -656,6 +656,18 @@
     udp.port==67
     eth.addr == ff:ff:ff:ff:ff:ff
 
+  * ps
+    ```
+    %ni for priority upgrade nice
+    %st — Steal Time : CPU ‘stolen’ from this virtual machine by the hypervisor for other tasks
+    %hi — Hardware IRQ
+    %si — Software Interrupts
+    %us %sy for user time and system time
+    %id for idel
+
+    S – indicates the status of the process: S=sleep R=running Z=zombie (S)
+    ```
+
 
 
 # ubuntu 16.10 #
