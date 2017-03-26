@@ -441,20 +441,24 @@
       handle -c 180 -y -p 4820
       ```
 
-  * procexp
+  * [handle](https://forum.sysinternals.com/howto-enumerate-handles_topic18892.html)
     ```
-    # run as administrator
+    handle -p cmd
+    ```
+
+  * procexp
+    - run as administrator
       ```bat
       "C:\Program Files\SysInternals\procexp.exe" /e /t
       ```
 
-    # registry
+    - registry
       ```
       Windows Registry Editor Version 5.00
 
       [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe]
       "Debugger"="\"C:\\PROGRAM FILES\\SYSINTERNALS\\PROCEXP.EXE\" /e"
-      ```
+      ``
 
   - regjump
     ```
@@ -707,7 +711,12 @@
       ```
 
   * excpetions: sx
-    - excepion or event occurs
+    - [control excepion or event](https://msdn.microsoft.com/en-us/library/windows/hardware/ff539287(v=vs.85).aspx)
+      - Using the Debugger to Analyze an Exception
+        ```
+        gh (Go with Exception Handled)
+        gn (Go with Exception Not Handled) 
+        ```
 
     - breaking on module load
       ```
@@ -960,7 +969,7 @@
     p             execute one source line 
     ```
 
-  - system hanle
+  - system hang
     ```
     .echocpunum  # enable cpu number show up
     !cpuid
@@ -978,6 +987,11 @@
     !devnode 2 # lists all pending ejects of device objects.
 
     !devnod 0 1  # show entire device tree
+
+    !drvobj hookssdt 7
+    !devstack 
+    lmv m HookSSDT
+
     ```
 
   * Controlling the User-Mode Debugger from the Kernel Debugger
@@ -2328,7 +2342,9 @@
       trace flags
       ```
 
-    - WPP(windows software trace )
+    - WPP(windows software trace processor)[https://msdn.microsoft.com/en-us/windows/hardware/drivers/devtest/wpp-software-tracing]
+      - DoTraceMessage 
+        %!ntstatus! [https://msdn.microsoft.com/en-us/library/cc704588.aspx]
 
     - deploy driver
       - set test environment in vmware
@@ -2564,6 +2580,26 @@
         - object's reference count == 0, all I/O completes --> IO manager send close request to driver 
         
       - Unload
+
+    - get device object
+      - IoGetDeviceObjectPointer:
+        works by sending an IRP_MJ_CREATE.
+        ```
+        # when calling it Access vailation in RtlEqualUnicodeString
+
+
+      - [IoGetDeviceObjectByName](https://www.osronline.com/showthread.cfm?link=166794)
+        - undocumented
+          ```
+          extern POBJECT_TYPE* IoDriverObjectType; 
+
+          POBJECT_TYPE ObGetObjectType(PVOID Object); 
+          
+          POBJECT_TYPE TypeObjectType = ObGetObjectType(*IoDriverObjectType);
+
+          ObReferenceObjectByName("\ObjectTypes\TypeName", TypeObjectType, ...);
+          ```
+
 
     - [target application](https://msdn.microsoft.com/en-us/library/windows/desktop/dn481241(v=vs.85).aspx)
 
