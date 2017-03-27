@@ -2124,7 +2124,10 @@
           // CloseHandle(hFileMapping);
           // CloseHandle(hFile);
 
-      - 
+        - memory-mapped file
+          - mapped (i.e., not copied) into virtual memory such that it looks as though it has been loaded into memory
+          - not actually being copied into virtual memory
+          - a range of virtual memory addresses are simply marked off for use by the file.
 
 
 # windows internal
@@ -2232,6 +2235,9 @@
         # link /VERBOSE[:{ICF|INCR|LIB|REF|SAFESEH|UNUSEDLIBS}]
         link /Entry:mainCRTStartup create_file.obj libucrt.lib /OUT:create_file.exe /DEBUG /PDB:create_file.pdb /MACHINE:x86 /SUBSYSTEM:CONSOLE /NOLOGO /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed
         /RELEASE (Set the Checksum)
+
+        # get preprocess output
+        cl /EP struct_padding.c
         ```
 
   - Format of a C decorated name
@@ -2599,7 +2605,6 @@
 
           ObReferenceObjectByName("\ObjectTypes\TypeName", TypeObjectType, ...);
           ```
-
 
     - [target application](https://msdn.microsoft.com/en-us/library/windows/desktop/dn481241(v=vs.85).aspx)
 

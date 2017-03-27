@@ -73,44 +73,43 @@ Rootkit Programming
 
   * create steps:
     1. umask(0)
-    2. fork() exit father 
-    3. setsid() 
-       * be a session leader 
-       * leader in a new process group
-       * no control tty
 
-         [why fork twice](http://stackoverflow.com/questions/881388/what-is-the-reason-for-performing-a-double-fork-when-creating-a-daemon)
-         
-          Strictly speaking, the double-fork has nothing to do with re-parenting the daemon as a child of init. All that is necessary to re-parent the child is that the parent must exit.
-          This can be done with only a single fork. Also, doing a double-fork by itself doesn't re-parent the daemon process  to init; the daemon's parent must exit. 
-          In other words, the parent always exits when forking a proper daemon so that the daemon process is re-parented to init.
- 
-          So why the double fork? POSIX.1-2008 Sec. 11.2.3, "The Controlling Terminal", has the answer (emphasis added):
+    2. fork() exit father 
+      - reparent to be a child of init
+
+    3. setsid() 
+      * dissociate the daemon fro its controlling terminal
+      * be a session leader 
+        - the process can still reacquire a controlling terminal
+        - only session leader can allocate a control tty
+      * leader in a new process group
+
+    4. [2nd fork() exit father to ensure no controlling terminal](http://stackoverflow.com/questions/881388/what-is-the-reason-for-performing-a-double-fork-when-creating-a-daemon)
+        
+        - POSIX.1-2008 Sec. 11.2.3, "The Controlling Terminal", has the answer (emphasis added):
           ```
           The controlling terminal for a session is allocated by the session leader in an implementation-defined manner. If a session leader has no controlling terminal, and opens a terminal device file that is not already associated with a session without using the O_NOCTTY option (see open()),  it is implementation-defined whether the terminal becomes the controlling terminal of the session leader. If a process which is not a session leader opens a terminal file, or the O_NOCTTY option is used on open(), then that terminal shall not become the controlling terminal of the  calling process.
           ```
-          This tells us that if a daemon process does something like this ...
-
+        - for example:
           ```c
           int fd = open("/dev/console", O_RDWR);
           ```
-         ... then the daemon process might acquire /dev/console as its controlling terminal, depending on whether the daemon process is a session leader, and depending on the system implementation. The program can guarantee that the above call will not acquire a controlling terminal if the program  first ensures that it is not a session leader.
- 
-         Normally, when launching a daemon, setsid is called (from the child process after calling fork) to dissociate the daemon from its controlling terminal. However, calling setsid also means that the calling process will be the session leader of the new session, which leaves open the  possibility that the daemon could reacquire a controlling terminal. The double-fork technique ensures that the daemon process is not the session leader, which then guarantees that a call to open, as in the example above, will not result in the daemon process reacquiring a controlling  terminal.
- 
-         The double-fork technique is a bit paranoid. It may not be necessary if you know that the daemon will never open a terminal device file.
-          Also, on some systems it may not be necessary even if the daemon does open a terminal device file, since that behavior is implementation-defined. 
-          However,  one thing that is not implementation-defined is that only a session leader can allocate the controlling terminal. 
-          If a process isn't a session leader, it can't allocate a controlling terminal. Therefore, if you want to be paranoid and be certain that the daemon process cannot inadvertently  acquire a controlling terminal, regardless of any implementation-defined specifics, then the double-fork technique is essential.
+        - then the daemon process might acquire /dev/console as its controlling terminal, depending on whether the daemon process is a session leader, and depending on the system implementation. 
+
+        - The program can guarantee the above call will not acquire a controlling terminal if first ensures that it is not a session leader.
+
+        - The double-fork technique is a bit paranoid. It may not be necessary if you know that the daemon will never open a terminal device file.
+
+        - on some systems it may not be necessary even if the daemon does open a terminal device file, since that behavior is implementation-defined. 
+
+        - one thing that is not implementation-defined is that only a session leader can allocate the controlling terminal. 
         
-
-
     4. chdir("/") to root or where it works
+
     5. close unneccessary file description
+
     6. redirection stdin, stdout, stderr to /dev/null
 
-
-    
   * ERROR CODE TABLE
 
     /usr/include/asm/errno.h
@@ -227,24 +226,24 @@ Rootkit Programming
     
     RESTRICTED DELETION FLAG OR STICKY BIT: 
 
-       The  restricted deletion flag or sticky bit is a single bit, whose interpretation depends on the file type.  
-       
-       * For directories, it prevents unprivileged users from removing or renaming a file in the directory  unless  they  own
-       the  file or the directory; this is called the restricted deletion flag for the directory, and is commonly found
-       on world-writable directories like /tmp. 
-       * For regular files on some older systems, the bit saves  the  program’s
-       text image on the swap device so it will load more quickly when run; this is called the sticky bit.
+    The  restricted deletion flag or sticky bit is a single bit, whose interpretation depends on the file type.  
     
-      buffer:
-        stderr not full buffered
-        stdout, stdin is full buffered when not directed to interactive device
-        setvbuf(stdout, NULL, _IONBF, 0)
-        ioctl
+    * For directories, it prevents unprivileged users from removing or renaming a file in the directory  unless  they  own
+    the  file or the directory; this is called the restricted deletion flag for the directory, and is commonly found
+    on world-writable directories like /tmp. 
+    * For regular files on some older systems, the bit saves  the  program’s
+    text image on the swap device so it will load more quickly when run; this is called the sticky bit.
+    
+    buffer:
+      stderr not full buffered
+      stdout, stdin is full buffered when not directed to interactive device
+      setvbuf(stdout, NULL, _IONBF, 0)
+      ioctl
 
-      * open 
-        1. file access flags: O_RDWR, O_RDONLY, O_WRONLY
-        2. file create flags: O_CREAT, o_TRUNC, O_DIRECTORY,O_DIRECT
-        3. file status flags: O_ASYNC, O_NONBLOCK, OAPPEND
+  * open 
+    1. file access flags: O_RDWR, O_RDONLY, O_WRONLY
+    2. file create flags: O_CREAT, o_TRUNC, O_DIRECTORY,O_DIRECT
+    3. file status flags: O_ASYNC, O_NONBLOCK, OAPPEND
 
 # buffer overflow
     * Make sure that the memory auditing is done properly in the program using utilities like valgrind memcheck
@@ -252,7 +251,6 @@ Rootkit Programming
     * Use strncmp() instead of strcmp(), strncpy() instead of strcpy() and so on.
 
 # socket
-
   * ruptime
     1. add service config
       vi /etc/services
@@ -371,6 +369,25 @@ Rootkit Programming
       int token9 = 9;  
       paster( 9 );   --> printf_s( "token" "9" " = %d", token9 );   --> printf_s( "token9 = %d", token9 );  
 
+# structure
+  - padding
+    ```
+    # pseudo-code, see actual code below
+    padding = (align - (offset mod align)) mod align
+    new offset = offset + padding = offset + (align - (offset mod align)) mod align      
 
+    # c code
+    padding = (align - (offset & (align - 1))) & (align - 1) = (-offset) & (align - 1)
+    new_offset = (offset + alian - 1) & ~(align -1)
 
-      
+    struct MixedData  /* After compilation in 32-bit x86 machine */
+    {
+        char Data1; /* 1 byte */
+        char Padding1[1]; /* 1 byte for the following 'short' to be aligned on a 2 byte boundary
+    assuming that the address where structure begins is an even number */
+        short Data2; /* 2 bytes */
+        int Data3;  /* 4 bytes - largest structure member */
+        char Data4; /* 1 byte */
+        char Padding2[3]; /* 3 bytes to make total size of the structure 12 bytes */
+    };
+    ```
