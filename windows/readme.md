@@ -591,6 +591,12 @@
           can't lauch the break-in thread neccessary for a true attach
   
   * dbg command
+    * .dbgdbg
+      ```
+      ctrl+alt + v # verbose
+      .dbgdbg   # debug windbg
+      ```
+      
     * regular cmd used to __debug process__
       ```
       k lm g
@@ -2351,6 +2357,45 @@
     - WPP(windows software trace processor)[https://msdn.microsoft.com/en-us/windows/hardware/drivers/devtest/wpp-software-tracing]
       - DoTraceMessage 
         %!ntstatus! [https://msdn.microsoft.com/en-us/library/cc704588.aspx]
+
+    - test
+      - verifier
+        ```
+        bit 0  - special pool checking
+        bit 1  - force irql checking
+        bit 2  - low resources simulation
+        bit 3  - pool tracking
+        bit 4  - I/O verification
+        bit 5  - deadlock detection
+        bit 6  - unused
+        bit 7  - DMA verification
+        bit 8  - security checks
+        bit 9  - force pending I/O requests
+        bit 10 - IRP logging
+        bit 11 - miscellaneous checks
+
+        verifier /standard /driver HookSSDT.sys
+        verifier /flags FF /driver HookSSDT.sys
+
+        # Start or Stop the Verification of a Driver without Rebooting
+        verifier /volatile /adddriver DriverName.sys
+        verifier /volatile /removedriver DriverName.sys
+
+        # Activate or Deactivate Options without Rebooting
+        verifier /valotile /flags 0x02
+
+        # Deactivate All Driver Verifier Options
+        verifier /valotile /flags 0x0
+
+        # Deactivate Driver Verifier, after next reboot
+        verifier /reset         
+
+       ```
+
+      - windbg
+        ```
+        !verifier 
+        ```
 
     - deploy driver
       - set test environment in vmware

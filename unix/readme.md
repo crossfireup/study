@@ -266,7 +266,10 @@
       nnoremap gb :buffers<CR>:sb<Space>
 
 
-      " VIM Configuration File
+      highlight nonascii guibg=Red ctermbg=1 term=standout
+      au BufReadPost * syntax match nonascii "[^\u0000-\u007F]"
+
+    " VIM Configuration File
     " Description: Optimized for C/C++ development, but useful also for other things.
     " Author: Gerhard Gappmeier
     "
@@ -533,11 +536,17 @@
       !  Insert and command-line mode map. Defined using 'map!' or
           'noremap!'.
     * show tab whitespace
+      ```
       :set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
       :set list
 
       autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
 
+      cat -vE file # -v show-nonprinting -E show-end -e=-vE
+
+      highlight nonascii guibg=Red ctermbg=1 term=standout
+      au BufReadPost * syntax match nonascii "[^\u0000-\u007F]"
+      ```
     * file name  
     ```
     :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
@@ -650,7 +659,7 @@
 
     prepend domain-name-servers 12.34.56.78, 12.34.56.79;
 
-  * wiresharek
+  * wireshark
     bootp:
       bootp.dhcp 
     udp.port==67
