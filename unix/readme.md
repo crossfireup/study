@@ -115,73 +115,76 @@
       tcpdump -lnni any 'udp port 180' -s0 -w - | strings
       ```      
 
-* bash shortcut
-  * Moving the cursor:
-
-    Ctrl + a   Go to the beginning of the line (Home)
-    Ctrl + e   Go to the End of the line (End)
-    Ctrl + p   Previous command (Up arrow)
-    Ctrl + n   Next command (Down arrow)
-    Alt + b   Back (left) one word
-    Alt + f   Forward (right) one word
-    Ctrl + f   Forward one character
-    Ctrl + b   Backward one character
-    Ctrl + xx  Toggle between the start of line and current cursor position
+* bash 
+  - shortcut
+    * Moving the cursor:
+      ```
+      Ctrl + a   Go to the beginning of the line (Home)
+      Ctrl + e   Go to the End of the line (End)
+      Ctrl + p   Previous command (Up arrow)
+      Ctrl + n   Next command (Down arrow)
+      Alt + b   Back (left) one word
+      Alt + f   Forward (right) one word
+      Ctrl + f   Forward one character
+      Ctrl + b   Backward one character
+      Ctrl + xx  Toggle between the start of line and current cursor position
+      ```
 
   * Editing:
+    ```
+    Ctrl + L   Clear the Screen, similar to the clear command
 
-  Ctrl + L   Clear the Screen, similar to the clear command
+      Alt + Del Delete the Word before the cursor.
+      Alt + d   Delete the Word after the cursor.
+    Ctrl + d   Delete character under the cursor
+    Ctrl + h   Delete character before the cursor (Backspace)
 
-    Alt + Del Delete the Word before the cursor.
-    Alt + d   Delete the Word after the cursor.
-  Ctrl + d   Delete character under the cursor
-  Ctrl + h   Delete character before the cursor (Backspace)
+    Ctrl + w   Cut the Word before the cursor to the clipboard.
+    Ctrl + k   Cut the Line after the cursor to the clipboard.
+    Ctrl + u   Cut/delete the Line before the cursor to the clipboard.
 
-  Ctrl + w   Cut the Word before the cursor to the clipboard.
-  Ctrl + k   Cut the Line after the cursor to the clipboard.
-  Ctrl + u   Cut/delete the Line before the cursor to the clipboard.
+      Alt + t   Swap current word with previous
+    Ctrl + t   Swap the last two characters before the cursor (typo).
+    Esc  + t   Swap the last two words before the cursor.
 
-    Alt + t   Swap current word with previous
-  Ctrl + t   Swap the last two characters before the cursor (typo).
-  Esc  + t   Swap the last two words before the cursor.
-
-  ctrl + y   Paste the last thing to be cut (yank)
-    Alt + u   UPPER capitalize every character from the cursor to the end of the current word.
-    Alt + l   Lower the case of every character from the cursor to the end of the current word.
-    Alt + c   Capitalize the character under the cursor and move to the end of the word.
-    Alt + r   Cancel the changes and put back the line as it was in the history (revert).
-  ctrl + _   Undo
+    ctrl + y   Paste the last thing to be cut (yank)
+      Alt + u   UPPER capitalize every character from the cursor to the end of the current word.
+      Alt + l   Lower the case of every character from the cursor to the end of the current word.
+      Alt + c   Capitalize the character under the cursor and move to the end of the word.
+      Alt + r   Cancel the changes and put back the line as it was in the history (revert).
+    ctrl + _   Undo
+    ```
   
   * TAB        Tab completion for file/directory names
-
       For example, to move to a directory 'sample1'; Type cd sam ; then press TAB and ENTER.
       type just enough characters to uniquely identify the directory you wish to open.
 
   * Special keys: Tab, Backspace, Enter, Esc
+    ```
+    Text Terminals send characters (bytes), not key strokes.
+    Special keys such as Tab, Backspace, Enter and Esc are encoded as control characters.
+    Control characters are not printable, they display in the terminal as ^ and are intended to have an effect on applications.
 
-      Text Terminals send characters (bytes), not key strokes.
-      Special keys such as Tab, Backspace, Enter and Esc are encoded as control characters.
-      Control characters are not printable, they display in the terminal as ^ and are intended to have an effect on applications.
+    Ctrl+I = Tab
+    Ctrl+J = Newline
+    Ctrl+M = Enter
+    Ctrl+[ = Escape
 
-      Ctrl+I = Tab
-      Ctrl+J = Newline
-      Ctrl+M = Enter
-      Ctrl+[ = Escape
+    Many terminals will also send control characters for keys in the digit row:
+    Ctrl+2 → ^@
+    Ctrl+3 → ^[ Escape
+    Ctrl+4 → ^\
+    Ctrl+5 → ^]
+    Ctrl+6 → ^^
+    Ctrl+7 → ^_ Undo
+    Ctrl+8 → ^? Backward-delete-char
 
-      Many terminals will also send control characters for keys in the digit row:
-      Ctrl+2 → ^@
-      Ctrl+3 → ^[ Escape
-      Ctrl+4 → ^\
-      Ctrl+5 → ^]
-      Ctrl+6 → ^^
-      Ctrl+7 → ^_ Undo
-      Ctrl+8 → ^? Backward-delete-char
-
-      Ctrl+v tells the terminal to not interpret the following character, so Ctrl+v Ctrl-I will display a tab character,
-      similarly Ctrl+v ENTER will display the escape sequence for the Enter key: ^M
+    Ctrl+v tells the terminal to not interpret the following character, so Ctrl+v Ctrl-I will display a tab character,
+    similarly Ctrl+v ENTER will display the escape sequence for the Enter key: ^M
+    ```
 
   * History:
-
+    ```
     Ctrl + r   Recall the last command including the specified character(s)
               searches the command history as you type.
               Equivalent to : vim ~/.bash_history. 
@@ -199,31 +202,50 @@
     ALT + .   Last argument of previous command
           !*   All arguments of previous command
     ^abc­^­def   Run previous command, replacing abc with def
+    ```
 
   * Process control:
-
-  Ctrl + C   Interrupt/Kill whatever you are running (SIGINT)
-  Ctrl + l   Clear the screen
-  Ctrl + s   Stop output to the screen (for long running verbose commands)
-              Then use PgUp/PgDn for navigation
-  Ctrl + q   Allow output to the screen (if previously stopped using command above)
-  Ctrl + D   Send an EOF marker, unless disabled by an option, this will close the current shell (EXIT)
-  Ctrl + Z   Send the signal SIGTSTP to the current task, which suspends it.
-              To return to it later enter fg 'process name' (foreground).
+    ```
+    Ctrl + C   Interrupt/Kill whatever you are running (SIGINT)
+    Ctrl + l   Clear the screen
+    Ctrl + s   Stop output to the screen (for long running verbose commands)
+                Then use PgUp/PgDn for navigation
+    Ctrl + q   Allow output to the screen (if previously stopped using command above)
+    Ctrl + D   Send an EOF marker, unless disabled by an option, this will close the current shell (EXIT)
+    Ctrl + Z   Send the signal SIGTSTP to the current task, which suspends it.
+                To return to it later enter fg 'process name' (foreground).
+    ```
 
   * Emacs mode vs Vi Mode
+    ```
+    All the above assume that bash is running in the default Emacs setting, if you prefer this can be switched to Vi shortcuts instead.
 
-      All the above assume that bash is running in the default Emacs setting, if you prefer this can be switched to Vi shortcuts instead.
+    Set Vi Mode in bash:
 
-      Set Vi Mode in bash:
+    $ set -o vi 
 
-      $ set -o vi 
+    Set Emacs Mode in bash:
 
-      Set Emacs Mode in bash:
+    $ set -o emacs 
+    ```
 
-      $ set -o emacs 
+  - Substring Replacement
+    ```
+    # removal
+    ${string#substring}: Deletes shortest match of $substring from front of $string.
+    ${string##substring}: Deletes longest match of $substring from front of $string.
+
+    ${string%substring}: Deletes shortest match of $substring from back of $string.
+    ${string%%substring}: Deletes longest match of $substring from back of $string.
 
 
+    # replacement
+    ${string/substring/replacement} : Replace first match of $substring with $replacement
+    ${string//substring/replacement}: Replace all matches of $substring with $replacement
+
+    ${string/#substring/replacement}: If $substring matches front end of $string, substitute $replacement for $substring.
+    ${string/%substring/replacement}: If $substring matches back end of $string, substitute $replacement for $substring.
+    ```
 
 * vim 
   - configure
@@ -728,6 +750,11 @@
     ```
     echo | gcc -E -xc -include 'stddef.h' - | grep size_t
     typedef long unsigned int size_t;
+
+    # compile without stdlib, frame protector and frame pointer 
+    CFLAGS = -ffreestanding -O2 -m32 -g -Wall -Wextra -nostdinc -fno-builtin -fno-stack-protector -fomit-frame-pointer
+
+    LDFLAGS = -Ttext 0x1000 --oformat binary -m elf_i386 -nostdlib
     ```
 
 * core dump

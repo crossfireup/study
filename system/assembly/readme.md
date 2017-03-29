@@ -356,6 +356,12 @@
       %deftok test ’TEST’
       %define test TEST
       ```
+
+    * usage
+      ```
+      # with debug info
+      nasm -f elf -F dwarf print.asm -o read
+      ```
       
 * nop operations[http://computer-programming-forum.com/46-asm/218312f780fb733f.htm]
   ```
@@ -371,9 +377,6 @@
 
   The one byte NOP, xchg EAX,EAX, has special hardware support.
   ```
-
-
-
 
 * c/c++ disassemble
   * set developing env

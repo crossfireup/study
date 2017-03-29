@@ -87,6 +87,24 @@
       !*/docs/test/*
       ```
 
+    - push error
+      ```
+      vim .git/config
+      url=https://github.com/xxx ---> url=ssh://git@github.com/xxx
+
+      git remote set-url origin ssh://git@github.com/user/repo.git
+
+      git config --global user.name xxxx
+      git config --global user.email xxx
+      git push origin master
+      ```
+
+    - submodules
+      ```
+      git submodule add <url>
+      git diff --cached --submodule
+      ```
+
 4. ocr tools for linux 
   - sites
     https://tools.ietf.org/inventory/author-tools.shtml

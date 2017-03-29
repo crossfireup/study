@@ -48,14 +48,24 @@ __os development__
   * read disk
     https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH.3D02h:_Read_Sectors_From_Driv
     * kernel entry
+      ```
         gcc -ffreestanding -m32 -c kernel.c -o kernel.o
         nasm -f elf kernel_entry.s -o kernel_entry.o
         ld -Ttext 0x1000 --oformat binary kernel_entry.o kernel.o -o kernel.bin -m elf_i386
+        $(LD) $(LDFLAGS) -T kernel.ld $^ -o $@
+      ```
 
     * CHS 24-bit
       * 10 bits for the cylinder number, or a total of 1,024 cylinders.
       * 8 bits for the head number, or a total of 256 heads.
       * 6 bits for the sector number, or a total of 63 sectors
+
+    * error
+      ```
+      # when change code layout, something strang happen, I use gdb to debug, found out that the instruction 
+      # in binary file differs from the command in asm file, always add [bits 16/32]in your asm file to make
+      # sure they are compiled the rigth way
+      ```
 
   * screen 
     framebuffer at address 0xB8000 is just an array of 16-bit words, each 16-bit value representing the display of one character.
