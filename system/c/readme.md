@@ -391,3 +391,59 @@ Rootkit Programming
         char Padding2[3]; /* 3 bytes to make total size of the structure 12 bytes */
     };
     ```
+
+# grammar
+  - switch case
+    ```c
+    switch (val)  
+    {  
+    case VAL:             /* <- C error is here */
+      int newVal = 42;  
+      break;
+    case ANOTHER_VAL:     /* <- C++ error is here */
+      ...
+      break;
+    }
+    /* Adding an extra {} block fixes both C++ and C problems */
+    {
+      int newVal = 42;  
+      break;
+    }
+    ```
+    - Jumps that bypass initialization are illegal in C++. 
+      - case ANOTHER_VAL: label jumps into the scope of variable newVal bypassing its initialization. 
+      - labeled-declaration is allowed but labeled -initialization is not allowed.
+      ```c
+      /* remove the initializer from variable declaration  */
+      switch (val)  
+      {  
+      case VAL: 
+        int newVal;
+        newVal = 42;  
+        break;
+      case ANOTHER_VAL:     /* Now it works in C++! */
+        ...
+        break;
+      }
+      ```
+    - In C language declarations are not statements. They cannot be labeled. 
+      ```c
+      /*
+      *  In C, according to the specification,
+      *  §6.8.1 Labeled Statements:
+      *  labeled-statement:
+      *      identifier : statement
+      *      case constant-expression : statement
+      *    default : statement
+      */ 
+      /* Just add an empty statement after the case VAL: label and the code will become valid */
+      switch (val)  
+      {  
+      case VAL:;            /* Now it works in C! */
+        int newVal = 42;  
+        break;
+      case ANOTHER_VAL:  
+        ...
+        break;
+      }
+      ```

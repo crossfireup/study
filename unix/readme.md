@@ -570,15 +570,15 @@
       au BufReadPost * syntax match nonascii "[^\u0000-\u007F]"
       ```
     * file name  
-    ```
-    :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
-    :echo expand('%:t') 	my.txt 	name of file ('tail')
-    :echo expand('%:p') 	/abc/def/my.txt 	full path
-    :echo expand('%:p:h') 	/abc/def 	directory containing file ('head')
-    :echo expand('%:p:h:t') 	def 	First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
-    :echo expand('%:r') 	my 	name of file less one extension ('root')
-    :echo expand('%:e') 	txt 	name of file's extension ('extension') 
-    ```
+      ```
+      :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
+      :echo expand('%:t') 	my.txt 	name of file ('tail')
+      :echo expand('%:p') 	/abc/def/my.txt 	full path
+      :echo expand('%:p:h') 	/abc/def 	directory containing file ('head')
+      :echo expand('%:p:h:t') 	def 	First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
+      :echo expand('%:r') 	my 	name of file less one extension ('root')
+      :echo expand('%:e') 	txt 	name of file's extension ('extension') 
+      ```
 
     * mark
       ```
@@ -630,6 +630,18 @@
       # delete the black hole register 
       "_d
       "_x
+      ```
+
+    - syntax
+      ```
+      ctrl N
+
+      filetype plugin on
+      au FileType php setl ofu=phpcomplete#CompletePHP
+      au FileType ruby,eruby setl ofu=rubycomplete#Complete
+      au FileType html,xhtml setl ofu=htmlcomplete#CompleteTags
+      au FileType c setl ofu=ccomplete#CompleteCpp
+      au FileType css setl ofu=csscomplete#CompleteCSS
       ```
 
 * linux
@@ -1026,7 +1038,7 @@
 
     tmux -S /tmp/tmux/msf4 attach
     ```
-Sender MAC address: Shenzhen_57:69:e7 (dc:9c:9f:57:69:e7)
+
   * window
     ```
     tmux new -n <window-name>
@@ -1043,11 +1055,12 @@ Sender MAC address: Shenzhen_57:69:e7 (dc:9c:9f:57:69:e7)
   * panel
     ```
     list panel nmuber: prefix q
-    vsplit）：prefix %
-    hsplit：prefix "
+    vsplit: prefix %
+    hsplit: prefix "
     switch: prefix o
     array : prefix <left/rigth arrow>
     layout: prefix space 
+    exit:   prefix D
     ```text
     水平平分（even-horizontal）
     垂直平分（even-vertical）
@@ -1055,6 +1068,18 @@ Sender MAC address: Shenzhen_57:69:e7 (dc:9c:9f:57:69:e7)
     主窗格最大化，其他窗格垂直平分（main-vertical）
     平铺，窗格均等分（tiled）
     ```
+    ```
+
+  * [more usage](https://mutelight.org/practical-tmux)
+    ```
+    scroll
+    set -g mouse on
+
+    (tmux version 2.1 and up) or
+
+    set -g mode-mouse on
+
+    tmux kill-server && tmux
     ```
 
 # makefile

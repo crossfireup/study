@@ -275,6 +275,31 @@
       gcc -masm=intel intel_syntax.c
       ```
 
+  - string instructions;
+    instructions permit large data structures, such as alphanumeric character strings, to be moved and examined in memory. 
+    - MOVS (Move String)
+      ```
+      cld / std
+      DS:ESI  <---> ES:EDI
+      ```
+    - CMPS (Compare string)
+      ```
+      cld / std
+      [DS:SI] or [DS:ESI] <----> [ES:DI] or [ES:EDI]
+      inc/dec si,di
+       sets the flags accordingly. 
+      ```
+    - SCAS (Scan string): 
+      - subtracts the destination string from the EAX, AX, or AL register (depending on operand length) 
+      - updates the status flags according to the results
+    - LODS (Load string):
+      ```
+      ESI -------> EAX, AX, AL
+      ```
+    - STOS (Store string) 
+      ```
+      EAX, AX, AL ------> EDI
+      ```
 # [as](https://sourceware.org/binutils/docs/as/)
   - concepts
     - CFI and CFA

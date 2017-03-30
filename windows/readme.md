@@ -2135,6 +2135,21 @@
           - not actually being copied into virtual memory
           - a range of virtual memory addresses are simply marked off for use by the file.
 
+  - user-mode
+    - UI
+      - [dialogbox](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644995(v=vs.85).aspx)
+        - WM_INITDIALOG
+        - WM_COMMAND
+        - WM_PARENTNOTIFY
+        - Control-Color
+          ```
+          WM_CTLCOLORBTN
+          WM_CTLCOLORDLG
+          WM_CTLCOLOREDIT
+          WM_CTLCOLORLISTBOX
+          WM_CTLCOLORSCROLLBAR
+          WM_CTLCOLORSTATIC
+          ```
 
 # windows internal
   1. subsystem
