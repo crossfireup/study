@@ -644,6 +644,36 @@
       au FileType css setl ofu=csscomplete#CompleteCSS
       ```
 
+    - plugin
+      [YouCompleteMe](https://github.com/Valloric/YouCompleteMe)
+      [vundle](https://github.com/VundleVim/Vundle.vim#about)
+      ```
+      git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+      # vim /etc/vim/vimrc
+      set nocompatible              " be iMproved, required
+      filetype off                  " required
+
+      set rtp+=~/.vim/bundle/Vundle.vim
+      call vundle#begin()
+
+      " let Vundle manage Vundle, required
+      Plugin 'VundleVim/Vundle.vim'
+
+      Plugin 'https://github.com/Valloric/YouCompleteMe.git'
+
+      call vundle#end()            " required
+      filetype plugin indent on    " required
+
+      # install tools
+      sudo apt-get install build-essential cmake
+      sudo apt-get install python-dev python3-dev
+
+      # Compiling YCM with semantic support for C-family languages:
+      cd ~/.vim/bundle/YouCompleteMe
+      ./install.py --clang-completer
+      ```
+
 * linux
   * runlevel
 
@@ -1080,6 +1110,15 @@
     set -g mode-mouse on
 
     tmux kill-server && tmux
+
+    # copy and paste using putty
+    tmux config: setw -g mode-mouse on
+
+    # copy from tmux to system clipboard:
+      SHIFT select the text by mouse, then click left-button of mouse.
+
+    # paste some text into tmux:
+      press SHIFT and click right-button of mouse.
     ```
 
 # makefile

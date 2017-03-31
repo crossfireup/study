@@ -137,31 +137,63 @@ Rootkit Programming
     3. The ldconfig manpage recommends explicitly linking against libc, which has been done above using the -l option (-lc).
 
     * preprocess
+      ```
       gcc -E hello.c -o hello.i
+      ```
     * compile
+      ```
       gcc -S hello.i -o hello.s
 
       /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/cc1 open.c
-
+      ```
     * assembly
+      ```
       as hello.s -o hello.o
       gcc -c hello.s -o hello.o
 
       nm -Ca  # list all function in lib so
+      ```
 
-    * ld 
-      make sure libmylib.so exist, if not, make a link to mylib.so.xx.xx.xx
-      ld find error ways:
-      1. LD_DEBUG=all make 
-      2. ld -lmylib --verbose or -Wl,--verbose or -Xlinker --verbose to gcc for passing parameters to ld
-    
+    * use library
+      ```
+      gcc -I/usr/local/lib strnlen_test.c -l:libcmockery.a - strnlen_test
+
+      # -l expand cmockery to libcmockery
+      gcc /local/lib strnlen_test.c -lcmockery - strnlen_test
+
+      gcc program.o -llib1 -Wl,-Bstatic -llib2 -Wl,-Bdynamic -llib3
+
+      #define asmlinkage extern "c"
+      ```
+
+    * ld : make sure libmylib.so exist, if not, make a link to mylib.so.xx.xx.xx
+      - ld find error ways:
+        1. LD_DEBUG=all make 
+        2. ld -lmylib --verbose or -Wl,--verbose or -Xlinker --verbose to gcc for passing parameters to ld
+
+      - error in file order:
+        - object files and libraries in the order that they depend on each other - as a consequential rule of thumb
+        - put the library AFTER the module you are compiling.
+
+      - link against installed libraries in a given directory, LIBDIR,
+        - use libtool, and specify the full pathname of the library
+
+        - use the `-LLIBDIR' flag during linking and do at least one of the following:
+          - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
+            during execution
+          - add LIBDIR to the `LD_RUN_PATH' environment variable
+            during linking
+          - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
+          - have your system administrator add LIBDIR to `/etc/ld.so.conf'
+          - ld(1) and ld.so(8) manual pages.
+
     * [create tiny size](http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html)
       [libc free](https://blogs.oracle.com/ksplice/entry/hello_from_a_libc_free)
-
+      ```
       gcc -Wall -s -nostdlib tiny.o
 
       gcc -fno-builtin/-fno-builtin-function
-
+      ```
     * The compiler option -D can be used to define the macro MY_MACRO from command line.
 
     * inline

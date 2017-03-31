@@ -174,35 +174,68 @@
     extended asm statements must be inside a function, Only basic asm may be outside functions
     The asm keyword is a GNU extension. When writing code that can be compiled with ‘-ansi’ and the various ‘-std’ options, use __asm__ instead of asm
 
-    Simple Constraints:
-    * ‘g’ Any register, memory or immediate integer operand is allowed, except for registers that are not general registers.
-    * ‘r’ A register operand is allowed provided that it is in a general register.
-        a	%eax
-        b 	%ebx
-        c 	%ecx
-        d 	%edx
-        S	%esi
-        D	%edi
-    * ‘m’ A memory operand is allowed, with any kind of address that the machine supports in general.
-    * ‘o’ A memory operand is allowed, but only if the address is offsettable. 
-    * ‘p’ An operand that is a valid memory address is allowed
-    * ‘i’ An immediate integer operand (one with constant value) is allowed including symbolic constants 
-          whose values will be known only at assembly time or later
+    - Simple Constraints:
+      * ‘g’ Any register, memory or immediate integer operand is allowed, except for registers that are not general registers.
+      * ‘r’ A register operand is allowed provided that it is in a general register.
+        ```
+          a	%eax
+          b 	%ebx
+          c 	%ecx
+          d 	%edx
+          S	%esi
+          D	%edi
+        ```
+      * ‘m’ A memory operand is allowed, with any kind of address that the machine supports in general.
+      * ‘o’ A memory operand is allowed, but only if the address is offsettable. 
+      * ‘p’ An operand that is a valid memory address is allowed
+      * ‘i’ An immediate integer operand (one with constant value) is allowed including symbolic constants 
+            whose values will be known only at assembly time or later
 
-    Constraint Modifier Characters:
-        When the compiler fixes up the operands to satisfy the constraints, it needs to
-        know which operands are read by the instruction and which are written by it.
-        1.‘=’ identifies an operand which is only written; 
-        2. ‘+’ identifies an operand that is both read and written; 
-        3. all other operands are assumed to only be read.
-    * '=' Means that this operand is written to by this instruction: the previous value is discarded and replaced by new data.
-    * '+' Means that this operand is both read and written by the instruction.
-    * '&' Means (in a particular alternative) that this operand is an earlyclobber operand, which is written before the instruction 
-        is finished using the input operands.Therefore, this operand may not lie in a register that is read by the instruction or 
-        as part of any memory address.
-    * '%' Declares the instruction to be commutative for this operand and the following operand. This means that the compiler
-        may interchange the two operands if that is the cheapest way to make all operands fit the constraints. ‘%’ applies to
-        all alternatives and must appear as the first character in the constraint. Only read-only operands can use ‘%’.
+   - Constraint Modifier Characters:
+     When the compiler fixes up the operands to satisfy the constraints, it needs to know which operands are read by the instruction and which are written by it.
+     1.‘=’ identifies an operand which is only written; 
+     2. ‘+’ identifies an operand that is both read and written; 
+     3. all other operands are assumed to only be read.
+       * '=' Means that this operand is written to by this instruction: the previous value is discarded and replaced by new data.
+       * '+' Means that this operand is both read and written by the instruction.
+       * '&' Means (in a particular alternative) that this operand is an earlyclobber operand, which is written before the instruction is finished using the input operands.Therefore, this operand may not lie in a register that is read by the instruction or as part of any memory address.
+       * '%' Declares the instruction to be commutative for this operand and the following operand. This means that the compiler
+          may interchange the two operands if that is the cheapest way to make all operands fit the constraints. ‘%’ applies to
+          all alternatives and must appear as the first character in the constraint. Only read-only operands can use ‘%’.
+
+    - [Matching(Digit) constraints](https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html)
+      - a single variable may serve as both the input and the output operand
+        ```C
+        /* the register %eax is used as both the input and the output variable
+         * var input is read to %eax and updated %eax is stored in var again after increment. 
+         * "0" here specifies the same constraint as the 0th output variable. 
+         */
+        asm ("incl %0" 
+          :"=&a"(var)
+          :"0"(var)
+          );
+        asm volatile(
+            "movsl"
+            : "=&D"(edi), "=&S"(esi)
+            : ""(edi), "1"(esi)
+            : "memory");
+        ```   
+
+  - Specifying Registers for Local Variables
+    - register int *foo asm ("r12");
+      ```
+      int t1 = ...;
+      register int *p1 asm ("r0") = ...;
+      register int *p2 asm ("r1") = t1;
+      register int *result asm ("r0");
+      asm ("sysint" : "=r" (result) : "0" (p1), "r" (p2));
+      ```
+
+  - omit frame pointer
+    ```
+    -fomit-frame-pointer
+    Don't keep the frame pointer in a register for functions that don't need one. This avoids the instructions to save, set up and restore frame pointers; it also makes an extra register available in many functions. It also makes debugging impossible on some machines.
+    ```
 
 * exceptions and interrupts 
   The difference between interrupts and exceptions is that interrupts are used to
@@ -292,6 +325,12 @@
     - SCAS (Scan string): 
       - subtracts the destination string from the EAX, AX, or AL register (depending on operand length) 
       - updates the status flags according to the results
+      ```
+      Error: no instruction mnemonic suffix given and no register operands
+      repnz scas  --> repnz scasb
+
+      [strlen](http://lxr.free-electrons.com/source/arch/s390/include/asm/string.h#L140)
+      ```
     - LODS (Load string):
       ```
       ESI -------> EAX, AX, AL
