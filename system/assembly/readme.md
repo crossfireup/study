@@ -190,6 +190,18 @@
       * ‘p’ An operand that is a valid memory address is allowed
       * ‘i’ An immediate integer operand (one with constant value) is allowed including symbolic constants 
             whose values will be known only at assembly time or later
+      * i386
+        ```
+        q - byte-addressable register (eax, ebx, ecx, edx)
+        A - eax or edx
+        I - immediate 0..31
+        J - immediate 0..63
+        K - immediate 255
+        L - immediate 65535
+        M - immediate 0..3 (shifts that can be done with lea)
+        N - immediate 0..255 (one-byte immediate value)
+        O - immediate 0..32
+        ```
 
    - Constraint Modifier Characters:
      When the compiler fixes up the operands to satisfy the constraints, it needs to know which operands are read by the instruction and which are written by it.
@@ -217,7 +229,7 @@
         asm volatile(
             "movsl"
             : "=&D"(edi), "=&S"(esi)
-            : ""(edi), "1"(esi)
+            : "0"(edi), "1"(esi)  /* use "0" in case of error */
             : "memory");
         ```   
 

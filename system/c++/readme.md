@@ -118,4 +118,96 @@
         Traffic_light next = ++light; // next becomes Traffic_light::green
         ```
 
+      - separate compilation
+        - class declarations in header
+        - class implements in cpp file
+        - use instance of a class by include header
+
+      - namespace
+        - a mechanism show some declarations belong together and their names shouldn’t clash with others
+          ```c++
+          namespace My_code {
+            class complex { /* ... */ };
+            complex sqrt(complex);
+            // ...
+            int main();
+          }
+
+          int My_code::main()
+          {
+            complex z {1,2};
+            auto z2 = sqrt(z);
+            std::cout << '{' << z2.real() << ',' << z2.imag() << "}\n";
+            // ...
+          };
+
+          int main()
+          {
+            return My_code::main();
+          }
+          ```
+        
+        - using directive: global, local
+          ```c++
+          using namespace std;
+          ```
+      
+      - Error Handling
+      
+      - exception
+        - Exceptions report errors found at run time
+        - try catch
+
+      - static assertions
+        - error can be found at compile time
+        - static_assert: static_assert(A,S) prints S as a compiler error message if A is not true.
+          ```
+          static_assert(4<=sizeof(int), "integers are too small"); // check integer size
+          ```
+
+      - Postscript
+
+      - advice
+        - don't panic, all will became clear in time;
+        - you don't have to know everty detail of c++ to write good programs;
+        - focus on programming technics, not the language features;
+
+  - class
+    - concrete classes
+      - behave "just like built-in types"
+
+      - defining characteristic: represention is part of definition
+        - vector 
+          - represention: one or more pointers to more data stored elsewhere
+          - reprent each object of a concrete class
+
+      - to be optimally efficent in time and space:
+        - place object of concrete types on the stack, in statical allocated memory, or other objects
+        - refer to object directly(not just through pointer or reference)
+        - initialize object immediately and completely usinge constructor and copy objects
+
+      - price: representation changes, a user must recompile
+
+      - usage:
+        - for types that don't change often, and where local variable provide much-needed clarity and efficiency
+        - increase flexibility: 
+          - keep major of its represention on the free store(dynamic memory, heep) and access throught the part stored in class
+
+      - tips
+        - Functions defined in a class are inlined by default
+        
+        - constructor that can be invoked without an argument is called a __default constructor__
+          - eliminate the possibility of uninitialized variables of that type.
+        
+        - const specifiers on the functions returning: functions do not modify the object for which they are called
+
+        -  destructor is the complement operator, ˜, followed by the name of the class
+
+    - abstract classes
+    - classes in hierarchies
+             
+
+
+      
+
         

@@ -3,7 +3,7 @@
 
 TARGET=vector.exe
 
-SOURCES= user.cpp vector.cpp
+SOURCES= main.cpp vector.cpp
 
 OBJECTS= $(SOURCES:.cpp=.obj)
 
@@ -14,3 +14,6 @@ all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
     $(CXX) $(CXXFLAGS) $** /Fe$@ 
+
+clean:
+	del /q /f $(OBJECTS) $(TARGET)

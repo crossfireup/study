@@ -164,6 +164,9 @@ Rootkit Programming
       gcc program.o -llib1 -Wl,-Bstatic -llib2 -Wl,-Bdynamic -llib3
 
       #define asmlinkage extern "c"
+      
+      sudo apt-get install gcc-multilib g++-multilib
+      ./configure --build=i686-pc-linux-gnu "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
       ```
 
     * ld : make sure libmylib.so exist, if not, make a link to mylib.so.xx.xx.xx
@@ -251,6 +254,93 @@ Rootkit Programming
               causes most calls to the function to be inlined
             * put another copy of definition (lack inline and extern) in a library file, 
               any uses of the function refer to single copy in librar
+
+  - get define
+    ```
+    echo | gcc -E -xc -include 'stddef.h' - | grep size_t
+    typedef long unsigned int size_t;
+
+    # compile without stdlib, frame protector and frame pointer 
+    CFLAGS = -ffreestanding -O2 -m32 -g -Wall -Wextra -nostdinc -fno-builtin -fno-stack-protector -fomit-frame-pointer
+
+    LDFLAGS = -Ttext 0x1000 --oformat binary -m elf_i386 -nostdlib
+    ```
+
+  - compile to raw binary 
+    ```
+    -ffreestanding :implies -fno-builtin
+    -fhosted   Assert that compilation targets a hosted environment.  This implies -fbuiltin
+    gcc -ffreestanding -m32 c basic.c -o basic.o
+    ```
+
+  - [selectively enable or disable certain types of diagnostics](https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html)
+    - format
+      ```c
+      #pragma GCC diagnostic kind option
+      
+      #pragma GCC diagnostic warning "-Wformat"
+      #pragma GCC diagnostic error "-Wformat"
+      #pragma GCC diagnostic ignored "-Wformat"
+      ```
+
+    - remember the state of the diagnostics as of each __push__, and restore to that point at each __pop__
+      ```c
+      #pragma GCC diagnostic error "-Wuninitialized"
+        foo(a);                       /* error is given for this one */
+      #pragma GCC diagnostic push
+      #pragma GCC diagnostic ignored "-Wuninitialized"
+        foo(b);                       /* no diagnostic for this one */
+      #pragma GCC diagnostic pop
+        foo(c);                       /* error is given for this one */
+      #pragma GCC diagnostic pop
+        foo(d);                       /* depends on command-line options */
+      ```
+
+    - printing messages during compilation. 
+      ```c
+      #pragma message "Compiling " __FILE__ "..."
+
+      #define DO_PRAGMA(x) _Pragma (#x)
+      #define TODO(x) DO_PRAGMA(message ("TODO - " #x))
+
+      TODO(Remember to fix this)
+      ```
+
+    - usage
+      ```c
+      #define DIAG_STR(s) #s
+      #define DIAG_JOINSTR(x,y) DIAG_STR(x ## y)
+
+      #ifdef _MSC_VER
+      #define DIAG_DO_PRAGMA(x) __pragma (#x)
+      #define DIAG_PRAGMA(compiler,x) DIAG_DO_PRAGMA(warning(x))
+      #else /* _MSC_VER */ 
+      #define DIAG_DO_PRAGMA(x) _Pragma (#x)
+      #define DIAG_PRAGMA(compiler,x) DIAG_DO_PRAGMA(compiler diagnostic x)
+      #endif
+      #if defined(__clang__)
+      # define DISABLE_WARNING(gcc_unused,clang_option,msvc_unused) DIAG_PRAGMA(clang,push) DIAG_PRAGMA(clang,ignored DIAG_JOINSTR(-W,clang_option))
+      # define ENABLE_WARNING(gcc_unused,clang_option,msvc_unused) DIAG_PRAGMA(clang,pop)
+      #elif defined(_MSC_VER)
+      # define DISABLE_WARNING(gcc_unused,clang_unused,msvc_errorcode) DIAG_PRAGMA(msvc,push) DIAG_DO_PRAGMA(warning(disable:##msvc_errorcode))
+      # define ENABLE_WARNING(gcc_unused,clang_unused,msvc_errorcode) DIAG_PRAGMA(msvc,pop)
+      #elif defined(__GNUC__)
+      #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
+      # define DISABLE_WARNING(gcc_option,clang_unused,msvc_unused) DIAG_PRAGMA(GCC,push) DIAG_PRAGMA(GCC,ignored DIAG_JOINSTR(-W,gcc_option))
+      # define ENABLE_WARNING(gcc_option,clang_unused,msvc_unused) DIAG_PRAGMA(GCC,pop)
+      #else
+      # define DISABLE_WARNING(gcc_option,clang_unused,msvc_unused) DIAG_PRAGMA(GCC,ignored DIAG_JOINSTR(-W,gcc_option))
+      # define ENABLE_WARNING(gcc_option,clang_option,msvc_unused) DIAG_PRAGMA(GCC,warning DIAG_JOINSTR(-W,gcc_option))
+      #endif
+      #endif
+      ```
+
+    - pragma
+      - gcc: _Pragma
+      - msvc: __pragma 
+
+    - [attribute](https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html)
+      - __attribute__ ((unused))
 
 # io
 -----
