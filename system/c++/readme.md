@@ -203,11 +203,52 @@
 
         -  destructor is the complement operator, ˜, followed by the name of the class
 
-    - abstract classes
+    - abstract classes: A class with a pure virtual function
+      - A class that provides the interface to a variety of __other classes__ is often called a polymorphic typ
+      ```c++
+      class Container {
+        public:
+          virtual double& operator[](int) = 0; // pure virtual function
+          virtual int size() const = 0; // const member function (§3.2.1.1)
+          virtual ˜Container() {} // destructor (§3.2.1.2)
+      };
+
+      void use(Container& c)
+      {
+        const int sz = c.size();
+        for (int i=0; i!=sz; ++i)
+          cout << c[i] << '\n';
+      }
+      ```
+      - virtual means "may be redefined later in a class derived from this one"
+      - =0 syntax says the function is pure virtual, some derived class must define the function
+      - not possible to define an object that is just a Container
+      - Container can only serve as the interface to a class that implements its operator[]() and size() functions
+      - Container does not have a constructor , does not have any data to initialize
+
     - classes in hierarchies
              
+  - usage:
+    - cppunit
+      ```
+      test:
+              Test
+        TestCase TestCompsite 
+                      TestSuite
 
+      equals: equal, double, 
+          TestAssert
 
-      
+      line info:
+        LineSource
 
+      msg:
+          Message 
+
+      exception:
+        Exception
+
+      assert:
+        Asserter: fail, failIF
+      ```
         

@@ -1,8 +1,21 @@
 #include <iostream>
 #include <stdexcept>
 #include "vector.h"
+#include "vector_container.h"
+#include "list_container.h"
 
-int main(void)
+void print_container(Container &c)
+{
+    int size = c.size();
+
+    for(int i = 0; i < size; i++){
+        std::cout << c[i] << std::endl;
+    }
+
+    return;
+}
+
+void handle_except()
 {
     Vector v(4);
 
@@ -42,6 +55,17 @@ int main(void)
 
     std::cout << std::endl;
 
-    return 0;
+    return;
+}
+
+int main(void)
+{
+    Vector_container vc{1.1, 2.1, 3.1};
+    print_container(vc);
+
+    List_container lc = {4.1, 5.2, 6.3};
+    print_container(lc);
+
+    return 0; 
 }
 
