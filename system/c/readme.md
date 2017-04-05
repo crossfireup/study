@@ -73,44 +73,43 @@ Rootkit Programming
 
   * create steps:
     1. umask(0)
-    2. fork() exit father 
-    3. setsid() 
-       * be a session leader 
-       * leader in a new process group
-       * no control tty
 
-         [why fork twice](http://stackoverflow.com/questions/881388/what-is-the-reason-for-performing-a-double-fork-when-creating-a-daemon)
-         
-          Strictly speaking, the double-fork has nothing to do with re-parenting the daemon as a child of init. All that is necessary to re-parent the child is that the parent must exit.
-          This can be done with only a single fork. Also, doing a double-fork by itself doesn't re-parent the daemon process  to init; the daemon's parent must exit. 
-          In other words, the parent always exits when forking a proper daemon so that the daemon process is re-parented to init.
- 
-          So why the double fork? POSIX.1-2008 Sec. 11.2.3, "The Controlling Terminal", has the answer (emphasis added):
+    2. fork() exit father 
+      - reparent to be a child of init
+
+    3. setsid() 
+      * dissociate the daemon fro its controlling terminal
+      * be a session leader 
+        - the process can still reacquire a controlling terminal
+        - only session leader can allocate a control tty
+      * leader in a new process group
+
+    4. [2nd fork() exit father to ensure no controlling terminal](http://stackoverflow.com/questions/881388/what-is-the-reason-for-performing-a-double-fork-when-creating-a-daemon)
+        
+        - POSIX.1-2008 Sec. 11.2.3, "The Controlling Terminal", has the answer (emphasis added):
           ```
           The controlling terminal for a session is allocated by the session leader in an implementation-defined manner. If a session leader has no controlling terminal, and opens a terminal device file that is not already associated with a session without using the O_NOCTTY option (see open()),  it is implementation-defined whether the terminal becomes the controlling terminal of the session leader. If a process which is not a session leader opens a terminal file, or the O_NOCTTY option is used on open(), then that terminal shall not become the controlling terminal of the  calling process.
           ```
-          This tells us that if a daemon process does something like this ...
-
+        - for example:
           ```c
           int fd = open("/dev/console", O_RDWR);
           ```
-         ... then the daemon process might acquire /dev/console as its controlling terminal, depending on whether the daemon process is a session leader, and depending on the system implementation. The program can guarantee that the above call will not acquire a controlling terminal if the program  first ensures that it is not a session leader.
- 
-         Normally, when launching a daemon, setsid is called (from the child process after calling fork) to dissociate the daemon from its controlling terminal. However, calling setsid also means that the calling process will be the session leader of the new session, which leaves open the  possibility that the daemon could reacquire a controlling terminal. The double-fork technique ensures that the daemon process is not the session leader, which then guarantees that a call to open, as in the example above, will not result in the daemon process reacquiring a controlling  terminal.
- 
-         The double-fork technique is a bit paranoid. It may not be necessary if you know that the daemon will never open a terminal device file.
-          Also, on some systems it may not be necessary even if the daemon does open a terminal device file, since that behavior is implementation-defined. 
-          However,  one thing that is not implementation-defined is that only a session leader can allocate the controlling terminal. 
-          If a process isn't a session leader, it can't allocate a controlling terminal. Therefore, if you want to be paranoid and be certain that the daemon process cannot inadvertently  acquire a controlling terminal, regardless of any implementation-defined specifics, then the double-fork technique is essential.
+        - then the daemon process might acquire /dev/console as its controlling terminal, depending on whether the daemon process is a session leader, and depending on the system implementation. 
+
+        - The program can guarantee the above call will not acquire a controlling terminal if first ensures that it is not a session leader.
+
+        - The double-fork technique is a bit paranoid. It may not be necessary if you know that the daemon will never open a terminal device file.
+
+        - on some systems it may not be necessary even if the daemon does open a terminal device file, since that behavior is implementation-defined. 
+
+        - one thing that is not implementation-defined is that only a session leader can allocate the controlling terminal. 
         
-
-
     4. chdir("/") to root or where it works
+
     5. close unneccessary file description
+
     6. redirection stdin, stdout, stderr to /dev/null
 
-
-    
   * ERROR CODE TABLE
 
     /usr/include/asm/errno.h
@@ -138,31 +137,66 @@ Rootkit Programming
     3. The ldconfig manpage recommends explicitly linking against libc, which has been done above using the -l option (-lc).
 
     * preprocess
+      ```
       gcc -E hello.c -o hello.i
+      ```
     * compile
+      ```
       gcc -S hello.i -o hello.s
 
       /usr/libexec/gcc/x86_64-redhat-linux/4.4.7/cc1 open.c
-
+      ```
     * assembly
+      ```
       as hello.s -o hello.o
       gcc -c hello.s -o hello.o
 
       nm -Ca  # list all function in lib so
+      ```
 
-    * ld 
-      make sure libmylib.so exist, if not, make a link to mylib.so.xx.xx.xx
-      ld find error ways:
-      1. LD_DEBUG=all make 
-      2. ld -lmylib --verbose or -Wl,--verbose or -Xlinker --verbose to gcc for passing parameters to ld
-    
+    * use library
+      ```
+      gcc -I/usr/local/lib strnlen_test.c -l:libcmockery.a - strnlen_test
+
+      # -l expand cmockery to libcmockery
+      gcc /local/lib strnlen_test.c -lcmockery - strnlen_test
+
+      gcc program.o -llib1 -Wl,-Bstatic -llib2 -Wl,-Bdynamic -llib3
+
+      #define asmlinkage extern "c"
+      
+      sudo apt-get install gcc-multilib g++-multilib
+      ./configure --build=i686-pc-linux-gnu "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
+      ```
+
+    * ld : make sure libmylib.so exist, if not, make a link to mylib.so.xx.xx.xx
+      - ld find error ways:
+        1. LD_DEBUG=all make 
+        2. ld -lmylib --verbose or -Wl,--verbose or -Xlinker --verbose to gcc for passing parameters to ld
+
+      - error in file order:
+        - object files and libraries in the order that they depend on each other - as a consequential rule of thumb
+        - put the library AFTER the module you are compiling.
+
+      - link against installed libraries in a given directory, LIBDIR,
+        - use libtool, and specify the full pathname of the library
+
+        - use the `-LLIBDIR' flag during linking and do at least one of the following:
+          - add LIBDIR to the `LD_LIBRARY_PATH' environment variable
+            during execution
+          - add LIBDIR to the `LD_RUN_PATH' environment variable
+            during linking
+          - use the `-Wl,--rpath -Wl,LIBDIR' linker flag
+          - have your system administrator add LIBDIR to `/etc/ld.so.conf'
+          - ld(1) and ld.so(8) manual pages.
+
     * [create tiny size](http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html)
       [libc free](https://blogs.oracle.com/ksplice/entry/hello_from_a_libc_free)
-
+      ```
       gcc -Wall -s -nostdlib tiny.o
 
       gcc -fno-builtin/-fno-builtin-function
-
+      ```
     * The compiler option -D can be used to define the macro MY_MACRO from command line.
 
     * inline
@@ -221,30 +255,117 @@ Rootkit Programming
             * put another copy of definition (lack inline and extern) in a library file, 
               any uses of the function refer to single copy in librar
 
+  - get define
+    ```
+    echo | gcc -E -xc -include 'stddef.h' - | grep size_t
+    typedef long unsigned int size_t;
+
+    # compile without stdlib, frame protector and frame pointer 
+    CFLAGS = -ffreestanding -O2 -m32 -g -Wall -Wextra -nostdinc -fno-builtin -fno-stack-protector -fomit-frame-pointer
+
+    LDFLAGS = -Ttext 0x1000 --oformat binary -m elf_i386 -nostdlib
+    ```
+
+  - compile to raw binary 
+    ```
+    -ffreestanding :implies -fno-builtin
+    -fhosted   Assert that compilation targets a hosted environment.  This implies -fbuiltin
+    gcc -ffreestanding -m32 c basic.c -o basic.o
+    ```
+
+  - [selectively enable or disable certain types of diagnostics](https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html)
+    - format
+      ```c
+      #pragma GCC diagnostic kind option
+      
+      #pragma GCC diagnostic warning "-Wformat"
+      #pragma GCC diagnostic error "-Wformat"
+      #pragma GCC diagnostic ignored "-Wformat"
+      ```
+
+    - remember the state of the diagnostics as of each __push__, and restore to that point at each __pop__
+      ```c
+      #pragma GCC diagnostic error "-Wuninitialized"
+        foo(a);                       /* error is given for this one */
+      #pragma GCC diagnostic push
+      #pragma GCC diagnostic ignored "-Wuninitialized"
+        foo(b);                       /* no diagnostic for this one */
+      #pragma GCC diagnostic pop
+        foo(c);                       /* error is given for this one */
+      #pragma GCC diagnostic pop
+        foo(d);                       /* depends on command-line options */
+      ```
+
+    - printing messages during compilation. 
+      ```c
+      #pragma message "Compiling " __FILE__ "..."
+
+      #define DO_PRAGMA(x) _Pragma (#x)
+      #define TODO(x) DO_PRAGMA(message ("TODO - " #x))
+
+      TODO(Remember to fix this)
+      ```
+
+    - usage
+      ```c
+      #define DIAG_STR(s) #s
+      #define DIAG_JOINSTR(x,y) DIAG_STR(x ## y)
+
+      #ifdef _MSC_VER
+      #define DIAG_DO_PRAGMA(x) __pragma (#x)
+      #define DIAG_PRAGMA(compiler,x) DIAG_DO_PRAGMA(warning(x))
+      #else /* _MSC_VER */ 
+      #define DIAG_DO_PRAGMA(x) _Pragma (#x)
+      #define DIAG_PRAGMA(compiler,x) DIAG_DO_PRAGMA(compiler diagnostic x)
+      #endif
+      #if defined(__clang__)
+      # define DISABLE_WARNING(gcc_unused,clang_option,msvc_unused) DIAG_PRAGMA(clang,push) DIAG_PRAGMA(clang,ignored DIAG_JOINSTR(-W,clang_option))
+      # define ENABLE_WARNING(gcc_unused,clang_option,msvc_unused) DIAG_PRAGMA(clang,pop)
+      #elif defined(_MSC_VER)
+      # define DISABLE_WARNING(gcc_unused,clang_unused,msvc_errorcode) DIAG_PRAGMA(msvc,push) DIAG_DO_PRAGMA(warning(disable:##msvc_errorcode))
+      # define ENABLE_WARNING(gcc_unused,clang_unused,msvc_errorcode) DIAG_PRAGMA(msvc,pop)
+      #elif defined(__GNUC__)
+      #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
+      # define DISABLE_WARNING(gcc_option,clang_unused,msvc_unused) DIAG_PRAGMA(GCC,push) DIAG_PRAGMA(GCC,ignored DIAG_JOINSTR(-W,gcc_option))
+      # define ENABLE_WARNING(gcc_option,clang_unused,msvc_unused) DIAG_PRAGMA(GCC,pop)
+      #else
+      # define DISABLE_WARNING(gcc_option,clang_unused,msvc_unused) DIAG_PRAGMA(GCC,ignored DIAG_JOINSTR(-W,gcc_option))
+      # define ENABLE_WARNING(gcc_option,clang_option,msvc_unused) DIAG_PRAGMA(GCC,warning DIAG_JOINSTR(-W,gcc_option))
+      #endif
+      #endif
+      ```
+
+    - pragma
+      - gcc: _Pragma
+      - msvc: __pragma 
+
+    - [attribute](https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html)
+      - __attribute__ ((unused))
+
 # io
 -----
   * file
     
     RESTRICTED DELETION FLAG OR STICKY BIT: 
 
-       The  restricted deletion flag or sticky bit is a single bit, whose interpretation depends on the file type.  
-       
-       * For directories, it prevents unprivileged users from removing or renaming a file in the directory  unless  they  own
-       the  file or the directory; this is called the restricted deletion flag for the directory, and is commonly found
-       on world-writable directories like /tmp. 
-       * For regular files on some older systems, the bit saves  the  program’s
-       text image on the swap device so it will load more quickly when run; this is called the sticky bit.
+    The  restricted deletion flag or sticky bit is a single bit, whose interpretation depends on the file type.  
     
-      buffer:
-        stderr not full buffered
-        stdout, stdin is full buffered when not directed to interactive device
-        setvbuf(stdout, NULL, _IONBF, 0)
-        ioctl
+    * For directories, it prevents unprivileged users from removing or renaming a file in the directory  unless  they  own
+    the  file or the directory; this is called the restricted deletion flag for the directory, and is commonly found
+    on world-writable directories like /tmp. 
+    * For regular files on some older systems, the bit saves  the  program’s
+    text image on the swap device so it will load more quickly when run; this is called the sticky bit.
+    
+    buffer:
+      stderr not full buffered
+      stdout, stdin is full buffered when not directed to interactive device
+      setvbuf(stdout, NULL, _IONBF, 0)
+      ioctl
 
-      * open 
-        1. file access flags: O_RDWR, O_RDONLY, O_WRONLY
-        2. file create flags: O_CREAT, o_TRUNC, O_DIRECTORY,O_DIRECT
-        3. file status flags: O_ASYNC, O_NONBLOCK, OAPPEND
+  * open 
+    1. file access flags: O_RDWR, O_RDONLY, O_WRONLY
+    2. file create flags: O_CREAT, o_TRUNC, O_DIRECTORY,O_DIRECT
+    3. file status flags: O_ASYNC, O_NONBLOCK, OAPPEND
 
 # buffer overflow
     * Make sure that the memory auditing is done properly in the program using utilities like valgrind memcheck
@@ -252,7 +373,6 @@ Rootkit Programming
     * Use strncmp() instead of strcmp(), strncpy() instead of strcpy() and so on.
 
 # socket
-
   * ruptime
     1. add service config
       vi /etc/services
@@ -371,6 +491,81 @@ Rootkit Programming
       int token9 = 9;  
       paster( 9 );   --> printf_s( "token" "9" " = %d", token9 );   --> printf_s( "token9 = %d", token9 );  
 
+# structure
+  - padding
+    ```
+    # pseudo-code, see actual code below
+    padding = (align - (offset mod align)) mod align
+    new offset = offset + padding = offset + (align - (offset mod align)) mod align      
 
+    # c code
+    padding = (align - (offset & (align - 1))) & (align - 1) = (-offset) & (align - 1)
+    new_offset = (offset + alian - 1) & ~(align -1)
 
-      
+    struct MixedData  /* After compilation in 32-bit x86 machine */
+    {
+        char Data1; /* 1 byte */
+        char Padding1[1]; /* 1 byte for the following 'short' to be aligned on a 2 byte boundary
+    assuming that the address where structure begins is an even number */
+        short Data2; /* 2 bytes */
+        int Data3;  /* 4 bytes - largest structure member */
+        char Data4; /* 1 byte */
+        char Padding2[3]; /* 3 bytes to make total size of the structure 12 bytes */
+    };
+    ```
+
+# grammar
+  - switch case
+    ```c
+    switch (val)  
+    {  
+    case VAL:             /* <- C error is here */
+      int newVal = 42;  
+      break;
+    case ANOTHER_VAL:     /* <- C++ error is here */
+      ...
+      break;
+    }
+    /* Adding an extra {} block fixes both C++ and C problems */
+    {
+      int newVal = 42;  
+      break;
+    }
+    ```
+    - Jumps that bypass initialization are illegal in C++. 
+      - case ANOTHER_VAL: label jumps into the scope of variable newVal bypassing its initialization. 
+      - labeled-declaration is allowed but labeled -initialization is not allowed.
+      ```c
+      /* remove the initializer from variable declaration  */
+      switch (val)  
+      {  
+      case VAL: 
+        int newVal;
+        newVal = 42;  
+        break;
+      case ANOTHER_VAL:     /* Now it works in C++! */
+        ...
+        break;
+      }
+      ```
+    - In C language declarations are not statements. They cannot be labeled. 
+      ```c
+      /*
+      *  In C, according to the specification,
+      *  §6.8.1 Labeled Statements:
+      *  labeled-statement:
+      *      identifier : statement
+      *      case constant-expression : statement
+      *    default : statement
+      */ 
+      /* Just add an empty statement after the case VAL: label and the code will become valid */
+      switch (val)  
+      {  
+      case VAL:;            /* Now it works in C! */
+        int newVal = 42;  
+        break;
+      case ANOTHER_VAL:  
+        ...
+        break;
+      }
+      ```

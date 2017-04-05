@@ -81,3 +81,27 @@
     * 
       javac LCG.class
       javap -c -verbose LCG.class
+
+* OOP
+  - creational patterns
+    - singleton
+      - better than a set of static methods
+        - inheritance and interfaces
+        - dynamic binding
+    - building
+      ```
+      Window w = new WindowBuilder().setVisible(false).setModal(true).setDialog(true).build();
+      ```
+    - Abstract Factory
+      - create and return a new object 
+    - Behavioral patterns
+      - Iterator
+      - Observer  
+        - Publish-Subscribe pattern
+        - MVC
+    - structure patterns
+      - decorator vs inheritance
+        - both modify the behavior of an object of the underlying class, but in different ways
+          - inheritance modify at compile time
+          - decorator applied dynamically at run time
+          

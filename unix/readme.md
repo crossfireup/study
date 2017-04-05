@@ -115,73 +115,76 @@
       tcpdump -lnni any 'udp port 180' -s0 -w - | strings
       ```      
 
-* bash shortcut
-  * Moving the cursor:
-
-    Ctrl + a   Go to the beginning of the line (Home)
-    Ctrl + e   Go to the End of the line (End)
-    Ctrl + p   Previous command (Up arrow)
-    Ctrl + n   Next command (Down arrow)
-    Alt + b   Back (left) one word
-    Alt + f   Forward (right) one word
-    Ctrl + f   Forward one character
-    Ctrl + b   Backward one character
-    Ctrl + xx  Toggle between the start of line and current cursor position
+* bash 
+  - shortcut
+    * Moving the cursor:
+      ```
+      Ctrl + a   Go to the beginning of the line (Home)
+      Ctrl + e   Go to the End of the line (End)
+      Ctrl + p   Previous command (Up arrow)
+      Ctrl + n   Next command (Down arrow)
+      Alt + b   Back (left) one word
+      Alt + f   Forward (right) one word
+      Ctrl + f   Forward one character
+      Ctrl + b   Backward one character
+      Ctrl + xx  Toggle between the start of line and current cursor position
+      ```
 
   * Editing:
+    ```
+    Ctrl + L   Clear the Screen, similar to the clear command
 
-  Ctrl + L   Clear the Screen, similar to the clear command
+      Alt + Del Delete the Word before the cursor.
+      Alt + d   Delete the Word after the cursor.
+    Ctrl + d   Delete character under the cursor
+    Ctrl + h   Delete character before the cursor (Backspace)
 
-    Alt + Del Delete the Word before the cursor.
-    Alt + d   Delete the Word after the cursor.
-  Ctrl + d   Delete character under the cursor
-  Ctrl + h   Delete character before the cursor (Backspace)
+    Ctrl + w   Cut the Word before the cursor to the clipboard.
+    Ctrl + k   Cut the Line after the cursor to the clipboard.
+    Ctrl + u   Cut/delete the Line before the cursor to the clipboard.
 
-  Ctrl + w   Cut the Word before the cursor to the clipboard.
-  Ctrl + k   Cut the Line after the cursor to the clipboard.
-  Ctrl + u   Cut/delete the Line before the cursor to the clipboard.
+      Alt + t   Swap current word with previous
+    Ctrl + t   Swap the last two characters before the cursor (typo).
+    Esc  + t   Swap the last two words before the cursor.
 
-    Alt + t   Swap current word with previous
-  Ctrl + t   Swap the last two characters before the cursor (typo).
-  Esc  + t   Swap the last two words before the cursor.
-
-  ctrl + y   Paste the last thing to be cut (yank)
-    Alt + u   UPPER capitalize every character from the cursor to the end of the current word.
-    Alt + l   Lower the case of every character from the cursor to the end of the current word.
-    Alt + c   Capitalize the character under the cursor and move to the end of the word.
-    Alt + r   Cancel the changes and put back the line as it was in the history (revert).
-  ctrl + _   Undo
+    ctrl + y   Paste the last thing to be cut (yank)
+      Alt + u   UPPER capitalize every character from the cursor to the end of the current word.
+      Alt + l   Lower the case of every character from the cursor to the end of the current word.
+      Alt + c   Capitalize the character under the cursor and move to the end of the word.
+      Alt + r   Cancel the changes and put back the line as it was in the history (revert).
+    ctrl + _   Undo
+    ```
   
   * TAB        Tab completion for file/directory names
-
       For example, to move to a directory 'sample1'; Type cd sam ; then press TAB and ENTER.
       type just enough characters to uniquely identify the directory you wish to open.
 
   * Special keys: Tab, Backspace, Enter, Esc
+    ```
+    Text Terminals send characters (bytes), not key strokes.
+    Special keys such as Tab, Backspace, Enter and Esc are encoded as control characters.
+    Control characters are not printable, they display in the terminal as ^ and are intended to have an effect on applications.
 
-      Text Terminals send characters (bytes), not key strokes.
-      Special keys such as Tab, Backspace, Enter and Esc are encoded as control characters.
-      Control characters are not printable, they display in the terminal as ^ and are intended to have an effect on applications.
+    Ctrl+I = Tab
+    Ctrl+J = Newline
+    Ctrl+M = Enter
+    Ctrl+[ = Escape
 
-      Ctrl+I = Tab
-      Ctrl+J = Newline
-      Ctrl+M = Enter
-      Ctrl+[ = Escape
+    Many terminals will also send control characters for keys in the digit row:
+    Ctrl+2 → ^@
+    Ctrl+3 → ^[ Escape
+    Ctrl+4 → ^\
+    Ctrl+5 → ^]
+    Ctrl+6 → ^^
+    Ctrl+7 → ^_ Undo
+    Ctrl+8 → ^? Backward-delete-char
 
-      Many terminals will also send control characters for keys in the digit row:
-      Ctrl+2 → ^@
-      Ctrl+3 → ^[ Escape
-      Ctrl+4 → ^\
-      Ctrl+5 → ^]
-      Ctrl+6 → ^^
-      Ctrl+7 → ^_ Undo
-      Ctrl+8 → ^? Backward-delete-char
-
-      Ctrl+v tells the terminal to not interpret the following character, so Ctrl+v Ctrl-I will display a tab character,
-      similarly Ctrl+v ENTER will display the escape sequence for the Enter key: ^M
+    Ctrl+v tells the terminal to not interpret the following character, so Ctrl+v Ctrl-I will display a tab character,
+    similarly Ctrl+v ENTER will display the escape sequence for the Enter key: ^M
+    ```
 
   * History:
-
+    ```
     Ctrl + r   Recall the last command including the specified character(s)
               searches the command history as you type.
               Equivalent to : vim ~/.bash_history. 
@@ -199,407 +202,50 @@
     ALT + .   Last argument of previous command
           !*   All arguments of previous command
     ^abc­^­def   Run previous command, replacing abc with def
+    ```
 
   * Process control:
-
-  Ctrl + C   Interrupt/Kill whatever you are running (SIGINT)
-  Ctrl + l   Clear the screen
-  Ctrl + s   Stop output to the screen (for long running verbose commands)
-              Then use PgUp/PgDn for navigation
-  Ctrl + q   Allow output to the screen (if previously stopped using command above)
-  Ctrl + D   Send an EOF marker, unless disabled by an option, this will close the current shell (EXIT)
-  Ctrl + Z   Send the signal SIGTSTP to the current task, which suspends it.
-              To return to it later enter fg 'process name' (foreground).
+    ```
+    Ctrl + C   Interrupt/Kill whatever you are running (SIGINT)
+    Ctrl + l   Clear the screen
+    Ctrl + s   Stop output to the screen (for long running verbose commands)
+                Then use PgUp/PgDn for navigation
+    Ctrl + q   Allow output to the screen (if previously stopped using command above)
+    Ctrl + D   Send an EOF marker, unless disabled by an option, this will close the current shell (EXIT)
+    Ctrl + Z   Send the signal SIGTSTP to the current task, which suspends it.
+                To return to it later enter fg 'process name' (foreground).
+    ```
 
   * Emacs mode vs Vi Mode
+    ```
+    All the above assume that bash is running in the default Emacs setting, if you prefer this can be switched to Vi shortcuts instead.
 
-      All the above assume that bash is running in the default Emacs setting, if you prefer this can be switched to Vi shortcuts instead.
+    Set Vi Mode in bash:
 
-      Set Vi Mode in bash:
+    $ set -o vi 
 
-      $ set -o vi 
+    Set Emacs Mode in bash:
 
-      Set Emacs Mode in bash:
-
-      $ set -o emacs 
-
-
-
-* vim 
-  - configure
-    ```vimrc
-      windows :_vimrc
-      set tabstop=4
-      set nu
-      set autoindent
-      set shiftwidth=4
-      set cindent
-      set smartindent
-      set expandtab
-      syntax on
-
-      # vim set backup and swp file position 
-      # for windows
-      :e $VIM/_vimrc
-      " set nowrite
-      " set nobackup
-      " set noundofile
-      set backupdir=~/.vim/backup/
-      set directory=~/.vim/swap/
-      set undodir=~/.vim/undo/
-
-
-      set nocompatible
-      filetype plugin indent on
-      syntax on
-      silent! runtime macros/matchit.vim
-      set autochdir
-      set backspace=indent,eol,start
-      set foldenable
-      set hidden
-      set incsearch
-      set laststatus=2
-      set ruler
-      set switchbuf=useopen,usetab
-      set tags=./tags,tags;/
-      set wildmenu
-      nnoremap gb :buffers<CR>:sb<Space>
-
-
-      " VIM Configuration File
-    " Description: Optimized for C/C++ development, but useful also for other things.
-    " Author: Gerhard Gappmeier
-    "
-
-    " set UTF-8 encoding
-    set enc=utf-8
-    set fenc=utf-8
-    set termencoding=utf-8
-    " disable vi compatibility (emulation of old bugs)
-    set nocompatible
-    " use indentation of previous line
-    set autoindent
-    " use intelligent indentation for C
-    set smartindent
-    " configure tabwidth and insert spaces instead of tabs
-    set tabstop=4        " tab width is 4 spaces
-    set shiftwidth=4     " indent also with 4 spaces
-    set expandtab        " expand tabs to spaces
-    " wrap lines at 120 chars. 80 is somewaht antiquated with nowadays displays.
-    set textwidth=120
-    " turn syntax highlighting on
-    set t_Co=256
-    syntax on
-    " colorscheme wombat256
-    " turn line numbers on
-    set number
-    " highlight matching braces
-    set showmatch
-    " intelligent comments
-    set comments=sl:/*,mb:\ *,elx:\ */
-
-    " Install OmniCppComplete like described on http://vim.wikia.com/wiki/C++_code_completion
-    " This offers intelligent C++ completion when typing ‘.’ ‘->’ or <C-o>
-    " Load standard tag files
-    set tags+=~/.vim/tags/cpp
-    set tags+=~/.vim/tags/gl
-    set tags+=~/.vim/tags/sdl
-    set tags+=~/.vim/tags/qt4
-
-    " Install DoxygenToolkit from http://www.vim.org/scripts/script.php?script_id=987
-    let g:DoxygenToolkit_authorName="John Doe <john@doe.com>"
-
-    " Enhanced keyboard mappings
-    "
-    " in normal mode F2 will save the file
-    nmap <F2> :w<CR>
-    " in insert mode F2 will exit insert, save, enters insert again
-    imap <F2> <ESC>:w<CR>i
-    " switch between header/source with F4
-    map <F4> :e %:p:s,.h$,.X123X,:s,.cpp$,.h,:s,.X123X$,.cpp,<CR>
-    " recreate tags file with F5
-    map <F5> :!ctags -R –c++-kinds=+p –fields=+iaS –extra=+q .<CR>
-    " create doxygen comment
-    map <F6> :Dox<CR>
-    " build using makeprg with <F7>
-    map <F7> :make<CR>
-    " build using makeprg with <S-F7>
-    map <S-F7> :make clean all<CR>
-    " goto definition with F12
-    map <F12> <C-]>
-    " in diff mode we use the spell check keys for merging
-    if &diff
-      ” diff settings
-      map <M-Down> ]c
-      map <M-Up> [c
-      map <M-Left> do
-      map <M-Right> dp
-      map <F9> :new<CR>:read !svn diff<CR>:set syntax=diff buftype=nofile<CR>gg
-    else
-      " spell settings
-      :setlocal spell spelllang=en
-      " set the spellfile - folders must exist
-      set spellfile=~/.vim/spellfile.add
-      map <M-Down> ]s
-      map <M-Up> [s
-    endif
+    $ set -o emacs 
     ```
 
-  - join two lines
-      ```
-      hostname: 
-      output
-      hostname2:
-      output2
-
-      :%v/:$/-1j
-      hostname: output
-      hostname2: output2
-
-      :g/$/j
-      :g/$/j3 # join every 3 lines
-
-      1.start recording a macro 'q': qqJjq
-      2.replay the macro 'q' 500 times: 500@q
-      ```
-
-  - write current content to disk
+  - Substring Replacement
     ```
-    :%!xxd
+    # removal
+    ${string#substring}: Deletes shortest match of $substring from front of $string.
+    ${string##substring}: Deletes longest match of $substring from front of $string.
 
-    da" Delete around quotes. Removes quoted text along with the quotes.
-    ci( Change inside parentheses. Removes anything inside the parentheses, but leaves the parentheses there, while dropping you into insert mode.
+    ${string%substring}: Deletes shortest match of $substring from back of $string.
+    ${string%%substring}: Deletes longest match of $substring from back of $string.
+
+
+    # replacement
+    ${string/substring/replacement} : Replace first match of $substring with $replacement
+    ${string//substring/replacement}: Replace all matches of $substring with $replacement
+
+    ${string/#substring/replacement}: If $substring matches front end of $string, substitute $replacement for $substring.
+    ${string/%substring/replacement}: If $substring matches back end of $string, substitute $replacement for $substring.
     ```
-
-  * case convert 
-      ~    : Changes the case of current character
-
-      guu  : Change current line from upper to lower.
-
-      gUU  : Change current LINE from lower to upper.
-
-      guw  : Change to end of current WORD from upper to lower.
-
-      guaw : Change all of current WORD to lower.
-
-      gUw  : Change to end of current WORD from lower to upper.
-
-      gUaw : Change all of current WORD to upper.
-
-      g~~  : Invert case to entire line
-
-  * windows control
-
-      :sp filename for a horizontal split
-
-      :vsp filename or :vs filename for a vertical split
-
-      Ctrl+W, S (upper case) for horizontal splitting
-
-      Ctrl+W, v (lower case) for vertical splitting
-
-      Ctrl+W, Q to close one
-
-      Ctrl+W, Ctrl+W to switch between windows
-
-      Ctrl+W, J (xor K, H, L) to switch to adjacent window (intuitively up, down, left, right)
-
-  
-  * paste from outside
-    ```
-      Do this before:
-
-      :set paste
-
-      Then after:
-
-      :set nopaste
-    ```
-      set pastetoggle=<F2>
-
-      in normal and visual modes, "xp pastes the contents of the register x.
-
-      This works with special registers as well: "+p (or "*p) pastes the contents of the clipboard,
-        "/p pastes the last search, and ":p pastes the last command. 
-      For example, you might want to save a complex search and replace (:%s///g) that you have just used, which you can do by pasting with ":p. 
-
-  * paste to/from clipboard
-
-      +y
-
-      +p
-
-      copy to system clipboard
-      gg
-      :%y+
-
-      g g " + y G 
-
-      ggVG
-
-  * save files as sudo
-
-      :w !sudo dd of=%
-
-      Making this trick easy
-
-      You can add this to your .vimrc to make this trick easy-to-use: just type :w!!.
-
-      " Allow saving of files as sudo when I forgot to start vim using sudo.
-      cmap w!! w !sudo tee > /dev/null %
-
-      The > /dev/null part explicitly throws away the standard output, since, as I said, we don't need to pass anything to another piped command.
-
-  * comment/uncomment
-
-    * press Esc (to leave editing or other mode)
-    * hit ctrl+v (visual block mode)
-    * use the up/down arrow keys to select lines you want (it won't highlight everything - it's OK!)
-    * Shift+i (capital I)
-    * insert the text you want, i.e. '% '
-    * press Esc
-
-  * swap char/line
-    1. Swap the current character (the character under the cursor) with the next:
-
-          xp
-
-    2. Swap the current character with the previous:
-
-          Xp
-
-    3. Swap the current line with the next (but see below for a better method):
-
-          ddp
-
-          ddP
-
-    4. swap words
-          dwwp
-          dwbP
-  
-  * format code
-
-      gg=G
-
-      Explanation:
-        gg goes to the top of the file, 
-        = is a command to fix the indentation
-        G tells it to perform the operation to the end of the file.
-      
-      :!indent %
-  
-  * highlight
-
-      To turn off highlighting until the next search:
-
-      :nohl
-
-      Or turn off highlighting completely:
-
-      set nohlsearch
-
-      Or, to toggle it:
-
-      set hlsearch!
-
-      nnoremap <F3> :set hlsearch!<CR>
-
-    * delete
-      
-      d63G # delete from cursor to line 63
-      
-      :a,bd # delete from a to b
-      
-      :,bd # delete from current to d 
-
-      :g/^/+d # delete every other line
-    
-    * tab pages
-      gt
-      gT
-
-    * map
-      n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
-      i  Insert mode map. Defined using ':imap' or ':inoremap'.
-      v  Visual and select mode map. Defined using ':vmap' or ':vnoremap'.
-      x  Visual mode map. Defined using ':xmap' or ':xnoremap'.
-      s  Select mode map. Defined using ':smap' or ':snoremap'.
-      c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
-      o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
-      
-      <Space>  Normal, Visual and operator pending mode map. Defined using
-                ':map' or ':noremap'.
-      !  Insert and command-line mode map. Defined using 'map!' or
-          'noremap!'.
-    * show tab whitespace
-      :set listchars=eol:$,tab:>-,trail:~,extends:>,precedes:<
-      :set list
-
-      autocmd FileType make set noexpandtab shiftwidth=8 softtabstop=0
-
-    * file name  
-    ```
-    :echo @% 	def/my.txt 	directory/name of file (relative to the current working directory of /abc)
-    :echo expand('%:t') 	my.txt 	name of file ('tail')
-    :echo expand('%:p') 	/abc/def/my.txt 	full path
-    :echo expand('%:p:h') 	/abc/def 	directory containing file ('head')
-    :echo expand('%:p:h:t') 	def 	First get the full path with :p (/abc/def/my.txt), then get the head of that with :h (/abc/def), then get the tail of that with :t (def)
-    :echo expand('%:r') 	my 	name of file less one extension ('root')
-    :echo expand('%:e') 	txt 	name of file's extension ('extension') 
-    ```
-
-    * mark
-      ```
-      ma 	set mark a at current cursor location
-      'a 	jump to line of mark a (first non-blank character in line)
-      `a 	jump to position (line and column) of mark a
-      d'a 	delete from current line to line of mark a
-      d`a 	delete from current cursor position to position of mark a
-      c'a 	change text from current line to line of mark a
-      y`a 	yank text to unnamed buffer from cursor to position of mark a
-      :marks 	list all the current marks
-      :marks aB 	list marks a, B
-      ```
-    
-    * reverse lines
-      ```
-      help 12.4
-      1. set a marker at the last line you want reverse (I name the marker 'a' using ma), 
-      2. move cursor to the first line of the block, 
-      3. type :'a,.g/^/m 'a
-
-      For those more comfortable with Visual mode:
-      1. Identify the line number above the selection you want flipped using :set nu.
-      2. Shift-V to highlight selection you want flipped (visual mode).
-      3. :g/^/m <Line number from step 1>.
-      ```
-
-    * replace words
-      :%s/a/b/g
-      :3,9s/a/b/g # 3-9 line
-
-    - registers
-      ```
-      There are nine types of registers:			*registers* *E354*
-      1. The unnamed register ""
-      2. 10 numbered registers "0 to "9
-      3. The small delete register "-
-      4. 26 named registers "a to "z or "A to "Z
-      5. four read-only registers ":, "., "% and "#
-      6. the expression register "=
-      7. The selection and drop registers "*, "+ and "~ 
-      8. The black hole register "_
-      9. Last search pattern register "/
-
-      ["x]yy			Yank [count] lines [into register x] |linewise|.
-      							*Y*
-      ["x]Y			yank [count] lines [into register x] (synonym for	yy, 
-
-      # delete the black hole register 
-      "_d
-      "_x
-      ```
 
 * linux
   * runlevel
@@ -650,11 +296,23 @@
 
     prepend domain-name-servers 12.34.56.78, 12.34.56.79;
 
-  * wiresharek
+  * wireshark
     bootp:
       bootp.dhcp 
     udp.port==67
     eth.addr == ff:ff:ff:ff:ff:ff
+
+  * ps
+    ```
+    %ni for priority upgrade nice
+    %st — Steal Time : CPU ‘stolen’ from this virtual machine by the hypervisor for other tasks
+    %hi — Hardware IRQ
+    %si — Software Interrupts
+    %us %sy for user time and system time
+    %id for idel
+
+    S – indicates the status of the process: S=sleep R=running Z=zombie (S)
+    ```
 
 
 
@@ -701,13 +359,6 @@
        possible to create further processes.  If a parent process
        terminates, then its "zombie" children (if any) are adopted by
        init(1), which automatically performs a wait to remove the zombies.
-
-- gcc
-  - get define
-    ```
-    echo | gcc -E -xc -include 'stddef.h' - | grep size_t
-    typedef long unsigned int size_t;
-    ```
 
 * core dump
     ```bash
@@ -965,49 +616,6 @@
     /etc/rc5.d/S17ssh
     ```
 
-# tmux
-
-  Prefix-Command,tmux default CTRL+b。
-  * session:
-    ```
-    create: tmux new-session -s <session-name> or tmux new -s <session-name>
-    detach: prefix d
-    attach: tmux attach -t <session-name> or tmux a -t <session-name>
-    tmux ls: list sessions
-    prefix $: rename sessions
-
-    tmux -S /tmp/tmux/msf4 attach
-    ```
-Sender MAC address: Shenzhen_57:69:e7 (dc:9c:9f:57:69:e7)
-  * window
-    ```
-    tmux new -n <window-name>
-    new window: prefix c
-    previous: prefix p
-    next: prefix n
-    switch to previous active windows: prefix space
-    window number: prefix <win-num>
-    list: prefix w
-    close: prefix &
-    rename: prefix ,
-    ```
-
-  * panel
-    ```
-    list panel nmuber: prefix q
-    vsplit）：prefix %
-    hsplit：prefix "
-    switch: prefix o
-    array : prefix <left/rigth arrow>
-    layout: prefix space 
-    ```text
-    水平平分（even-horizontal）
-    垂直平分（even-vertical）
-    主窗格最大化，其他窗格水平平分（main-horizontal）
-    主窗格最大化，其他窗格垂直平分（main-vertical）
-    平铺，窗格均等分（tiled）
-    ```
-    ```
 
 # makefile
   * order 

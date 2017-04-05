@@ -441,20 +441,24 @@
       handle -c 180 -y -p 4820
       ```
 
-  * procexp
+  * [handle](https://forum.sysinternals.com/howto-enumerate-handles_topic18892.html)
     ```
-    # run as administrator
+    handle -p cmd
+    ```
+
+  * procexp
+    - run as administrator
       ```bat
       "C:\Program Files\SysInternals\procexp.exe" /e /t
       ```
 
-    # registry
+    - registry
       ```
       Windows Registry Editor Version 5.00
 
       [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\taskmgr.exe]
       "Debugger"="\"C:\\PROGRAM FILES\\SYSINTERNALS\\PROCEXP.EXE\" /e"
-      ```
+      ``
 
   - regjump
     ```
@@ -587,6 +591,12 @@
           can't lauch the break-in thread neccessary for a true attach
   
   * dbg command
+    * .dbgdbg
+      ```
+      ctrl+alt + v # verbose
+      .dbgdbg   # debug windbg
+      ```
+      
     * regular cmd used to __debug process__
       ```
       k lm g
@@ -707,7 +717,12 @@
       ```
 
   * excpetions: sx
-    - excepion or event occurs
+    - [control excepion or event](https://msdn.microsoft.com/en-us/library/windows/hardware/ff539287(v=vs.85).aspx)
+      - Using the Debugger to Analyze an Exception
+        ```
+        gh (Go with Exception Handled)
+        gn (Go with Exception Not Handled) 
+        ```
 
     - breaking on module load
       ```
@@ -915,7 +930,6 @@
               400 size of headers
                 0 checksum
     ```
-      
 
   * debug info
     ```
@@ -925,6 +939,18 @@
     !ready
     # create dumpfile
     .crash
+    [Forcing a System Crash from the Keyboard](https://msdn.microsoft.com/en-us/library/windows/hardware/ff545499(v=vs.85).aspx)
+    https://channel9.msdn.com/Shows/Defrag-Tools/DefragTools-137-Debugging-kernel-mode-dumps
+    
+    PS/2 Keyboard
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters
+      DWORD CrashOnCtrlScroll 1
+
+    USB Keyboard
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\kbdhid\Parameters
+      DWORD CrashOnCtrlScroll 1
+
+     Right Ctrl + Scroll Lock + Scroll Lock will generate a nice looking real blue screen. 
     ```
 
   * pde(Prototype Debugger Extension)
@@ -948,6 +974,63 @@
     pr            execute one source line, and toggle register display off
     p             execute one source line 
     ```
+
+  - system hang
+    ```
+    .echocpunum  # enable cpu number show up
+    !cpuid
+    !cpuinfo
+    ~0s     #change to cpu0
+    !running it 
+    !analyze -v -hang
+    !locks
+    !qlocks
+
+    .process 0 0 
+    .process 0 0 sc.exe
+
+    !devnode 1 # lists all pending removals of device objects.
+    !devnode 2 # lists all pending ejects of device objects.
+
+    !devnod 0 1  # show entire device tree
+
+    !drvobj hookssdt 7
+    !devstack 
+    lmv m HookSSDT
+
+    ```
+
+  * Controlling the User-Mode Debugger from the Kernel Debugger
+    - redirect the input and output from a user-mode debugger to a kernel debugger
+
+    - start the debugging session 
+      - Start NTSD or CDB on the target computer as the user-mode debugger, with the -d command-line option. 
+        ```
+        ntsd -d [-y UserSymbolPath] -p PID
+
+        ntsd -d [-y UserSymbolPath] ApplicationName
+
+        If you are installing this as a postmortem debugger, you would use the following syntax.
+
+        ntsd -d [-y UserSymbolPath]
+        ```
+
+      - Start WinDbg or KD on the host computer as the kernel debugger
+        ```
+        windbg [-y KernelSymbolPath] [-k ConnectionOptions]
+        ```
+
+      - Switching Modes
+        ```                           g
+           User-mode debugging    ----------------->  target application execution
+                             +      !bpid 
+                  |           +                               |
+            .wake | .sleep      +   .breakin                  | Ctrl+C
+                  |               +----------->               |
+                  |                           ++++           \ /
+              Sleep mode ---------------------->    kernel-mode debugging
+              
+        ```
   
   * set remote debug using vmware
     1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
@@ -1725,6 +1808,15 @@
 
   - resmon
     cannot save file
+    Registry path
+    ```
+    # cpu high write thumbcache_xxx.db file
+    [HKEY_CURRENT_USER\Software\Policies\Microsoft\Windows\Explorer]
+
+    "DisableThumbsDBOnNetworkFolders"
+    Type:REG_DWORD
+    Value:1
+    ```
 
   - WPA(windows performance analyzer)
     - windows performance recorder:
@@ -2038,8 +2130,26 @@
           // CloseHandle(hFileMapping);
           // CloseHandle(hFile);
 
-      - 
+        - memory-mapped file
+          - mapped (i.e., not copied) into virtual memory such that it looks as though it has been loaded into memory
+          - not actually being copied into virtual memory
+          - a range of virtual memory addresses are simply marked off for use by the file.
 
+  - user-mode
+    - UI
+      - [dialogbox](https://msdn.microsoft.com/en-us/library/windows/desktop/ms644995(v=vs.85).aspx)
+        - WM_INITDIALOG
+        - WM_COMMAND
+        - WM_PARENTNOTIFY
+        - Control-Color
+          ```
+          WM_CTLCOLORBTN
+          WM_CTLCOLORDLG
+          WM_CTLCOLOREDIT
+          WM_CTLCOLORLISTBOX
+          WM_CTLCOLORSCROLLBAR
+          WM_CTLCOLORSTATIC
+          ```
 
 # windows internal
   1. subsystem
@@ -2146,7 +2256,27 @@
         # link /VERBOSE[:{ICF|INCR|LIB|REF|SAFESEH|UNUSEDLIBS}]
         link /Entry:mainCRTStartup create_file.obj libucrt.lib /OUT:create_file.exe /DEBUG /PDB:create_file.pdb /MACHINE:x86 /SUBSYSTEM:CONSOLE /NOLOGO /MANIFEST /MANIFESTUAC:"level='requireAdministrator' uiAccess='false'" /manifest:embed
         /RELEASE (Set the Checksum)
+
+        # get preprocess output
+        cl /EP struct_padding.c
         ```
+
+  - Format of a C decorated name
+    - A decorated name for a C++ function contains the following information:
+      - function name
+      - The class that the function is a member of
+      - The namespace the function belongs to, if it is part of a namespace.
+      - The types of the function parameters.
+      - The calling convention.
+      - The return type of the function.
+      ```
+      Calling convention |        	Decoration
+      ---------------- - | -----------------------
+          __cdecl	       |  Leading underscore (_)
+          __stdcall	     |  Leading underscore (_) and a trailing at sign (@) followed by the number of bytes in the parameter list in decimal
+          __fastcall	   |  Leading and trailing at signs (@) followed by a decimal number , the number of bytes in the parameter list
+          __vectorcall	 |  Two trailing at signs (@@) followed by a decimal number of bytes in the parameter list
+      ```
 
   - create project from sources
     // Disable warning messages 4507 and 4034.  
@@ -2239,7 +2369,48 @@
       trace flags
       ```
 
-    - WPP(windows software trace )
+    - WPP(windows software trace processor)[https://msdn.microsoft.com/en-us/windows/hardware/drivers/devtest/wpp-software-tracing]
+      - DoTraceMessage 
+        %!ntstatus! [https://msdn.microsoft.com/en-us/library/cc704588.aspx]
+
+    - test
+      - verifier
+        ```
+        bit 0  - special pool checking
+        bit 1  - force irql checking
+        bit 2  - low resources simulation
+        bit 3  - pool tracking
+        bit 4  - I/O verification
+        bit 5  - deadlock detection
+        bit 6  - unused
+        bit 7  - DMA verification
+        bit 8  - security checks
+        bit 9  - force pending I/O requests
+        bit 10 - IRP logging
+        bit 11 - miscellaneous checks
+
+        verifier /standard /driver HookSSDT.sys
+        verifier /flags FF /driver HookSSDT.sys
+
+        # Start or Stop the Verification of a Driver without Rebooting
+        verifier /volatile /adddriver DriverName.sys
+        verifier /volatile /removedriver DriverName.sys
+
+        # Activate or Deactivate Options without Rebooting
+        verifier /valotile /flags 0x02
+
+        # Deactivate All Driver Verifier Options
+        verifier /valotile /flags 0x0
+
+        # Deactivate Driver Verifier, after next reboot
+        verifier /reset         
+
+       ```
+
+      - windbg
+        ```
+        !verifier 
+        ```
 
     - deploy driver
       - set test environment in vmware
@@ -2443,6 +2614,14 @@
         - calls IoReleaseRemoveLockAndWait, it is ready to be removed and cannot perform I/O operations   
         - calls IoInitializeRemoveLock to re-initialize the remove lock
 
+    - [driver to driver communication](http://www.osronline.com/article.cfm?id=24)
+      - IoGetDeviceObjectPointer 
+
+      - IoRegisterPlugPlayNotification
+
+      - Callbacks
+        ExCreateCallback
+
     - driver files
       - %SystemRoot%\Driver Cache\i386\drivers.cab
       - %SystemRoot%\Driver Cache\i386\service_pack.cab
@@ -2468,6 +2647,25 @@
         
       - Unload
 
+    - get device object
+      - IoGetDeviceObjectPointer:
+        works by sending an IRP_MJ_CREATE.
+        ```
+        # when calling it Access vailation in RtlEqualUnicodeString
+
+
+      - [IoGetDeviceObjectByName](https://www.osronline.com/showthread.cfm?link=166794)
+        - undocumented
+          ```
+          extern POBJECT_TYPE* IoDriverObjectType; 
+
+          POBJECT_TYPE ObGetObjectType(PVOID Object); 
+          
+          POBJECT_TYPE TypeObjectType = ObGetObjectType(*IoDriverObjectType);
+
+          ObReferenceObjectByName("\ObjectTypes\TypeName", TypeObjectType, ...);
+          ```
+
     - [target application](https://msdn.microsoft.com/en-us/library/windows/desktop/dn481241(v=vs.85).aspx)
 
     - [reboot or not](https://msdn.microsoft.com/en-us/library/windows/hardware/dn653568(v=vs.85).aspx)
@@ -2477,6 +2675,29 @@
 
 
   - hook SSDT
+    - call procedure
+      ```                 ntdll
+      ReadFile()  ----> NtReadFile
+      kernel32.dll      KiFastSysytemCall                         ntoskrnl.exe
+                        SYSENTER  --------------------------> KiSystermService()
+                                             ntoskrnl.exe       SSDT
+                      ntfs.sys <----------->I/O manager  <--  NtReadFile() 
+                      disk.sys <----------->
+                        |
+                      disk
+
+      .foreach /ps 1 /pS 1 ( offset {dd /c 1 nt!KiServiceTable L poi(nt!KeServiceDescriptorTable+10)}){ .printf "%y\n", ( offset >>> 4) + nt!KiServiceTable }
+
+      dd SharedUserData!SystemCallStub
+      7ffe0300  772d64f0 772d64f4 00000000 00000000
+
+      uf 772d64f0 
+      ntdll!KiFastSystemCall:
+      772d64f0 8bd4            mov     edx,esp
+      772d64f2 0f34            sysenter
+      772d64f4 c3              ret
+      ```
+
     - disable write protect
       - CR0
         clear CR0.WP

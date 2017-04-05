@@ -48,14 +48,24 @@ __os development__
   * read disk
     https://en.wikipedia.org/wiki/INT_13H#INT_13h_AH.3D02h:_Read_Sectors_From_Driv
     * kernel entry
+      ```
         gcc -ffreestanding -m32 -c kernel.c -o kernel.o
         nasm -f elf kernel_entry.s -o kernel_entry.o
         ld -Ttext 0x1000 --oformat binary kernel_entry.o kernel.o -o kernel.bin -m elf_i386
+        $(LD) $(LDFLAGS) -T kernel.ld $^ -o $@
+      ```
 
     * CHS 24-bit
       * 10 bits for the cylinder number, or a total of 1,024 cylinders.
       * 8 bits for the head number, or a total of 256 heads.
       * 6 bits for the sector number, or a total of 63 sectors
+
+    * error
+      ```
+      # when change code layout, something strang happen, I use gdb to debug, found out that the instruction 
+      # in binary file differs from the command in asm file, always add [bits 16/32]in your asm file to make
+      # sure they are compiled the rigth way
+      ```
 
   * screen 
     framebuffer at address 0xB8000 is just an array of 16-bit words, each 16-bit value representing the display of one character.
@@ -418,7 +428,70 @@ __os development__
         
         * paging (linear-address translation)
           linear -> physical
+    
+    - protect mode memory management 
+      - segment selectors 
+        ```
+        | 15                      3 | 2 | 1 0
+        +-------------------------------+-----+
+        |           Index           |TI | RPL |
+        +-------------------------------+-----+
+                                    |      |
+        Table Indicator:-------------+     |
+            0 = GDT                        |
+            1 = LDT                        |
+        Requested Privilege Level (RPL) ---+
+            0 - 3
+        ```
 
+        - SS CS DS ES FS GS
+          ```
+            visible part            hidden part
+          +-----------------+----------------------------------------+
+          |Segment Selector | Base Address, Limit, Access Information|
+          +-----------------+----------------------------------------+
+          ```
+
+      - system descripter types
+        - system-segment descriptor: point to system segment
+          - LDT segment descriptor
+          - TSS segment descriptor
+        - gate descriptor: hold pointers to procedure entry point in code segment
+          - interrupt-gate descriptor
+          - trap-gate descriptor
+          - task-gate descriptor
+
+      - segemtn descriptor tables
+        - GDT : 
+          ```
+          47(79)                          15                   0
+          +--------------------------------+--------------------+
+          | 32(64)-bit Linear Base Address | 16-Bit Table Limit |
+          +--------------------------------+--------------------+
+          
+          LGDT  SGDT
+          ```
+          - not a segment itself, a data structure in linear address space
+          - base address is aligned 8-byte boundary
+          - limit be one less than an integral multiple of eight (that is, 8N – 1).
+          - first descriptor in the GDT is not used by the processor, “null descriptor”
+            - does not generate an exception when loaded into a data-segment register (DS, ES, FS, or GS)
+            - get general-protection exception (#GP) when an try to access memory using the descriptor
+        - LDT :
+          ```
+          +----------------+----------------------------------------------+-----------+
+          | 16-bit Seg.Sel | 32(64)-bit Linear Base Address Segment Limit | Attribute |
+          +----------------+----------------------------------------------+-----------+
+
+          LLDT  SLDT
+          ```
+          - a system segment of the LDT type
+          - GDT must contain a segment descriptor for the LDT segment
+          - in system supports multiple LDTs
+            - each have seperate selector and segment descriptor in the GDT
+            - locate anywhere in GDT
+          - access with its segment selector
+            - segment selector, base linear address, limit, and access right stored in LDTR
 
       * System Registers
         * The system flags and IOPL field in the EFLAGS register control task and mode switching, interrupt handling,
@@ -433,10 +506,29 @@ __os development__
           The model-specific registers (MSRs) are a group of registers available primarily to operating-system or executive
           procedures (that is, code running at privilege level 0). These registers control items such as the debug extensions,
           the performance-monitoring counters, the machine- check architecture, and the memory type ranges (MTRRs).
+          - Extended Feature Enable Register (EFER)
+            - LME (Long Mode Enable)
       
       * mode of operations
                     PE = 1 | 0                    VM = 1 | 0
         real mode  <-----------> protected mode <---------------> Virtual-8086 mode 
         
         virtual-8086: allows the processor execute 8086 software in a protected, multitasking environment
+
+    - paging modes
+      - 32-bit paging: 
+        - CR0.PG=1, CR4.PAE=0  
+        - uses CR0.WP, CR4.PSE(Page Size Extensions), CR4.PGE(Paging Global Extensions), CR4.SMEP, and CR4.SMAP 
+
+      - PAE paging: 
+        - CR0.PG=1, CR4.PAE=1
+        - uses CR0.WP, CR4.PGE, CR4.SMEP, CR4.SMAP, and IA32_EFER.NXE 
+
+      - IA-32e paging:
+        - CR0.PG=1, CR4.PAE=1, IA32_EFER.LME=1
+        - use uses CR0.WP, CR4.PGE, CR4.PCIDE, CR4.SMEP, CR4.SMAP, CR4.PKE, and IA32_EFER.NXE
+
+    - Enumeration of Paging Features by CPUID
+      - 
+
         
