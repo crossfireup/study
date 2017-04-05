@@ -168,6 +168,66 @@
   Base64-encoded 	T 	Q 	= 	=
   ```
 
+- windows
+  - gs
+    - disable when buffer size <=4
+      ```
+      #pragma strict_gs_check([push,] on )   
+      #pragma strict_gs_check([push,] off )   
+      #pragma strict_gs_check(pop) 
+      ```
+    - usage
+      - When you compile this code with /GS, no cookie is inserted in the stack, because the array data type is a pointer. 
+      - Adding the strict_gs_check pragma forces the stack cookie into the function stack.
+      ```c
+      // pragma_strict_gs_check.cpp  
+      // compile with: /c  
+      // https://blogs.technet.microsoft.com/srd/2009/03/16/gs-cookie-protection-effectiveness-and-limitations/
+      #pragma strict_gs_check(on)  
+        
+      void ** ReverseArray(void **pData,  
+                          size_t cData)  
+      {  
+          // *** This buffer is subject to being overrun!! ***  
+          void *pReversed[20];  
+        
+          // Reverse the array into a temporary buffer  
+          for (size_t j = 0, i = cData; i ; --i, ++j)  
+              // *** Possible buffer overrun!! ***  
+                  pReversed[j] = pData[i];   
+        
+          // Copy temporary buffer back into input/output buffer  
+          for (size_t i = 0; i < cData ; ++i)   
+              pData[i] = pReversed[i];  
+        
+          return pData;  
+      }  
+      ```
+
+    - ASLR
+      - options
+        ```
+        /DYNAMICBASE[:NO]  
+        ```
+
+      - rules
+        - heap
+          - request an allocation of size rand(0..31) * 64kb then free extra
+        
+        - stack
+          - skip rand(0..31) STACK_SIZE(64kb 256kb), then alloc stack
+          - skip rand(0..PAGE_SIZE/2)(PTR alignment: 4b(x86) 8b(x64) or 16b(AI64)) bytes from top of the stack
+
+        - image
+          - offset starting address of first image(NTDLL.DLL) by rand(0..255) * 64kb and then pack image after that
+
+    - [DEP](https://blogs.technet.microsoft.com/srd/2010/12/08/on-the-effectiveness-of-dep-and-aslr/)
+      ```c
+      BOOL WINAPI SetProcessDEPPolicy(
+        _In_ DWORD dwFlags
+      )
+      ```
+
 * hack expose 7
   * footprint
     * methods

@@ -201,7 +201,7 @@
         
         - const specifiers on the functions returning: functions do not modify the object for which they are called
 
-        -  destructor is the complement operator, ˜, followed by the name of the class
+        - destructor is the complement operator, ˜, followed by the name of the class
 
     - abstract classes: A class with a pure virtual function
       - A class that provides the interface to a variety of __other classes__ is often called a polymorphic typ
@@ -226,8 +226,192 @@
       - Container can only serve as the interface to a class that implements its operator[]() and size() functions
       - Container does not have a constructor , does not have any data to initialize
 
-    - classes in hierarchies
-             
+    - classes 
+      - smart pointer
+        - unique_ptr
+          ```c++
+          std::unique_ptr<int> p1(new int(5));
+          std::unique_ptr<int> p2 = p1; //Compile error.
+          std::unique_ptr<int> p3 = std::move(p1); //Transfers ownership. p3 now owns the memory and p1 is rendered invalid.
+
+          p3.reset(); //Deletes the memory.
+          p1.reset(); //Does nothing.
+          ```
+          - a container for a raw pointer, belong to unique_ptr
+          - explicitly prevents copying of its contained pointer
+          - std::move can be used to transfer ownership of the contained pointer to another unique_ptr
+
+        - shared_ptr
+          ```c++
+          std::shared_ptr<int> p1(new int(5));
+          std::shared_ptr<int> p2 = p1; //Both now own the memory.
+
+          p1.reset(); //Memory still exists, due to p2.
+          p2.reset(); //Deletes the memory, since no one else owns the memory.
+          ```
+          - a container for a raw pointer
+          - maintains reference counting ownership of its contained pointer in cooperation with all copies of the shared_ptr
+          - destroyed when and only when all copies of the shared_ptr have been destroyed. 
+
+        - weak_ptr
+          ```c++
+          std::shared_ptr<int> p1(new int(5));
+          std::weak_ptr<int> wp1 = p1; //p1 owns the memory.
+
+          {
+            std::shared_ptr<int> p2 = wp1.lock(); //Now p1 and p2 own the memory.
+            if(p2) // As p2 is initialized from a weak pointer, you have to check if the memory still exists!
+            {
+              //Do something with p2
+            }
+          } //p2 is destroyed. Memory is owned by p1.
+
+          p1.reset(); //Memory is deleted.
+
+          std::shared_ptr<int> p3 = wp1.lock(); //Memory is gone, so we get an empty shared_ptr.
+          if(p3)
+          {
+            //Will not execute this.
+          }
+          ```
+          - a container for a raw pointer. It is created as a copy of a shared_ptr
+          - existence or destruction of weak_ptr copies of a shared_ptr have no effect on the shared_ptr or its other copies
+          - all copies of a shared_ptr have been destroyed, all weak_ptr copies become empty.
+
+        - copy and move
+          - copy 
+            ```
+            Vector(const Vector& a); // copy constr uctor
+            Vector& operator=(const Vector& a); // copy assignment
+            ```
+
+          - move 
+            ```
+            Vector(Vector&& a); // move constructor
+            Vector& operator=(Vector&& a); // move assignment
+            ```
+            - && means "rvalue reference" and is a reference to which we can bind an rvalue
+
+        - Suppressing Operation
+          ```c++
+          class Shape {
+            public:
+              Shape(const Shape&) =delete; // no copy operations
+              Shape& operator=(const Shape&) =delete;
+              Shape(Shape&&) =delete; // no move operations
+              Shape& operator=(Shape&&) =delete;
+              ˜Shape();
+              // ...
+            };
+          ```
+        
+        - template
+          - Parameterized Types:
+            ```c++
+            template<typename T>
+            class Vector {
+              public:
+                  Vector(int n);
+
+              private:
+                  T *elem;
+                  int sz;
+            }
+
+            template<typename T>
+            Vector<T>::Vector(int n){
+              if(n < 0) throw Negative_size();
+              
+              elem = new T[n];
+              sz = n;
+            }
+            ```
+
+          - function template
+            ```c++
+            template<typename Container, typename Value>
+            Value sum(const Container& c, Value v)
+            {
+              for (auto x : c)
+                v+=x;
+              return v;
+            }
+
+            void user(Vector<int>& vi, std::list<double>& ld, std::vector<complex<double>>& vc)
+            {
+              int x = sum(vi,0); // the sum of a vector of ints (add ints)
+              double d = sum(vi,0.0); // the sum of a vector of ints (add doubles)
+              double dd = sum(ld,0.0); // the sum of a list of doubles
+              auto z = sum(vc,complex<double>{}); // the sum of a vector of complex<double>
+              // the initial value is {0.0,0.0}
+            }
+            ```
+          
+          - function object
+            ```
+            template<typename T>
+            class Less_than {
+                const T val; // value to compare against
+              public:
+                Less_than(const T& v) :val(v) { }
+                bool operator()(const T& x) const { return x<val; } // call operator
+            }; 
+
+
+            Less_than<int> lti {42}; // lti(i) will compare i to 42 using < (i<42)
+            Less_than<string> lts {"Backus"}; // lts(s) will compare s to "Backus" using < (s<"Backus")
+
+            void fct(int n, const string & s)
+            {
+              bool b1 = lti(n); // true if n<42
+              bool b2 = lts(s); // true if s<"Backus"
+              // ...
+            }
+            ```
+          
+          - Variadic Templates
+            ```
+            template<typename T, typename... Tail>
+            void f(T head, Tail... tail)
+            {
+              g(head); // do something to head
+              f(tail...); // tr y again with tail
+            }
+
+            void f() { } // do nothing
+
+            template<typename T>
+            void g(T x)
+            {
+              cout << x << " ";
+            }
+
+            f(1,2.2,"hello"); // -->go(1) -> f(2.2, "hello") ->g(2.2) --> f("hello") ->g("hello") -> f()
+
+            output:  1 2.2 hello
+            ```
+
+          - aliases
+            - using size_t = unsigned int;
+            ```c++
+            template<typename T>
+            class Vector {
+              public:
+                using value_type = T;
+              // ...
+            };
+
+            template<typename C>
+            using Element_type = typename C::value_type;
+
+            template<typename Container>
+            void algo(Container& c)
+            {
+              Vector<Element_type<Container>> vec; // keep results here
+              // ...
+            }
+
+
   - usage:
     - cppunit
       ```

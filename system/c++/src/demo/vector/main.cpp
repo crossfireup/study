@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include <stdexcept>
 #include "vector.h"
 #include "vector_container.h"
@@ -63,9 +64,28 @@ int main(void)
     Vector_container vc{1.1, 2.1, 3.1};
     print_container(vc);
 
+    std::cout << "copy constructor" << std::endl;
+    Vector_container vc1{vc};
+    print_container(vc1);
+
+    std::cout << "copy assignment" << std::endl;
+    Vector_container vc2 = vc;
+    print_container(vc2);
+
+    std::cout << "move constructor " << std::endl;
+    Vector_container vc3(std::move(vc));
+    print_container(vc3);
+
+    std::cout << "move assignment " << std::endl;
+    Vector_container vc4(std::move(vc3));
+    print_container(vc4);
+
+    std::cout << "after move" << std::endl;
+    print_container(vc);
+    print_container(vc3);
+
     List_container lc = {4.1, 5.2, 6.3};
     print_container(lc);
 
     return 0; 
 }
-
