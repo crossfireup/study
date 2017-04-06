@@ -60,18 +60,18 @@
       FORWARD     | For any packets coming in one interface and leaving out another.
 
     * [netfilter](http://www.netfilter.org/documentation/HOWTO/netfilter-hacking-HOWTO-3.html)
-    ```
-            --->PRE------>[ROUTE]--->FWD---------->POST------>
-            Conntrack    |       Mangle   ^    Mangle
-            Mangle       |       Filter   |    NAT (Src)
-            NAT (Dst)    |                |    Conntrack
-            (QDisc)      |             [ROUTE]
-                        v                |
-                        IN Filter       OUT Conntrack
-                        |  Conntrack     ^  Mangle
-                        |  Mangle        |  NAT (Dst)
-                        v                |  Filter
-    ```
+      ```
+      --->PRE------>[ROUTE]--->FWD---------->POST------>
+      Conntrack    |       Mangle   ^    Mangle
+      Mangle       |       Filter   |    NAT (Src)
+      NAT (Dst)    |                |    Conntrack
+      (QDisc)      |             [ROUTE]
+                   v                |
+                   IN Filter       OUT Conntrack
+                   |  Conntrack     ^  Mangle
+                   |  Mangle        |  NAT (Dst)
+                   v                |  Filter
+      ```
 
   * iptables log
     * Enable Iptables LOG
@@ -498,7 +498,6 @@
       - any name preceded by ‘$’ can be used for a convenience variable, unless it is one of the predefned 
         machine-specifc register names 
       ```
-
       
     * usage:
       - debug daemon
