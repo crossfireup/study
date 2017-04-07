@@ -227,6 +227,11 @@
       - Container does not have a constructor , does not have any data to initialize
 
     - classes 
+      - initailization order
+        - for most-derived class, virtual base classes -> depth-first left-to-right of the base class declaration
+        - direct base classes left->right in base-specifier list
+        - non-static data members -> declaration in the class definition
+        - the body being excuted
       - smart pointer
         - unique_ptr
           ```c++
