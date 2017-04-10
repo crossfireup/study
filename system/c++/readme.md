@@ -362,7 +362,6 @@
                 bool operator()(const T& x) const { return x<val; } // call operator
             }; 
 
-
             Less_than<int> lti {42}; // lti(i) will compare i to 42 using < (i<42)
             Less_than<string> lts {"Backus"}; // lts(s) will compare s to "Backus" using < (s<"Backus")
 
@@ -415,9 +414,24 @@
               Vector<Element_type<Container>> vec; // keep results here
               // ...
             }
+            ```
+    - Standard Library: the most common fundamental data structures together with the fundamental algorithms used on them
+      - Run-time language support
+      - The C standard library
+      - Strings and I/O streams: <string>, <sstream>, <fstream>, <iostream>
+      - STL: container, algorithm
+      - Numeric compulation: standard mathmatical functions, complex numbers, vector with arithmetical ops and random generation
+      - regular expression matching
+      - concurrent programming: thread, lock
+      - utilities support template metaprogramming, STL-style generic programming, general programming
+      - "smart pointer" support resource management and interface to garbage collectors: <memory> unique_ptr, shared_ptr,
+      - special-purpose containers: array, bitset, pair, tuple
 
-
+      - string and IO
+        - cin<< c will skip whitespace and cin.get() doesn't   
+    
   - usage:
+    - pmr (Polymorphic Memory Resource)
     - cppunit
       ```
       test:
