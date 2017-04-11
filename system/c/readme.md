@@ -37,10 +37,15 @@ Rootkit Programming
   * struct sockaddr_ndd Defines the AIX NDD sockets used for machine-to-machine communication across a physical network. The /usr/include/sys/ndd_var.h file contains the sockaddr_ndd structure. Depending upon socket types and protocol, other header files may need to be included. 
 
 
-* [restrict](https://en.wikipedia.org/wiki/Restrict https://en.wikipedia.org/wiki/Pointer_aliasing)
+* [Type Qualifiers](http://www.oracle.com/technetwork/server-storage/solaris10/cc-restrict-139391.html)
+  - const: No writes through this lvalue.
+
+  - volatile: No cacheing through this lvalue
+
+  - [restric](https://en.wikipedia.org/wiki/Restrict https://en.wikipedia.org/wiki/Pointer_aliasing)
   
-  It says that for the lifetime of the pointer, only the pointer itself or a value directly derived from it (such as pointer + 1) will
-  be used to access the object to which it points. This limits the effects of pointer aliasing, aiding optimizations.
+    - for the lifetime of the pointer, only the pointer itself or a value directly derived from it (such as pointer + 1) will be used to access the object to which it points. 
+    - limits the effects of pointer aliasing, aiding optimizations
 
 * pthread 
   

@@ -105,6 +105,41 @@
       git diff --cached --submodule
       ```
 
+    - merge two different repository
+      - merge 2 local repos to one remote repository
+      - submodule
+      - subtree
+      - merger -s subtree
+      ```
+      git remote tree merge      
+      http://stackoverflow.com/questions/18858709/push-local-repo-to-new-sub-directory-of-remote-repo
+      https://git-scm.com/book/en/v1/Git-Tools-Subtree-Mergin
+      
+      #push HookSSDT to wkd
+      git config push.default upstream
+      git push wkd master
+      mkdir HookSSDT
+      find . -maxdepth 1 -type f -print | grep -v "git" | xargs -I % git mv % HookSSDT
+      git commit -m "new folder"
+      git push wkd master
+
+      # meget HookControl
+      git remote add wkd https://github.com/HuangBR/wkd
+      git fetch wkd master
+      git merge --allow-unrelated-histories wkd/master -m "merge HookControl"
+      mkdir HookControl
+      find . -maxdepth 1 -type f -print | grep -v "git" | xargs -I % git mv % HookControl
+      git commit -m "new folder"
+      git push wkd master
+
+      # get all
+      git clone https://github.com/HuangBR/wkd
+      cd wkd 
+
+      # tips
+      find . -name "*indexscreen_*" -a -type d -exec sh -c 'n={}; git mv {} ${n/indexscreen_/}' \;
+      ```
+
 4. ocr tools for linux 
   - sites
     https://tools.ietf.org/inventory/author-tools.shtml

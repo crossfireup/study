@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include <ios>
+#include <vector>
 #include <cctype>
 
 struct Entry {
@@ -35,9 +36,21 @@ std::istream& operator>>(std::istream& is, Entry& e)
     return is;
 }
 
+void print_book(const std::vector<Entry>& book)
+{
+    for(int i = 0; i != book.size(); i++){
+        std::cout << book[i] << '\n';
+    }
+
+    return;
+}
+
 int main(void)
 {
     std::string name = "hello world !";
+    std::vector<Entry> phone_book = { {"Dobly", 2332222}, {"Karia", 2553233}, {"Betey", 5688989}};
+
+    print_book(phone_book);
 
     std::cout << name.substr(0, 5) << std::endl;
     std::cout << name.replace(0, 5, "there") << std::endl;

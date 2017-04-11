@@ -429,8 +429,17 @@
 
       - string and IO
         - cin<< c will skip whitespace and cin.get() doesn't   
+
+      - container
+        - vector
+          - 
     
   - usage:
+    - default parameter value should only be defined in the function declaration.
+
+    - Member functions that do not modify the class instance should be declared as const:
+      error: passing ‘const String’ as ‘this’ argument of ‘const char* String::c_str()’ discards qualifiers
+
     - pmr (Polymorphic Memory Resource)
     - cppunit
       ```
