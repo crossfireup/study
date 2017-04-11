@@ -342,6 +342,12 @@ Rootkit Programming
     - [attribute](https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html)
       - __attribute__ ((unused))
 
+  - compile c++
+    ```
+    gcc leton.cpp -lstdc++
+    g++ letion.cpp
+    ```
+
 # io
 -----
   * file

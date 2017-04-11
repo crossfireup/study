@@ -18,10 +18,10 @@ OBJECTS= $(SOURCES:.cpp=.obj)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-    $(CXX) $(CXXFLAGS) $** /Fe$@
+    $(CXX) $(CXXFLAGS) $** /Fe$@ /Zi 
 
 .cpp.obj:
-	$(CXX) $(CXXFLAGS) /c $< /Fa /Fo$@
+	$(CXX) $(CXXFLAGS) /c $< /Fa /Fo$@ /FAcs
 
 clean:
-	del /q /f $(OBJECTS) $(TARGET) $(OBJECTS:.obj=.asm)
+	del /q /f $(OBJECTS) $(TARGET) $(OBJECTS:.obj=.asm) *.cod
