@@ -463,4 +463,29 @@
       assert:
         Asserter: fail, failIF
       ```
+
+    - sandbox in chromium
+      - broker
+        - set policy to target
+        
+        - spawn the target process
+        
+        - host sandbox policy engine service
+
+        - host sandbox interception service:
+          forward windows API calls via IPC to the broker.
+
+        - host sandbox IPC service
+
+        - perform the policy-allowed action on behalf of the target process
+
+      - target
+        - all code to be sandboxed
+        - sandbox IPC client
+        - sandbox policy client
+        - sandbox interceptions:
+          - the interceptions (also known as hooks) are how Windows API calls are forwarded via the sandbox IPC to the broker
+          - It is up to the broker to re-issue the API calls and return the results or simply fail the calls.
+
+      - 
         
