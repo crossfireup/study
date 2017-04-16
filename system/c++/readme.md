@@ -440,6 +440,13 @@
     - Member functions that do not modify the class instance should be declared as const:
       error: passing ‘const String’ as ‘this’ argument of ‘const char* String::c_str()’ discards qualifiers
 
+    - windows C++ use static to cast dialog procedure in DialogBox
+      - CreateDialogParam takes a pointer to a simple function, not a pointer to member-function of some class.
+
+      - Window and dialog procedures (and other Win32 callback functions) need to be static or global functions - they can't be non-static class functions. Win32 is fundamentally a C-based API and it has no concept of the hidden this pointer that class functions require.(http://stackoverflow.com/questions/25678892/calling-a-win32-api-and-giving-a-callback-to-a-class-function)
+
+    - [C and C++ mixing](http://www.oracle.com/technetwork/articles/servers-storage-dev/mixingcandcpluspluscode-305840.html, https://isocpp.org/wiki/faq/mixing-c-and-cpp)
+    
     - pmr (Polymorphic Memory Resource)
     - cppunit
       ```
@@ -487,5 +494,6 @@
           - the interceptions (also known as hooks) are how Windows API calls are forwarded via the sandbox IPC to the broker
           - It is up to the broker to re-issue the API calls and return the results or simply fail the calls.
 
-      - 
+     - qt create
+      - set spec
         
