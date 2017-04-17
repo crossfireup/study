@@ -364,8 +364,13 @@
   - packege
     ```
     pkgmgr
-    msiexec
     ```
+    - msiexec
+      ```
+      msiexec /a D:\test\windows\msi\help3_vs_net.msi TARGETDIR=D:\test\windows\msi\out\
+
+      msiexec /a D:\test\windows\msi\help3_vs_net.msi VS_SETUP=1 /log install.log
+      ```
   - cmd 
     ```
     setx - Set environment variables permanently, SETX can be used to set Environment Variables for the machine (HKLM) or currently logged on user (HKCU).
@@ -1031,6 +1036,14 @@
               Sleep mode ---------------------->    kernel-mode debugging
               
         ```
+
+    * logger
+      ```
+      !logexts.logo e|d d|t|v # eable/disable debug/text/verbose
+
+      !logo e|d d|t|v
+      ```
+
   
   * set remote debug using vmware
     1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)
@@ -2310,6 +2323,15 @@
       C:\ProgramData\Microsoft\HelpLibrary2\Catalogs\VisualStudio12\
 
       hlpctntMgr /operation install /catalogName VisualStudio12 /locale en-US /sourceUri C:\Users\Dobly\AppData\Local\Microsoft\HelpViewer2.1\VisualStudio12_en-US\helpcontentsetup.msha
+      ```
+
+    - open catelog
+      ```
+      "C:\Program Files (x86)\Microsoft Help Viewer\v2.2\HlpViewer.exe" /catalogName VisualStudio14 /helpQuery method=f1&query=msdnstart /locale en-US /sku 1800 /launchingApp Microsoft,VisualStudio,14.0
+
+      HlpCtntMgr.exe /operation uninstall /catalogName VisualStudio14 /locale en-US
+
+      "C:\Program Files (x86)\Microsoft Help Viewer\v2.2\hlpctntMgr.exe" /operation install /catalogName VisualStudio14 /locale en-US /sourceUri C:\Users\Dobly\AppData\Local\Microsoft\HelpViewer2.2\VisualStudio14_en-US\helpcontentsetup.msha
       ```
 
     - [driver sign](https://technet.microsoft.com/en-us/library/dd919238(v=ws.10).aspx)
