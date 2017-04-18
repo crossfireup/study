@@ -2332,6 +2332,9 @@
       HlpCtntMgr.exe /operation uninstall /catalogName VisualStudio14 /locale en-US
 
       "C:\Program Files (x86)\Microsoft Help Viewer\v2.2\hlpctntMgr.exe" /operation install /catalogName VisualStudio14 /locale en-US /sourceUri C:\Users\Dobly\AppData\Local\Microsoft\HelpViewer2.2\VisualStudio14_en-US\helpcontentsetup.msha
+
+      # restart updateCommand
+      "C:\Program Files (x86)\Microsoft Help Viewer\v2.2\HlpCtntMgr.exe" "/operation" "restart" "/catalogName" "VisualStudio14" "/restart" "UpdateCommand" "/locale" "en-US" "/E"
       ```
 
     - [driver sign](https://technet.microsoft.com/en-us/library/dd919238(v=ws.10).aspx)
