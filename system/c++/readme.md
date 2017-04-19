@@ -435,6 +435,9 @@
           - 
     
   - usage:
+    - placement new:
+      - don't use placement new unless you have to
+      - use it only when you really care that an object is placed at particular memory location
     - default parameter value should only be defined in the function declaration.
 
     - Member functions that do not modify the class instance should be declared as const:

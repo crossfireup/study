@@ -140,6 +140,14 @@
       find . -name "*indexscreen_*" -a -type d -exec sh -c 'n={}; git mv {} ${n/indexscreen_/}' \;
       ```
 
+    # amending a commit
+      ```
+      # Amending a Commit Without Changing Its Message
+      git comit --amend --no-edit
+
+      git commit --amend -m "Your new commit message"
+      ```
+
 4. ocr tools for linux 
   - sites
     https://tools.ietf.org/inventory/author-tools.shtml
@@ -841,3 +849,25 @@
     # paste some text into tmux:
       press SHIFT and click right-button of mouse.
     ```
+
+# tips
+  - always pay attention to the version of the software you install, or it may be a disaster
+    - VS2015 and VS2013, and their related QT version
+      - _NT_TARGET_VERSION not set
+        ```xml
+        <!-- WindowsDriver.Shared.Props -->
+        <When Condition="('$(TargetVersion)'=='Windows7') Or ('$(TargetVersion)'=='Win7')">
+          <PropertyGroup>
+            <_NT_TARGET_VERSION>$(_NT_TARGET_VERSION_WIN7)</_NT_TARGET_VERSION>
+            <CURRENT_NTDDI_VERSION>0x06010000</CURRENT_NTDDI_VERSION>
+            <CURRENT_WIN32_WINNT_VERSION>0x0601</CURRENT_WIN32_WINNT_VERSION>
+            <SUBSYSTEM_VERSION_LATEST>6.01</SUBSYSTEM_VERSION_LATEST>
+            <!-- Continue to default to Vista due to extra requirement to link to ole32.dll in Win7 stubs -->
+            <MIDL_TARGET Condition="'$(MIDL_TARGET)' == ''">$(MIDL_TARGET_VISTA)</MIDL_TARGET>
+            <DDKSpec>win7</DDKSpec>
+            <Inf2CatWindowsVersionList>7_$(DDKPlatform)</Inf2CatWindowsVersionList>
+          </PropertyGroup>
+        </When>
+      ```
+      - symbols not found
+      - exit unexpected
