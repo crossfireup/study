@@ -850,6 +850,16 @@
       press SHIFT and click right-button of mouse.
     ```
 
+# visual studio
+  - resource file
+    ```
+    # add to rc file
+    #include <winres.h>
+    #pragma code_page(1252)
+
+     "C:\Program Files (x86)\Windows Kits\8.1\bin\x86\rc.exe" /D _UNICODE /D UNICODE /l"0x0409" /nologo /fo"Debug\ExplorePE.res" ExplorePE.rc
+     ```
+
 # tips
   - always pay attention to the version of the software you install, or it may be a disaster
     - VS2015 and VS2013, and their related QT version
@@ -871,3 +881,24 @@
       ```
       - symbols not found
       - exit unexpected
+
+  - start debug with error in vs
+    *.vcxproj.user has user-defined variables that can be used to build the project, usually the git ignore this file for that its was set as a system varaible and different between machines
+    ```
+    <?xml version="1.0" encoding="utf-8"?>
+    <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+      <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      <QTDIR>C:\Qt\Qt5.8.0_vs2013\5.8\msvc2013</QTDIR>
+        <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+      </PropertyGroup>
+      <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      <QTDIR>C:\Qt\Qt5.8.0_vs2013\5.8\msvc2013</QTDIR>
+        <LocalDebuggerEnvironment>PATH=$(QTDIR)\bin%3b$(PATH)</LocalDebuggerEnvironment>
+      </PropertyGroup>
+    </Project>
+    ```
+
+# todo
+- how default icon being loaded in QT
+  - a rc file being compile by rc.exe and link with the res file
+  - not find function call setWindowIcon
