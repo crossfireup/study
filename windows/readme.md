@@ -434,6 +434,11 @@
     ```
 
 # sysinternals
+  * use
+    ```
+    \\live.sysinternals.com\tools\sigcheck.exe -m c:\Windows\notepad.exe
+    net use Y: \\live.sysinternals.com\tools\
+    ```
   * get open files 
     - handle -u Administrator
     - handle -p cmd
@@ -515,6 +520,15 @@
       wevtutil qe Microsoft-Windows-Sysmon/Operational /f:text
       eventvwr.msc
       ```
+
+  - sigcheck
+    - extract manifest info
+    ```
+    \\live.sysinternals.com\tools\sigcheck.exe -m notepad.exe
+    
+    # manifest tool
+    mt.exe /?
+    ```
 
 # common useful gui 
   - godmod
