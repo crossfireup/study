@@ -26,7 +26,44 @@
 
       modified files     ------------> snapshot of them ------------> permenently stored
 
-    - 
+    * view updates
+      git add -u -n
+
+    * undo add
+      git reset <file>
+
+    * add changes to stage
+      git add . # add all incluing untraced files
+      git commit -a -m "message"
+
+    * stash
+      git stash
+      git stash list
+      git stash apply stash@{1}  
+      git stash pop # apply the top stash on the stack
+      git stash drop <id>
+      git stash clear
+
+      git stash show -p stash@{0}
+      git stash save --keep-index
+
+    * add local repository to github
+      * create a short name for use
+        ```
+        git remote add study https://github.com/HuangBR/study.git
+        ```
+      * push to remote 
+        ```
+        git push origin master
+        ```
+      * after all above, just use git push
+        ```
+        git push
+        ```
+
+    - add remote repository 
+      - git remote
+      -  
 
   - git repository
     ```

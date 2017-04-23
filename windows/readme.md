@@ -1056,6 +1056,8 @@
       !logexts.logo e|d d|t|v # eable/disable debug/text/verbose
 
       !logo e|d d|t|v
+
+      .effmach x86
       ```
 
   
