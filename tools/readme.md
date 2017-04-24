@@ -934,6 +934,7 @@
       </PropertyGroup>
     </Project>
     ```
+    http://blogs.microsoft.co.il/sasha/2007/08/11/debugging-and-investigation-tools/
 
 # todo
 - how default icon being loaded in QT

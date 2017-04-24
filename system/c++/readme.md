@@ -433,6 +433,19 @@
       - container
         - vector
           - 
+
+    - lvalue and rvalue
+      - forward
+        ```C++
+        template<class T, class... U>
+        std::unique_ptr<T> make_unique(U&&... u)
+        {
+            return std::unique_ptr<T>(new T(std::forward<U>(u)...));
+        }
+
+        string a;
+        make_unique(1, a, 2);
+        ```
     
   - usage:
     - placement new:
