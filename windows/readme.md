@@ -433,6 +433,11 @@
     E = ENCRYPTED
     ```
 
+  - robocopy
+    ```
+    robocopy C:\Users\Dobly\AppData\Local\Temp\{0A95B1D1-A2A2-4F5A-82ED-7D6DC301A5A3} d:\test\ WebToolsAzureVS14.R
+    ```
+
 # sysinternals
   * use
     ```
@@ -1059,7 +1064,26 @@
 
       .effmach x86
       ```
+      - [mix x86 and x64](https://blogs.msdn.microsoft.com/msdnforum/2010/03/14/how-do-i-switch-to-32bit-mode-when-i-use-windbg-to-debug-a-dump-of-a-32bit-application-running-on-an-x64-machine/)
+        ```
+        # using 64-bit cdb to debug 32-bit application in x64 system
+        "C:\Program Files (x86)\Windows Kits\8.1\Debuggers\x86\cdb.exe"  "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\errlook.exe"
 
+        .load wow64exts
+        .effmatch
+        # switch to x86 mode
+        !wow64exts.sw      !sw      .effmatch x86
+        .effmatch
+
+        .load logexts
+        !loge    # .logexts.loge #
+        .logexts.logi
+        .logo e d
+        .logo e t
+        .logo e v
+
+        logviewer
+        ```
   
   * set remote debug using vmware
     1. [Installation](http://www.microsoft.com/whdc/devtools/debugging/installx86.mspx)

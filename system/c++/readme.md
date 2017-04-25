@@ -513,3 +513,12 @@
      - qt create
       - set spec
         
+- com
+  - midl (Microsoft Interface Define Language)[https://en.wikipedia.org/wiki/Interface_description_language]
+    ```
+                midl vss.idl
+    vss.h         vss_i.h         vss.tlb
+    C/C++           GUID          VB, Java
+          vss_p.c         dlldata.c
+
+    ```

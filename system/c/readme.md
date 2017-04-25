@@ -580,3 +580,6 @@ Rootkit Programming
         break;
       }
       ```
+
+# [ABI specification](http://stackoverflow.com/questions/4489012/does-c-have-a-standard-abi)
+  - x64 Software Conventions in vs
