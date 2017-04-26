@@ -438,6 +438,21 @@
     robocopy C:\Users\Dobly\AppData\Local\Temp\{0A95B1D1-A2A2-4F5A-82ED-7D6DC301A5A3} d:\test\ WebToolsAzureVS14.R
     ```
 
+  - [rundll32.exe](https://support.microsoft.com/en-us/help/164787/info-windows-rundll-and-rundll32-interface)
+    ```
+    RUNDLL.EXE <dllname>,<entrypoint> <optional arguments>
+     
+    cl testdll.c /MDd /c
+    link /dll testdll.obj  user32.lib
+    rundll32.exe testdll.dll,dllmain
+    ```
+    Rundll performs the following steps:
+      - parses the command line.
+      - loads the specified DLL via LoadLibrary().
+      - obtains the address of the <entrypoint> function via GetProcAddress().
+      - calls the <entrypoint> function, passing the command line tail which is the <optional arguments>.
+      - When the <entrypoint> function returns, Rundll.exe unloads the DLL and exits.
+
 # sysinternals
   * use
     ```
@@ -1683,6 +1698,20 @@
     @="\"C:\\Program Files (x86)\\IDA 6.8\\idaq64.exe\" \"%1\" "
     ```
   
+  - [registry string redirection](https://msdn.microsoft.com/en-us/library/windows/desktop/dd374120(v=vs.85).aspx)
+    - format
+      ```
+      "@<PE-path>,-<stringID>[;<comment>]"
+      
+      @%SystemRoot%\system32\input.dll,-5020
+      ```
+      - PE-path specifies the path of executable, can use %Programfiles%
+      - stringID specifies the numeric resource identifier of the relevant string resource
+      - comment specifies optional information for debugging or readability of the registry value
+
+  - usage
+    - don't display user name
+
 
 # [network tracing in windows](https://msdn.microsoft.com/en-us/library/windows/desktop/dd569136(v=vs.85).aspx)
   - network tracing architecture
@@ -2266,7 +2295,8 @@
                            |___ GLOBALROOT
           ```
 
-
+      - [path convention](https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html)
+        
 # MS15-050
   - 
 

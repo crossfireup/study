@@ -446,6 +446,9 @@
         string a;
         make_unique(1, a, 2);
         ```
+
+    - allocators
+      - provide a source of memory for a given type and a place to return that memory to once it is no longer needed
     
   - usage:
     - placement new:
