@@ -124,6 +124,11 @@
         - use instance of a class by include header
 
       - namespace
+        - features
+          - express a logically coherent set of features
+          - no access to unrelated features
+          - not impose a signifacant notational burden on users
+
         - a mechanism show some declarations belong together and their names shouldn’t clash with others
           ```c++
           namespace My_code {
@@ -152,6 +157,47 @@
           using namespace std;
           ```
       
+        - namespace alias
+          ```C++
+          namespace Telephone_And_Telegraph {
+            // ...
+          }
+
+          namespace TAT = Telephone_And_Telegraph;
+          ```
+
+        - composition using namespace
+          ```
+          namespace X {
+            int i, j, k;
+          }
+
+          int k;
+
+          void f1()
+          {
+            int i = 0;
+            using namespace X;
+            i++;  // local i
+            j++;  // X::j
+            k++;  // error, global k ? X::k
+            ::k++;// global k
+            X::k++; 
+          }
+
+          void f2()
+          {
+            int i = 0;
+            using X::i; // error: i declares twice
+            using X::j;
+            using X::k; // hide global k
+
+            i++;
+            j++; // X::j++
+            k++; // X::k++
+          }
+          ```
+
       - Error Handling
       
       - exception
@@ -225,6 +271,9 @@
       - not possible to define an object that is just a Container
       - Container can only serve as the interface to a class that implements its operator[]() and size() functions
       - Container does not have a constructor , does not have any data to initialize
+
+    - mutable
+      - means it can be modified even in a const object
 
     - classes 
       - initailization order
@@ -379,7 +428,7 @@
             void f(T head, Tail... tail)
             {
               g(head); // do something to head
-              f(tail...); // tr y again with tail
+              f(tail...); // try again with tail
             }
 
             void f() { } // do nothing

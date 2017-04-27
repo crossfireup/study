@@ -7,13 +7,30 @@
 # windows tools:
   - package
     - sysinternals
-    - windows resource tool
+    - windows resource kits
     - SUA
     - cygwin
     - mingwin
     - support tools
     - sdk
     - ddk
+    - ida
+    - Explorer Suite CFF
+    - resource hacker
+    - winhex / hex workshop
+    - everything
+    - listrary
+    - IObit unlocker
+    - firefox / chrome
+
+  - others
+    - API monitor
+    - astah community
+    - utralISO
+    - 7-zip
+    - office
+    - foxreader
+    - jisupdf
   
   * appwiz.cpl
   * inetcpl.cpl
