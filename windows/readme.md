@@ -339,6 +339,74 @@
         http://www.winhelponline.com/blog/wp-content/uploads/reg/copypath.reg C:\Users\Dobly\Downloads\cmd_download\bits_copypath.reg
       ```
 
+  - windows update
+    ```
+    wuauclt.exe /deletenow /updatenow
+
+    wusa.exe /uninstall /kb:123456 /quiet /norestart
+    wusa.exe Windows6.1-KB123456-x86.msu /quiet /norestart
+
+
+    powershell
+    Install-Module PSWindowsUpdate
+    Get-WindowsUpdate
+    Install-WindowsUpdate
+    ```
+  
+  - powershell
+    - execution policy and scope
+      - [Set-ExecutionPolicy](https://technet.microsoft.com/library/hh847748.aspx)
+        - Restricted: No Script either local, remote or downloaded can be executed on the system.
+        - AllSigned: All script that are ran require to be digitally signed.
+        - RemoteSigned: All remote scripts (UNC) or downloaded need to be signed.
+        - Unrestricted: No signature for any type of script is required.
+      
+      - [scope](https://www.darkoperator.com/blog/2013/3/5/powershell-basics-execution-policy-part-1.html)
+        - MachinePolicy: The execution policy set by a Group Policy for all users.
+        - UserPolicy: The execution policy set by a Group Policy for the current user.
+        - Process: The execution policy that is set for the current Windows PowerShell process.
+        - CurrentUser: The execution policy that is set for the current user.
+        - LocalMachine: The execution policy that is set for all users.
+
+      - usage
+        ```
+        Get-ExecutionPolicy -List | ft -AutoSize 
+
+        Set-ExecutionPolicy Restricted -Force 
+        ```
+    
+    - package management
+      ```
+      @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+      choco upgrade chocolatey
+      ```
+
+    - version
+      ```
+      get-host
+
+      $PSversionTable
+      ```
+
+    - windows update
+      ```
+      control.exe /name Microsoft.WindowsUpdate
+
+      Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+      Install-Module PSWindowsUpdate
+      import-module PSWindowsUpdate
+
+      Get-wulist
+      Install-windowsupdate
+      ```
+
+    - diskinfo
+      ```ps
+      $disk = ([wmi]"\root\cimv2:Win32_logicalDisk.DeviceID='c:'")
+      "C: has {0:#.0} GB free of {1:#.0} GB Total" -f ($disk.FreeSpace/1GB),($disk.Size/1GB)
+      ```
+
   * [Event Tracing for Windows (ETW)](https://msdn.microsoft.com/en-us/magazine/ee412263.aspx)
     ```
     xperf.exe
@@ -1254,6 +1322,13 @@
         bcdedit /bootdebug {9ee65318-1029-11e6-bdc5-d24cbb4066ca} on 
         bcdedit /debug {9ee65318-1029-11e6-bdc5-d24cbb4066ca} on
         ```
+    
+    - hypervisor configure
+      ```
+      bcdedit /set hypervisorlaunchtype off
+
+      bcdedit /set hypervisorlaunchtype auto
+      ```
 
     - restart computer
       ```
@@ -2898,3 +2973,6 @@
 
                     DpcQueue: 
       ```
+
+# kernel
+  - CreateFile and NtCreateFile

@@ -942,6 +942,10 @@
       vs_community__797361372.1493258229.exe --layout D:\Software\programming\vs2017offline --lang zh-CN en-US
       ```
 
+  - bash on windows
+    ```
+    lxrun /setdefaultuser root /y
+    ```
 # todo
 - how default icon being loaded in QT
   - a rc file being compile by rc.exe and link with the res file
