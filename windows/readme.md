@@ -373,6 +373,9 @@
         Get-ExecutionPolicy -List | ft -AutoSize 
 
         Set-ExecutionPolicy Restricted -Force 
+
+        if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+
         ```
     
     - package management
@@ -1803,6 +1806,12 @@
 
   - usage
     - don't display user name
+
+    - permission
+      - regini.exe
+        ```
+
+        ```
 
 
 # [network tracing in windows](https://msdn.microsoft.com/en-us/library/windows/desktop/dd569136(v=vs.85).aspx)
