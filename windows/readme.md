@@ -410,6 +410,20 @@
       "C: has {0:#.0} GB free of {1:#.0} GB Total" -f ($disk.FreeSpace/1GB),($disk.Size/1GB)
       ```
 
+    - registry
+      ```
+      Get-Item -Path "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Search"
+      ```
+
+    - [ACL](https://ss64.com/ps/set-acl.html)(https://msdn.microsoft.com/en-us/library/system.security.accesscontrol.filesystemaccessrule%28v=vs.110%29.aspx)
+      ```
+      $acl = Get-Acl -Path "d:\github"
+      $perm = $env:USERNAME, 'Read,Modify', 'ContainerInherit, ObjectInherit', 'None', 'Allow'
+      $rule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $perm
+      $acl.SetAccessRule($rule) 
+      Set-Acl -Path "d:\github" -AclObjec $acl
+      ```
+
   * [Event Tracing for Windows (ETW)](https://msdn.microsoft.com/en-us/magazine/ee412263.aspx)
     ```
     xperf.exe
@@ -540,6 +554,28 @@
       - obtains the address of the <entrypoint> function via GetProcAddress().
       - calls the <entrypoint> function, passing the command line tail which is the <optional arguments>.
       - When the <entrypoint> function returns, Rundll.exe unloads the DLL and exits.
+
+  - reg
+    ```
+    reg query "HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\Repository\Packages\Microsoft.MicrosoftEdge_40.15063.0.0_neutral__8wekyb3d8bbwe\MicrosoftEdge\Capabilities\FileAssociations" /s
+
+    .htm    REG_SZ    AppX4hxtad77fbk3jkkeerkrm0ze94wjf3s9
+    .html    REG_SZ    AppX4hxtad77fbk3jkkeerkrm0ze94wjf3s9
+    .pdf    REG_SZ    AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723
+    .svg    REG_SZ    AppXde74bfzw9j31bzhcvsrxsyjnhhbq66cs
+    .xml    REG_SZ    AppXcc58vyzkbjbs4ky0mxrmxf8278rk9b3t
+    .epub    REG_SZ    AppXvepbp3z66accmsd0x877zbbxjctkpr6t
+
+    reg query HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723 /s
+
+    reg add HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723 /v NoOpenWith /t REG_SZ /v ""
+
+    reg add HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723 /v NoOpenWith /t REG_SZ
+
+    reg query HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723
+      HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723
+      NoOpenWith    REG_SZ
+    ```
 
 # sysinternals
   * use
