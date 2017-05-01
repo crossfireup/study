@@ -8,7 +8,8 @@
   - package
     - sysinternals
     - windows resource kits
-    - SUA
+    - unxutil
+    - SUA 
     - cygwin
     - mingwin
     - support tools
@@ -575,6 +576,11 @@
     reg query HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723
       HKEY_CURRENT_USER\SOFTWARE\Classes\AppXd4nrz8ff68srnhf9t5a8sbjyar1cr723
       NoOpenWith    REG_SZ
+    ```
+
+  - SubInAcl.exe
+    ```
+    subinacl.exe /verbose /file acctinfo.dll /display
     ```
 
 # sysinternals
