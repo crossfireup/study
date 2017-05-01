@@ -1,6 +1,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <iphlpapi.h>
+#include <tlhelp32.h>
 #include <stdio.h>
 
 // Need to link with Iphlpapi.lib and Ws2_32.lib
@@ -47,69 +48,90 @@ int main()
 // Make a second call to GetTcpTable2 to get
 // the actual data we require
     if ((dwRetVal = GetTcpTable2(pTcpTable, &ulSize, TRUE)) == NO_ERROR) {
-        printf("\tNumber of entries: %d\n", (int) pTcpTable->dwNumEntries);
-        printf("\tTCP State\tLocal Addr\tLocal Port\tRemote Addr\tRemote Port\tPid\tOffload State\n");
+        printf("Number of entries: %d\n", (int) pTcpTable->dwNumEntries);
+        printf("%-18s  %-15s  %-5s  %-15s  %-5s  %-8s  %-10s\n",
+                "TCP State", "Local Addr", "Local Port", "Remote Addr", "Remote Port", "Pid", "Name");
         for (i = 0; i < (int) pTcpTable->dwNumEntries; i++) {
-            printf(" %ld - ", i,
+            printf("%03d - ", i,
                    pTcpTable->table[i].dwState);
             switch (pTcpTable->table[i].dwState) {
             case MIB_TCP_STATE_CLOSED:
-                printf("CLOSED\t");
+                printf("%-12s  ", "CLOSED");
                 break;
             case MIB_TCP_STATE_LISTEN:
-                printf("LISTEN\t");
+                printf("%-12s  ", "LISTEN");
                 break;
             case MIB_TCP_STATE_SYN_SENT:
-                printf("SYN-SENT\t");
+                printf("%-12s  ", "SYN-SENT");
                 break;
             case MIB_TCP_STATE_SYN_RCVD:
-                printf("SYN-RECEIVED\t");
+                printf("%-12s  ", "SYN-RECEIVED");
                 break;
             case MIB_TCP_STATE_ESTAB:
-                printf("ESTABLISHED\t");
+                printf("%-12s  ", "ESTABLISHED");
                 break;
             case MIB_TCP_STATE_FIN_WAIT1:
-                printf("FIN-WAIT-1\t");
+                printf("%-12s  ", "FIN-WAIT-1");
                 break;
             case MIB_TCP_STATE_FIN_WAIT2:
-                printf("FIN-WAIT-2 \t");
+                printf("%-12s  ", "FIN-WAIT-2 ");
                 break;
             case MIB_TCP_STATE_CLOSE_WAIT:
-                printf("CLOSE-WAIT\t");
+                printf("%-12s  ", "CLOSE-WAIT");
                 break;
             case MIB_TCP_STATE_CLOSING:
-                printf("CLOSING\t");
+                printf("%-12s  ", "CLOSING");
                 break;
             case MIB_TCP_STATE_LAST_ACK:
-                printf("LAST-ACK\t");
+                printf("%-12s  ", "LAST-ACK");
                 break;
             case MIB_TCP_STATE_TIME_WAIT:
-                printf("TIME-WAIT\t");
+                printf("%-12s  ", "TIME-WAIT");
                 break;
             case MIB_TCP_STATE_DELETE_TCB:
-                printf("DELETE-TCB\t");
+                printf("%-12s  ", "DELETE-TCB");
                 break;
             default:
-                wprintf(L"UNKNOWN dwState value: %d\t", pTcpTable->table[i].dwState);
+                wprintf(L"UNKNOWN dwState value: %d", pTcpTable->table[i].dwState);
                 break;
             }
 
             IpAddr.S_un.S_addr = (u_long) pTcpTable->table[i].dwLocalAddr;
             strcpy_s(szLocalAddr, sizeof (szLocalAddr), inet_ntoa(IpAddr));
-            printf(" %s\t", szLocalAddr);
+            printf("%-20s", szLocalAddr);
 
-            printf(" %d \t", ntohs((u_short)pTcpTable->table[i].dwLocalPort));
+            printf("%-10d", ntohs((u_short)pTcpTable->table[i].dwLocalPort));
 
             IpAddr.S_un.S_addr = (u_long) pTcpTable->table[i].dwRemoteAddr;
             strcpy_s(szRemoteAddr, sizeof (szRemoteAddr), inet_ntoa(IpAddr));
-            printf(" %s\t", szRemoteAddr);
+            printf("%-20s", szRemoteAddr);
 
-            printf(" %d\t",
+            printf("%-10d",
                    ntohs((u_short)pTcpTable->table[i].dwRemotePort));
                    
-            printf(" %d\t", pTcpTable->table[i].dwOwningPid);
+            printf("%-9d", pTcpTable->table[i].dwOwningPid);
 
-            printf(" %ld - ",
+			HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
+			if(hSnapshot) {
+				PROCESSENTRY32 pe32;
+				pe32.dwSize = sizeof(PROCESSENTRY32);
+				if(Process32First(hSnapshot, &pe32)) {
+					do {
+						if (pe32.th32ProcessID == pTcpTable->table[i].dwOwningPid){
+							printf("%s\n", pe32.szExeFile);
+							break;
+						}
+					} while(Process32Next(hSnapshot, &pe32));
+					if(pe32.th32ProcessID != pTcpTable->table[i].dwOwningPid)
+						printf("\n");
+				} else {
+                    printf("\n");
+                }
+				CloseHandle(hSnapshot);
+			}
+
+#if 0
+            printf("%ld - ",
                    pTcpTable->table[i].dwOffloadState);
             switch (pTcpTable->table[i].dwOffloadState) {
             case TcpConnectionOffloadStateInHost:
@@ -128,7 +150,7 @@ int main()
                 printf("UNKNOWN Offload state value\n");
                 break;
             }
-                   
+#endif
         }
     } else {
         printf("\tGetTcpTable2 failed with %d\n", dwRetVal);
