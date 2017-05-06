@@ -946,6 +946,17 @@
     ```
     lxrun /setdefaultuser root /y
     ```
+
+  - htop
+    ```
+    nice [ - ] +
+    k kill
+    p m t : sort by processor usage, memory, time
+    s : strace
+    l : losf
+    L : lib usage
+    ```
+    
 # todo
 - how default icon being loaded in QT
   - a rc file being compile by rc.exe and link with the res file
