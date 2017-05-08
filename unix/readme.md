@@ -314,8 +314,6 @@
     S – indicates the status of the process: S=sleep R=running Z=zombie (S)
     ```
 
-
-
 # ubuntu 16.10 #
   * ppa
     
@@ -427,6 +425,34 @@
         info line * $pc
         info line foo.c:42
     D_PRELOAD to the path of a shared object, that file will be loaded before any other library (including the C runtime, libc.so).
+
+      - continue and break
+        ```
+        break foo if x>0
+        commands
+        silent
+        printf "x is %d\n",x
+        cont
+        end
+
+        ignore bnum count
+
+        continue [ignore-count](http://web.mit.edu/gnu/doc/html/gdb_7.html)
+        c [ignore-count]
+        fg [ignore-count] 
+
+        until location
+        u location 
+        ```
+
+      - calling or reture from a function
+        ```
+        return
+        return expression 
+
+        finish:Continue running until just after function in the selected stack frame returns. Print the returned value (if any). 
+        call expr:Evaluate the expression expr without displaying void returned values. 
+        ```
 
     * common commands
       command | description

@@ -57,7 +57,7 @@
     schtasks.exe /query /tn "start-up"
     schtasks.exe /change /TN "start-up" /enable
 
-    schtask /create -ru 
+    schtasks /create -ru 
     ```
   * optionalfeatures.exe
 
@@ -116,7 +116,7 @@
 
     WMIC /OUTPUT:C:\Process.txt path win32_process get Caption,Processid,Commandline
 
-    wmicwmic:root\cli>context
+    wmic:root\cli>context
     NAMESPACE             : root\cimv2
     ROLE                  : root\cli
     NODE(S)               : DOBLY-PC
@@ -423,6 +423,11 @@
       $rule = New-Object -TypeName System.Security.AccessControl.FileSystemAccessRule -ArgumentList $perm
       $acl.SetAccessRule($rule) 
       Set-Acl -Path "d:\github" -AclObjec $acl
+      ```
+
+    - pipe usage
+      ```
+      Get-Process -Name zeal | ForEach-Object  {Get-NetTCPConnection -OwningProcess $_.Id}
       ```
 
   * [Event Tracing for Windows (ETW)](https://msdn.microsoft.com/en-us/magazine/ee412263.aspx)
