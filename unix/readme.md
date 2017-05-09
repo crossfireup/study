@@ -258,6 +258,8 @@
     5: multi-user with display manager (graphical login)
     6: reboot
 
+    /etc/motd (message-of-the-day)
+
   *  Name Service Switch (NSS). 
 
   * [systemd](https://www.freedesktop.org/wiki/Software/systemd/)
