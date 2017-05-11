@@ -2444,6 +2444,9 @@
           ```
 
       - [path convention](https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html)
+
+    - prevent being killed 
+      RtlSetProcessIsCritical 
         
 # MS15-050
   - 
