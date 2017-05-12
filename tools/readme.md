@@ -956,6 +956,65 @@
     l : losf
     L : lib usage
     ```
+
+* autotools
+    * autoconf automake
+                   autoconf
+      configure.ac ---------> configure 
+            |
+            |       automake
+      Makefile.am -----------> Makefile.in
+
+      Standard ‘configure.ac’ Layout:
+        Autoconf requirements
+        AC_INIT(package, version, bug-report-address)
+        information on the package
+        checks for programs
+        checks for libraries
+        checks for header fles
+        checks for types
+        checks for structures
+        checks for compiler characteristics
+        checks for library functions
+        checks for system services
+        AC_CONFIG_FILES([file...])
+        AC_OUTPUT
+                                  rename
+      autoscan --> configure.scan --------> configure.ac
+
+      
+
+      - autoconf: create configure from configure.ac
+      
+      - autoheader: create config.h.in from configure.ac
+
+      - autoreconf: update configure file, run all tools in the right order
+      
+      - autoscan: scan sources for common portability problems and related macros missing from configure.ac
+
+      - autoupdate: update obsolete macros in configure.ac
+
+      - ifnames: Gather identifiers from all #if/#ifdef/... directives
+
+      - autom4te: the heart of autoconf, drives M4 and implements the features used by most of the above tools. Useful for creating more than just configure files
+      
+      - automake: create Makefile.ins from configure.acs and configure.ams
+
+      - aclocal: Scan configure.ac for uses of third-party macros and gather definitions in aclocal.m4.
+
+
+        - auxiliary tools used during build
+          - depcomp
+          - install-sh
+          - missing
+
+       
+
+    * automake
+      AM_CFLAGS
+
+    - usage
+      - autoscan 
     
 # todo
 - how default icon being loaded in QT
