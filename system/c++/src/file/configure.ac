@@ -7,6 +7,9 @@ AC_INIT([FileDel], [0.0.1], [kuinscplus@gmail.com])
 # Initialize automake, turn on all automake warnings and report them as errors, a foreign package
 AM_INIT_AUTOMAKE([foreign -Wall -Werror])
 
+MY_TEST = "helloc"
+#AC_SUBST(MY_TEST,"helloc")
+AC_SUBST(MY_TEST)
 # Checks for programs.
 # check for c++ compiler
 AC_PROG_CXX
