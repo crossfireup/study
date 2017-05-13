@@ -1015,6 +1015,10 @@
 
     - usage
       - autoscan 
+
+      - makefile
+        ```
+        AC_SUBST(variable, [value])
     
 # todo
 - how default icon being loaded in QT

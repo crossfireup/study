@@ -195,6 +195,18 @@ Rootkit Programming
           - have your system administrator add LIBDIR to `/etc/ld.so.conf'
           - ld(1) and ld.so(8) manual pages.
 
+      - usage
+        - [dlopen undefined](https://blog.flameeyes.eu/2008/11/relationship-between-as-needed-and-no-undefined-part-1-what-do-they-do/)
+          ```
+           g++ -g -O2 -o .libs/DllPlugInTester DllPlugInTester.o CommandLineParser.o -L/lib32/libdl.so -ldl          ../../src/cppunit/.libs/libcppunit.so -lm -Wl,--no-as-needed
+            ../../src/cppunit/.libs/libcppunit.so: undefined reference to `dlsym'
+            ../../src/cppunit/.libs/libcppunit.so: undefined reference to `dlopen'
+            ../../src/cppunit/.libs/libcppunit.so: undefined reference to `dlclose'
+
+          # the lib dependencies order is wrong
+            g++ -g -O2 -o .libs/DllPlugInTester DllPlugInTester.o CommandLineParser.o ../../src/cppunit/.libs/libcppunit.so -lm -ldl
+          ```
+
     * [create tiny size](http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html)
       [libc free](https://blogs.oracle.com/ksplice/entry/hello_from_a_libc_free)
       ```
