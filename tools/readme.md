@@ -1013,6 +1013,31 @@
     * automake
       AM_CFLAGS
 
+    - libtool
+      - why 
+        - encourage modularity and reuse of code (both conceptually and physically) in GNU programs.
+        - the absence of a standard procedure for creating shared libraries on diﬀerent platforms. 
+      - aim
+        - elagant
+        - integrate with automake and autoconf
+        - portability to other (non-GNU) architectures and tools is desirable
+
+      - solve problem
+        - control what sort of libraries are built
+        - can be tricky to run dynamically linked programs whose libraries have not yet been installed
+          ```
+          LD_LIBRARY_PATH
+          LD_RUN_PATH
+          ```
+        - operate consistently even on hosts that don’t support shared libraries.
+        - build shared libraries may diﬀer wildly from host to host.
+        - not always obvious with what prefx or sufx a shared library should be installed
+        - needs a simple library version number abstraction, so that shared libraries can be upgraded in place
+        - The install Makefile target should warn the package installer to set the proper environment variables (LD_LIBRARY_PATH or equivalent), or run ldconfig.
+
+      ```
+      LT_INIT
+
     - usage
       - autoscan 
 

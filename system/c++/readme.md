@@ -499,6 +499,37 @@
     - allocators
       - provide a source of memory for a given type and a place to return that memory to once it is no longer needed
     
+    - dynamic allocation
+      - new and delete
+        - C++ provide two standart mechanism to check if the allocation was successful
+          - throw bad_alloc exception whe memory allocation fails
+
+          - return a nullptr 
+            ```
+            foo = new (nothrow) int [5];
+            if (foo == nullptr) {
+              // error assigning memory. Take measures.
+            }
+            ```
+        - why overload new and delete
+          - take charge or control over the memory allocation
+          - aid in debugging: trace allocation and deallocation
+          - other operation at allocation and deallocation
+          ```
+          void* operator new(size_t num, char x)
+          {
+              void *ptr;
+          
+              if (ptr = malloc(num)) *ptr = x;
+              return ptr;
+          }
+          
+          int main()
+          {
+              char *p = new('*') char;
+          }
+          ```
+    
   - usage:
     - placement new:
       - don't use placement new unless you have to
