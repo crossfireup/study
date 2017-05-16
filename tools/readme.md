@@ -1045,6 +1045,19 @@
         ```
         AC_SUBST(variable, [value])
     
+  - doxgen 
+    ```
+    git clone https://github.com/doxygen/doxygen.git
+    cd doxygen
+
+    mkdir build
+    cd build
+    cmake -G "Unix Makefiles" ..
+    make
+    
+    make install
+    ```
+    
 # todo
 - how default icon being loaded in QT
   - a rc file being compile by rc.exe and link with the res file
