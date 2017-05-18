@@ -820,6 +820,15 @@
       ./install.py --clang-completer
       ```
 
+    - vim open to line
+      ```
+      vi +linenumb fileName
+      vim +/command file
+
+      vim +/main file
+      vim +14 file
+      ```
+
 # tmux
 
   Prefix-Command,tmux default CTRL+b。
