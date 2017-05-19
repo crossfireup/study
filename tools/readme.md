@@ -1066,6 +1066,17 @@
     
     make install
     ```
+
+# wireshark
+  - Locating the Source of High Latency
+    - wire latency: device between the client and server
+      syn,ack
+
+    - client latency: client --> server
+      - layer7 protocol request
+
+    - server latency: server --> client
+      - layer7 protocol data 
     
 # todo
 - how default icon being loaded in QT

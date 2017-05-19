@@ -2448,6 +2448,15 @@
     - prevent being killed 
       RtlSetProcessIsCritical 
         
+  - [shutdown](http://forum.thewindowsclub.com/windows-tips-tutorials-articles/33170-how-does-shutdown-boot-work-windows-7-a.html)
+    1.The user initiates a shutdown by selecting “shut down” from the Start menu, or by pressing the power button; or an application initiates shutdown by calling an API such as ExitWindowsEx() or InitiateShutdown().
+    2.Windows broadcasts messages to running applications, giving them a chance to save data and settings. Applications can also request a little extra time to finish what they’re doing.
+    3.Windows closes the user sessions for each logged on user.
+    4.Windows sends messages to services notifying them that a shutdown has begun, and subsequently shuts them down. It shuts down ordered services that have a dependency serially, and the rest in parallel. If a service doesn’t respond, it is shut down forcefully.
+    5.Windows broadcasts messages to devices, signaling them to shut down.
+    6.Windows closes the system session (also known as “session 0”).
+    7.Windows flushes any pending data to the system drive to ensure it is saved completely.
+    8.Windows sends a signal via the ACPI interface to the system to power down the PC.
 # MS15-050
   - 
 
