@@ -281,6 +281,12 @@
         - direct base classes left->right in base-specifier list
         - non-static data members -> declaration in the class definition
         - the body being excuted
+
+      - constructor and destructor
+        - constructor: how an object initialize
+          
+
+      
       - smart pointer
         - unique_ptr
           ```c++

@@ -1079,6 +1079,10 @@
       - layer7 protocol data 
     
 # todo
+- lex and yacc usage
+
+- m4 usage
+
 - how default icon being loaded in QT
   - a rc file being compile by rc.exe and link with the res file
   - not find function call setWindowIcon
