@@ -1077,6 +1077,12 @@
 
     - server latency: server --> client
       - layer7 protocol data 
+
+
+  - usage
+    ```
+    tcpdump -U -v -i eth0 host 192.168.1.1 -w - | tee f.pcap | tcpdump -vvv -lnr -
+    ```
     
 # todo
 - lex and yacc usage
