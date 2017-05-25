@@ -1082,7 +1082,20 @@
   - usage
     ```
     tcpdump -U -v -i eth0 host 192.168.1.1 -w - | tee f.pcap | tcpdump -vvv -lnr -
+
+     tcp contains traffic [displays all TCP packets that contain the word ‘traffic’. Excellent when searching on a specific string or user ID]
+    udp contains 33:27:58 [sets a filter for the HEX values of 0x33 0x27 0x58 at any offset]
     ```
+
+# packege manage tools
+  ```
+  dpkg-query -S /usr/lib/rtkit/rtkit-daemon
+  rtkit: /usr/lib/rtkit/rtkit-daemon
+
+  dpkg -s rtkit
+  
+  apt-cache show rtkit
+  ```
     
 # todo
 - lex and yacc usage
