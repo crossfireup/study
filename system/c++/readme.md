@@ -284,8 +284,6 @@
 
       - constructor and destructor
         - constructor: how an object initialize
-          
-
       
       - smart pointer
         - unique_ptr
@@ -537,6 +535,11 @@
           ```
     
   - usage:
+    - make function local
+      - static
+      - put function into anonymous namespace
+      - usinge __attribute__ ((visiblity("hidden")))
+
     - placement new:
       - don't use placement new unless you have to
       - use it only when you really care that an object is placed at particular memory location
@@ -564,7 +567,7 @@
           TestAssert
 
       line info:
-        LineSource
+          LineSource
 
       msg:
           Message 

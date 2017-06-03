@@ -185,6 +185,27 @@
       git commit --amend -m "Your new commit message"
       ```
 
+- subversion
+  - locking
+    - discovering locking
+      ```
+      svn lock <file>
+      svn info <file>
+      svn unlock <file>
+
+      svnadmin lslocks /var/svn/repos
+      svnlook info /var/svn/repos
+      svnadmin rmlocks /var/svn/repos /project/raisin.jpg
+
+      # unlock force
+      svn info raisin.jpg | grep URL
+        URL: http://svn.example.com/repos/project/raisin.jpg
+      svn unlock --force http://svn.example.com/repos/project/raisin.jpg
+
+      # lock forec
+      svn lock --force raisin.jpg
+      ```
+
 4. ocr tools for linux 
   - sites
     https://tools.ietf.org/inventory/author-tools.shtml

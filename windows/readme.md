@@ -523,6 +523,13 @@
     ```
     mklink /J c:\dir d:\dir
     mklink /H file.txt f.txt
+
+    fsutil hardlink list <file>
+    dir /al /s 
+
+    dir 'd:\Temp' -recurse -force | ?{$_.LinkType} | select FullName,LinkType,Target
+
+    fsutil reparsepoint query b\b.txt
     ```
 
   - attrib
@@ -586,6 +593,11 @@
   - SubInAcl.exe
     ```
     subinacl.exe /verbose /file acctinfo.dll /display
+    ```
+
+  - timeout
+    ```
+    timeout /t 10
     ```
 
 # sysinternals
