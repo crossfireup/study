@@ -190,7 +190,7 @@
     - discovering locking
       ```
       svn lock <file>
-      svn info <file>
+      svn info <URL>
       svn unlock <file>
 
       svnadmin lslocks /var/svn/repos
@@ -202,8 +202,37 @@
         URL: http://svn.example.com/repos/project/raisin.jpg
       svn unlock --force http://svn.example.com/repos/project/raisin.jpg
 
-      # lock forec
+      # lock force
       svn lock --force raisin.jpg
+      ```
+
+    - property
+      ```
+      svn propset "svn:executable" * readme.md
+      svn proplist -v readme.md
+        Properties on 'readme.md':
+        svn:executable
+          *
+
+       svn propdel "svn:executable" * readme.md
+      ```
+
+    - usage
+      ```
+      apt-get install subversion
+
+      svnadmin create /opt/svn
+      
+      # permission
+      vim /opt/svn/conf/svnserve.conf
+      # users
+      vim /opt/svn/conf/passwd
+
+      svn import /opt/test file:///opt/svn/test -m "init repo"
+
+      svnserve -d -r /opt/svn --listen-port 8099  --listen-host 0.0.0.0 -c 5 --log-file /var/log/svn/svn.log --pid-file /var/log/svn/pid
+
+      svn co --username other svn://192.168.2.132:8099/test
       ```
 
 4. ocr tools for linux 
