@@ -179,8 +179,9 @@
 
       The network name cannot be found.
 
-    * wireshare
-      net user \\DOLPHIN7-PC\admin$
+    * wireshark
+      ```
+      net use \\DOLPHIN7-PC\admin$
 
       # filter
       ip.host==192.168.2.146
@@ -189,6 +190,7 @@
       192.168.2.1	65059	192.168.2.146	80	74	TCP	65059 → 80 [SYN] Seq=0 Win=8192 Len=0 MSS=1460 WS=256 SACK_PERM=1 TSval=3209213 TSecr=0
 
       net use port 80(WebDav) after get ip addr instead of 445(NetBIOS over tcp)
+      ```
 
     * solution
       - Open Network Connections
@@ -209,6 +211,12 @@
         Enter the password for dolphin7-pc:
         The command completed successfully.
         ```
+
+    - net share registry
+      ```
+      regjump HKEY_CURRENT_USER\Network
+      reg query HKEY_CURRENT_USER\Network /s
+      ```
 
   * netsh
     ```
