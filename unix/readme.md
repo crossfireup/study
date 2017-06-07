@@ -643,7 +643,15 @@
     /etc/rc5.d/S17ssh
     ```
 
+  - rm file
+    ```
+    rsync -a delete empty/ a
+    find b/ -type f -delete
 
+    # prevent being delete
+    chattr +i <file>
+    ```
+    
 # makefile
   * order 
     

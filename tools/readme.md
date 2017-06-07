@@ -235,6 +235,16 @@
       svn co --username other svn://192.168.2.132:8099/test
       ```
 
+      - remove untraced files
+        ```
+        svn status --no-ignore | grep '^[I?]' | cut -c 9- | xargs rm -f 
+
+        >= 1.9.0
+        svn cleanup . --remove-unversioned
+
+        https://wiki.debian.org/CommonErrorMessages/ArgumentListTooLong
+        ```
+
 4. ocr tools for linux 
   - sites
     https://tools.ietf.org/inventory/author-tools.shtml
