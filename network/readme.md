@@ -183,3 +183,35 @@
 
 - ssl
   - [decrypt](https://wiki.wireshark.org/SSL)
+
+# wireshark
+  - Locating the Source of High Latency
+    - wire latency: device between the client and server
+      syn,ack
+
+    - client latency: client --> server
+      - layer7 protocol request
+
+    - server latency: server --> client
+      - layer7 protocol data 
+
+  - usage
+    ```
+    tcpdump -U -v -i eth0 host 192.168.1.1 -w - | tee f.pcap | tcpdump -vvv -lnr -
+
+     tcp contains traffic [displays all TCP packets that contain the word ‘traffic’. Excellent when searching on a specific string or user ID]
+    udp contains 33:27:58 [sets a filter for the HEX values of 0x33 0x27 0x58 at any offset]
+    ```
+  
+  - tshark
+    - extract server_name in ssl
+      ```
+      "C:\Program Files\Wireshark\tshark.exe" -r ssl.pcap.pcapng -T fields -e ssl.handshake.extensions_server_name -Y ssl.handshake.extensions_server_name
+
+      "C:\Program Files\Wireshark\tshark.exe" -T json -j "http tcp ip" -x -r file.pcap
+
+      "C:\Program Files\Wireshark\tshark.exe" -Y "dns.flags.response == 1" -T fields -E separator=";" -E quote=s -e frame.time -e dns.qry.name -e dns.a -r file.pcap
+
+      # http post body: http.file_data, text, data.data
+      "C:\Program Files\Wireshark\tshark.exe" -Y "http.request.method == POST" -T fields -E separator=";" -E quote=s -e frame.time -e http.host -e http.request.uri -e http.file_data -e text -r file.pcap
+      ```
