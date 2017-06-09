@@ -214,4 +214,12 @@
 
       # http post body: http.file_data, text, data.data
       "C:\Program Files\Wireshark\tshark.exe" -Y "http.request.method == POST" -T fields -E separator=";" -E quote=s -e frame.time -e http.host -e http.request.uri -e http.file_data -e text -r file.pcap
+
+      tshark -u s -t ad -o column.format:"Time, %t","Source, %s","Destination, %d","Protocol, %p","Info, %i" 
       ```
+  - mergecap
+    ```
+    mergecap -w all.pcap a.pcap b.pcap
+    ```
+
+  - epan(Etheral Packet Analyzer)
