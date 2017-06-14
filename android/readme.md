@@ -33,6 +33,8 @@
       adb kill-server
       adb start-server
       adb connect 192.168.1.4:6666
+
+      adb -s emulator install test.apk
       ```
     4. test 
       ```
@@ -46,3 +48,17 @@
       adb usb
       adb devices -l
       ```
+
+# package manager
+  ```
+  adb shell pm list
+  adb shell pm path com.example.someapp
+
+  adb pull /data/*.apk path
+  ```
+
+# tools
+  - apktool
+  - dex2jar
+  - JD-ui
+  - ClassyShark.jar
