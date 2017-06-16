@@ -16,6 +16,12 @@
 * strace
 	strace -ff -e trace=file -o /tmp/trace /etc/init.d/mysqld start 
 
+- library dependency
+  ```
+  pldd <pid>
+  pmap <pid>
+  ```
+
 * iptables
 	 
     /sbin/service iptables save
@@ -1809,8 +1815,6 @@ reader, updater, and reclaimer.
     apt-key adv --keyserver keyserver.ubuntu.com --recv-key 8B48AD6246925553
     apt-key adv --keyserver keyserver.ubuntu.com --recv-key 7638D0442B90D010
     ```
-
-    
 
 # [make a virtual ethernet device in linux](http://unix.stackexchange.com/questions/152331/how-can-i-create-a-virtual-ethernet-interface-on-a-machine-without-a-physical-ad)
   - create device
