@@ -514,12 +514,19 @@
       source -s brks.gdb   # If -s is specified, then gdb searches for filename on the search path even if filename specifies a directory
       ```
 
+    - examine data
+      ```
+      # set buffer size
+      set print elements number-of-elements # 0 means unlimited
+      ```
+
     * frame
       ```
       frame
 
       info f[rame]
       frame n     select frame
+      f n
       up n    up n frames
       down n 
       ```

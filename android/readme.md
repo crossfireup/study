@@ -55,6 +55,9 @@
   adb shell pm path com.example.someapp
 
   adb pull /data/*.apk path
+
+  export PATH=$PATH:/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets
+  export LD_LIBRARY_PATH=/data/data/com.termux/files/usr/lib
   ```
 
 # tools
