@@ -1,0 +1,17 @@
+# 24
+- almost go insane after go back from work very late
+
+# 29
+- windbg start when desktop showing up at start up
+   ```
+   CmdLine: "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\windbg.exe" -p 3304 -e 348 -g
+   CmdLine: "C:\Program Files (x86)\Windows Kits\10\Debuggers\x64\windbg.exe" -p 7836 -e 356 -g
+
+
+    Sysmon             3304   8   6  134   1704     0:00:00.015     0:14:47.809
+    explorer           7836  13 117 2016  46980     0:00:04.046     0:13:52.502
+   ```
+
+- c++
+    - tuple and pair
+    - final in c11

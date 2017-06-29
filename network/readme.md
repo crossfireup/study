@@ -224,5 +224,21 @@
 
   - epan(Etheral Packet Analyzer)
 
+  - configure in ubuntu
+    ```
+    # Get the development packages needed to build Wireshark
+    apt-cache search libgcryp*
+    apt-get install libgcrypt20 libgcrypt20-dbg libgcrypt20-dev
+    
+    sudo apt-get build-dep wireshark
+    sudo apt-get install qt5-default
+    sudo apt-get install libssl-dev
+    sudo apt-get install libgtk-3-dev
+    
+    # build
+    ./autogen.sh
+    ./configure --with-ssl --enable-setcap-install
+    
+
 # todo
 - http header print using tshark

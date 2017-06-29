@@ -365,6 +365,9 @@ Rootkit Programming
     g++ letion.cpp
     ```
 
+  - [new C++ visibility support](https://gcc.gnu.org/wiki/Visibility)
+
+
 # io
 -----
   * file
@@ -595,3 +598,16 @@ Rootkit Programming
 
 # [ABI specification](http://stackoverflow.com/questions/4489012/does-c-have-a-standard-abi)
   - x64 Software Conventions in vs
+
+- Linux vDSO
+  ```
+  man vdso
+
+  The base address of the vDSO (if one exists) is passed by the kernel to each program in the  initial  auxiliary vector (see getauxval(3)), via the AT_SYSINFO_EHDR tag.
+
+  For  example,  the  "gettimeofday"  function  is  named "__vdso_gettimeofday".
+
+  #include <sys/auxv.h>
+
+  unsigned long getauxval(unsigned long type);
+  ```
