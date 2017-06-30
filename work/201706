@@ -15,3 +15,11 @@
 - c++
     - tuple and pair
     - final in c11
+
+# 30
+- override to avoid function miscreate
+
+- PVS-Studio: static C, C++, C# analysis tool
+     RtlSecureZeroMemory. # Microsoft
+     memset_s
+     explicit_bzero() #FreeBSD
