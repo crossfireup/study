@@ -281,6 +281,16 @@ Rootkit Programming
     CFLAGS = -ffreestanding -O2 -m32 -g -Wall -Wextra -nostdinc -fno-builtin -fno-stack-protector -fomit-frame-pointer
 
     LDFLAGS = -Ttext 0x1000 --oformat binary -m elf_i386 -nostdlib
+
+    # expande defined macro
+    gcc -dM -E - < /dev/null
+
+    # -x c++ option to force the invocation of the C++ compiler 
+    gcc -dM -E -x c++ < /dev/null | grep _cplusplus
+
+    # expand a file
+    echo "#include <sys/socket.h>" | gcc -E -dM -
+
     ```
 
   - compile to raw binary 
