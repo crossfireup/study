@@ -719,6 +719,14 @@
         G tells it to perform the operation to the end of the file.
       
       :!indent %
+
+  * wrap and unwrap
+    ```
+    set wrap
+    set nowrap
+
+    set formatoptions-=tc
+    ```
   
   * highlight
 

@@ -292,7 +292,12 @@ Rootkit Programming
     echo "#include <sys/socket.h>" | gcc -E -dM -
 
     ```
-
+  
+  - debugging macros
+    ```
+    gcc -ggdb <files>
+    ```
+  
   - compile to raw binary 
     ```
     -ffreestanding :implies -fno-builtin
