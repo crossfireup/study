@@ -614,6 +614,34 @@
      - qt create
       - set spec
         
+  - multithread
+    - passing reference to a thread 
+      ```
+      thread t(update_data_for_widget, w, std::ref(data));
+      ```
+    
+    - avoid dangling pointer
+      ```
+      void not_oops(int some_param)
+      {
+      char buffer[1024];
+      sprintf(buffer,"%i",some_param);
+      // error: std::thread t(f,3,buffer); 
+      // oops will exit before the buffer has been converted to a std::string on the new thread, 
+      // thus leading to undefined behavior.
+      std::thread t(f,3,std::string(buffer)); // avoid dangling pointer
+      t.detach();
+      }
+      ```
+
+    - arguments can’t be copied but can only be moved
+      ```
+      void process_big_object(std::unique_ptr<big_object>);
+      std::unique_ptr<big_object> p(new big_object);
+      p->prepare_data(42);
+      std::thread t(process_big_object,std::move(p));
+      ```
+
 - com
   - midl (Microsoft Interface Define Language)[https://en.wikipedia.org/wiki/Interface_description_language]
     ```
