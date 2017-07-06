@@ -641,6 +641,20 @@
       p->prepare_data(42);
       std::thread t(process_big_object,std::move(p));
       ```
+    
+    - number of threads
+      ```
+      std::thread::hardware_
+      concurrency()
+      ```
+
+    - thread id
+      ```
+      std::thread::id
+      std::thread t;
+      t.get_id();
+
+      std::this_thread::get_id()
 
 - com
   - midl (Microsoft Interface Define Language)[https://en.wikipedia.org/wiki/Interface_description_language]

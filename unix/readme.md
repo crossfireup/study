@@ -569,6 +569,14 @@
 
     3. __Performance__: multiple caching mechanisms provide increased performance. ARC is an advanced memory-based read cache. A second level of disk-based read cache can be added with L2ARC, and disk-based synchronous write cache is available with ZIL.
 
+  - write detail
+    - write throught cache
+
+    - write back
+
+    - cache eviction
+      - LRU-dlist
+
 # network #
  * ppp
     CHAP versus PAP:
