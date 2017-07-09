@@ -542,13 +542,96 @@
               char *p = new('*') char;
           }
           ```
+
+        - why using new instead of mallloc
+          - new can't accidentally allocate the wrong amount of memory,
+          - new implicitly checks for memory exhaustion, and
+          - new provides for initialization 
+
+    - Explicit Type Conversion
+      Casts are generally best avoided. With the exception of dynamic_cast, their use implies the possibility of a type error or the truncation of a numeric value
+      ```
+      int a = 7;
+	    double* p1 = (double*) &a;			// ok (but a is not a double)
+	    double* p2 = static_cast<double*>(&a);	// error
+	    double* p2 = reinterpret_cast<double*>(&a);	// ok: I really mean it
+
+	    const int c = 7;
+	    int* q1 = &c;			// error
+	    int* q2 = (int*)&c;		// ok (but *q2=2; is still invalid code and may fail)
+	    int* q3 = static_cast<int*>(&c);	// error: static_cast doesn't cast away const
+	    int* q4 = const_cast<int*>(&c);	// I really mean it
+      ```
+
+    - lock
+      - std::lock_guard
+        ```
+        void push(T new_value)
+        {
+        std::lock_guard<std::mutex> lk(mut);
+        data_queue.push(std::move(data));
+        data_cond.notify_one();
+        }
+        ```
+      - std::unique_lock
+        ```
+        std::mutex m;
+        std::condition_variable cv;
+        std::string data;
+        bool ready = false;
+        bool processed = false;
+
+        void worker_thread()
+        {
+            // Wait until main() sends data
+            std::unique_lock<std::mutex> lk(m);
+            cv.wait(lk, []{return ready;});
+          
+            // after the wait, we own the lock.
+            std::cout << "Worker thread is processing data\n";
+            data += " after processing";
+          
+            // Send data back to main()
+            processed = true;
+            std::cout << "Worker thread signals data processing completed\n";
+          
+            // Manual unlocking is done before notifying, to avoid waking up
+            // the waiting thread only to block again (see notify_one for details)
+            lk.unlock();
+            cv.notify_one();
+        }
+        ```
+      - std::scoped_lock      
     
-  - usage:
+  - [usage](http://www.stroustrup.com/bs_faq2.html#finally)
     - make function local
       - static
       - put function into anonymous namespace
       - usinge __attribute__ ((visiblity("hidden")))
 
+    - Definition of const member in general, needs initialization of the variable too..
+
+      - Inside the class , if you want to initialize the const the syntax is like this
+        ```
+        static const int a = 10; //at declaration
+        ```
+      - Second way can be
+        ``` 
+        class A
+        {
+          static const int a; //declaration
+        };
+        
+        const int A::a = 10; //defining the static member outside the class
+        ```
+      - Well if you don't want to initialize at declaration, then the other way is to through constructor, the variable needs to be initialized in the initialization list(not in the body of the constructor). It has to be like this
+        ``` 
+        class A
+        {
+          const int b;
+          A(int c) : b(c) {} //const member initialized in initialization list
+        };
+        ```
     - placement new:
       - don't use placement new unless you have to
       - use it only when you really care that an object is placed at particular memory location
