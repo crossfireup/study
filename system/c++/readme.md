@@ -603,29 +603,40 @@
         ```
       - std::scoped_lock      
 
-      - user defined spinlock_mutex
-        ```c++
-        class spinlock_mutex
-        {
-          std::atomic_flag flag;
+    - lock free
+      - why
+        - enable maximum concurrency
+        - robustness
+          - thread dies while holding a lock, that data structure is broken forever
+          - thread dies partway on a lock-free data structure, nothing is lost except that thread’s data; other threads can proceed normally.
+          
+      - definition
+        - blocking
+          Algorithms and data structures that use mutexes, condition variables, and futures to synchronize the data are called blocking data structures and algorithms
 
-          public:
-            spinlock_mutex():flag(ATOMIC_FLAG_INIT)
-            {
+        - blocking call
+          library calls are termed blocking calls because the thread can’t progress past this point until the block is removed
 
-            }
-
-            void lock()
-            {
-              while(flag.test_and_set(std::memory_order_acquire));
-            }
-
-            void unlock()
-            {
-              flag.clear(std::memory_order_release);
-            }
-        };
-        ```
+        - non-blocking
+          Data structures and algorithms that don’t use blocking library functions are said to be nonblocking
+          ```
+          class spinlock_mutex
+          {
+            std::atomic_flag flag;
+            public:
+              spinlock_mutex():
+                flag(ATOMIC_FLAG_INIT)
+              {}
+              void lock()
+              {
+                while(flag.test_and_set(std::memory_order_acquire));
+              }
+              void unlock()
+              {
+                flag.clear(std::memory_order_release);
+              }
+          };
+          ```
     
   - [usage](http://www.stroustrup.com/bs_faq2.html#finally)
     - make function local
