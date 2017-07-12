@@ -511,6 +511,21 @@
 
     - allocators
       - provide a source of memory for a given type and a place to return that memory to once it is no longer needed
+      ```
+      template<typename T>
+      struct Simple_alloc { // use new[] and delete[] to allocate and deallocate bytes
+        using value_type = T;
+
+        Simple_alloc() {}
+
+        T∗ allocate(size_t n)
+        { return reinterpret_cast<T∗>(new char[n∗sizeof(T)]); }
+
+        void deallocate(T∗ p, size_t n)
+        { delete[] reinterpret_cast<char∗>(p); }
+        // ...
+        };
+      ```
     
     - dynamic allocation
       - new and delete
