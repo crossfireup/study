@@ -7,5 +7,7 @@ int main(int argc, char *argv[])
     size_t n = strtoull(argv[1], 0, 0);
     double A[n][n];
 
+    typeof A b;
+
     return 0;
 }
