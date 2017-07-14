@@ -748,6 +748,10 @@
       - set spec
         
   - multithread
+    - pthread and c++11
+      - future and shard_future
+         MoveConstructible CopyConstructible
+         
     - passing reference to a thread 
       ```
       thread t(update_data_for_widget, w, std::ref(data));
