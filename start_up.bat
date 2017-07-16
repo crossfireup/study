@@ -20,6 +20,6 @@
 
 @start /B explorer D:\study
 
-@start /B devenv
+@rem @start /B devenv
 
 @exit 0
