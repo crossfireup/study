@@ -672,6 +672,15 @@
     # prevent being delete
     chattr +i <file>
     ```
+
+  - zlib
+    ```
+    echo -n '...' | python2 -c 'import sys,zlib; sys.stdout.write(zlib.compress(sys.stdin.read()))' > /tmp/data
+
+    printf "\x1f\x8b\x08\x00\x00\x00\x00\x00" |cat - zlib.raw |gzip -dc
+    openssl zlib -d < /tmp/data
+    $ openssl zlib -d -in /tmp/data
+    ```
     
 # makefile
   * order 
