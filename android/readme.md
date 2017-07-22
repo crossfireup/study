@@ -51,7 +51,8 @@
 
 # package manager
   ```
-  adb shell pm list
+  sysdump
+  adb shell pm list packages
   adb shell pm path com.example.someapp
 
   adb pull /data/*.apk path
