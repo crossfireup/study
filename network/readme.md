@@ -239,6 +239,9 @@
     ./autogen.sh
     ./configure --with-ssl --enable-setcap-install
     
+# OSI
+  - SDU and PDU
+  - TCP UDP SCTP DCCP NCP
 
 # todo
 - http header print using tshark
