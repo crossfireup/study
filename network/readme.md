@@ -217,6 +217,12 @@
 
       tshark -u s -t ad -o column.format:"Time, %t","Source, %s","Destination, %d","Protocol, %p","Info, %i" 
       ```
+    
+    - follow stream
+      ```
+      tshark -z flow,tcp,ascii -r *.pcap
+      tshark -z "follow,tcp,ascii,200.57.7.197:32891,200.57.7.198:2906"
+      ```
   - mergecap
     ```
     mergecap -w all.pcap a.pcap b.pcap
@@ -242,6 +248,8 @@
 # OSI
   - SDU and PDU
   - TCP UDP SCTP DCCP NCP
+  - SIP (Session Initial Protocol)
+  - STUN (Session Traversal Utilities for NAT)
 
 # todo
 - http header print using tshark
