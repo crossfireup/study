@@ -50,7 +50,7 @@
     http://www.unixwiz.net/techtips/iguide-ipsec.html
     https://technet.microsoft.com/en-us/library/cc779919(d=printer,v=ws.10).aspx
     https://tools.ietf.org/pdf/rfc2637.pdf
-
+    https://technet.microsoft.com/en-us/library/cc771298(v=ws.10).aspx
     ```
   - terminology
     - network access server (NAS):
@@ -244,7 +244,41 @@
     # build
     ./autogen.sh
     ./configure --with-ssl --enable-setcap-install
-    
+
+- windows
+  - [TCP Chimney Offload overview](https://support.microsoft.com/en-us/help/951037/information-about-the-tcp-chimney-offload--receive-side-scaling--and-n#LetMeFixItMyselfAlways)
+    - TCP Chimney Offload is a networking technology that helps transfer the workload from the CPU to a network adapter during network data transfer. 
+    ```
+    netsh int tcp set global chimney=enabled
+    netsh int tcp set global chimney=disabled
+    netsh int tcp show global
+
+    netstat –t
+      Active Connections
+
+        Proto  Local Address          Foreign Address        State           Offload State
+
+        TCP    127.0.0.1:52613        computer_name:52614       ESTABLISHED     InHost
+        TCP    192.168.1.103:52614        computer_name:52613       ESTABLISHED     Offloaded
+ 
+    ```
+
+    - Receive Side Scaling (RSS)
+      ```
+      netsh int tcp set global rss=enabled
+      netsh int tcp set global rss=disabled
+      netsh int tcp show global
+      ```
+
+    - Network Direct Memory Access (NetDMA) features
+      ```
+      HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+
+      EnableTCPA: DWORD Value
+      enable NetDMA, type 1
+      disable NetDMA, type 0
+      ```
+
 # OSI
   - SDU and PDU
   - TCP UDP SCTP DCCP NCP
