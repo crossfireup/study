@@ -216,6 +216,10 @@
       "C:\Program Files\Wireshark\tshark.exe" -Y "http.request.method == POST" -T fields -E separator=";" -E quote=s -e frame.time -e http.host -e http.request.uri -e http.file_data -e text -r file.pcap
 
       tshark -u s -t ad -o column.format:"Time, %t","Source, %s","Destination, %d","Protocol, %p","Info, %i" 
+
+      tcp.port in {80 443 8080}
+
+      dns.apl.afdpart.ipv4
       ```
     
     - follow stream
@@ -223,6 +227,22 @@
       tshark -z flow,tcp,ascii -r *.pcap
       tshark -z "follow,tcp,ascii,200.57.7.197:32891,200.57.7.198:2906"
       ```
+
+    - dns
+      ```
+      windows:tshark -G currentprefs | find "resolve"
+      unix:tshark -G currentprefs | grep "resolve"
+      Result: name_resolve: FALSE
+
+      Preferences -> Name Resolution -> Enable Network Name Resolution
+
+      tshark -r input.cap -T fields -e ip.src -e ip.src_host -e ip.dst -e ip.dst_host -E header=y -E separator=,
+
+      tvbuffer
+
+       http://code.google.com/p/dns-mole/
+      ```
+
   - mergecap
     ```
     mergecap -w all.pcap a.pcap b.pcap
