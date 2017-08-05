@@ -272,9 +272,36 @@
     
     Unit:
 
-    Service
+    Service:
+      Environment="pidfil=/var/log/svn/pid"
+      EnvironmentFile=/etc/svn/svn.conf
 
     Install
+
+    ```
+    systemdctl enable svnserve.conf
+    systemctl daemon-reload
+    systemctl status -l svnserver.conf
+    
+    journalctl -xe
+
+    cat svnserver.service
+    [Unit]
+    Description=Subversion Daemon
+    After=syslog.target network.target
+
+    [Service]
+    Type=forking
+    PIDFile=/var/log/svn/pid
+    ExecStart=/usr/bin/svnserve -d -r /opt/svn --listen-port 8099  --listen-host 0.0.0.0 -c 5 --log-file /var/log/svn/svn.log --pid-file /var/log/svn/pid
+    ExecReload=/bin/kill -HUP $MAINPID
+    KillMode=process
+    Restart=on-failure
+    RestartSec=10s
+
+    [Install]
+    WantedBy=multi-user.target
+    ```
 
   * [dns](https://wiki.debian.org/NetworkConfiguration)
 
