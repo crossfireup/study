@@ -2,6 +2,11 @@
   1. termux in android 
   2. android x86
   3. busybox
+  4. [nethunter](https://build.nethunter.com/nightly/ )
+
+  - AOSP stands for Android Open Source Project.
+  - Stock Android is what Google provides in their Nexus devices.
+  - CyanogenMod (pronounced /saɪ.'æn.oʊ.dʒɛn.mɒd/) is an enhanced open source firmware distribution for smartphones and tablet computers based on the Android mobile operating system. It offers features and options not found in the official firmware distributed by vendors of these devices.   
 
 # android x86 
   * [7.0_x86](http://www.osboxes.org/android-x86/#android-x86-7_0-vmware) 
@@ -59,7 +64,46 @@
 
   export PATH=$PATH:/data/data/com.termux/files/usr/bin:/data/data/com.termux/files/usr/bin/applets
   export LD_LIBRARY_PATH=/data/data/com.termux/files/usr/lib
+
+  #212100447155748840-00
   ```
+
+# flash recovery img
+  - [relock](https://www.emui.com/cn/plugin/unlock/detail)
+    ```
+    adb reboot bootloader
+    fastboot oem relock xxxx
+    ```
+  
+  - [flash twrp](https://www.howtogeek.com/240047/how-to-flash-twrp-recovery-on-your-android-phone/)
+    - enable usb debugging
+
+    - Download TWRP(https://twrp.me/)
+
+    - boot into bootloader
+      ```
+      adb reboot bootloader
+      ```
+    - unlock oem
+      ```
+      fastboot oem unlock xxxx
+      fastboot oem get-bootinfo
+      adb reboot bootloader
+      fastboot flash recovery twrp.img
+
+      fastboot update update.zip 
+      ```
+    - Boot Into TWRP Recovery
+      ```
+      adb reboot recovery
+      ```
+
+    - push zip(https://forums.kali.org/showthread.php?27431-How-to-safely-install-Nethunter-2-0-on-any-supported-device)
+      ```
+      adb push Z:\Software\Android\nethunter-flounder-marshmallow-3.0.zip /data/local/tmp/
+
+       adb reboot-bootloader
+       ```
 
 # tools
   - apktool
