@@ -110,3 +110,22 @@
   - dex2jar
   - JD-ui
   - ClassyShark.jar
+
+
+# [Android system](https://source.android.com/devices/architecture/ http://elinux.org/Android_Architecture)
+  - logging system
+    - a kernel driver and kernel buffers for storing log messages
+      - mail - mail application log
+      - event - system event infomation
+      - radio - radio and phone-related information
+      - system - a log for low-level system message and debugging
+      ```
+      cat /proc/last_kmsg > /sdcard/last_kernel_message_log.txt
+      dmesg > /sdcard/kernel_boot_log.tx
+      
+      ls -l /dev/log
+      
+      ```
+    - API(C, C++, Java) for making log entries and accessing logging messages
+    - standalone program for viewing  log messages - logcat
+    - ability to view and filter the log messages from the host machine (via eclipse or ddms)
