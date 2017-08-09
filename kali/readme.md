@@ -1,8 +1,8 @@
 # rules
   * no harm
-  * defiine and honor boundaries
+  * define and honor boundaries
   * consider contermeasures only after haking is complete
-  * get  agreement in advance
+  * get agreement in advance
   * document everything
 
 # start postgres db
@@ -51,7 +51,7 @@
       -q 4   // query count
       -n     // not use hostname,use ip address instead
      ```
-  * wireshare
+  * wireshark
       ip.src == 192.168.11.1
       udp.port==68 or udp.port==67
   
@@ -121,6 +121,14 @@
   * nmap
     ```
     nmap -sU -p 67 --script dhcp-discover --script-args 'dchptype=DHCPINFORM' 192.168.1.1
+    ```
+
+  * [socat](http://www.dest-unreach.org/socat/)
+    ```
+    socat TCP4-LISTEN:www TCP4:www.domain.org:www
+
+    socat TCP4-LISTEN:2022,reuseaddr,fork \
+    PROXY:proxy:www.domain.org:22,proxyport=3128,proxyauth=user:pass
     ```
 
   * tcpreplay
