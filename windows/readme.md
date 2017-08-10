@@ -523,6 +523,20 @@
     fsutil handlink list read.txt
     ```
 
+  - vss(Volume Shadow Copy Service)[https://technet.microsoft.com/en-us/library/ee923636.aspx]
+    ```https://technet.microsoft.com/en-us/library/cc754968.aspx
+    vssadmin list shadows
+    vssadmin list shadowstorage
+    vssadmin list volumes
+    vssadmin list writers
+
+    vssadmin create shadow /for=c:
+
+    vssadmin delete Shadows /shadow={xxx}
+
+    gwmi Win32_ShadowCopy | select -Property DeviceObject
+    ```
+
   - mklink
     - A junction (also called a soft link) 
       - differs from a hard link in that the storage objects it references are separate directories
