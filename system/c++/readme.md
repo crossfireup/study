@@ -793,6 +793,12 @@
 
       std::this_thread::get_id()
 
+
+  - stack unwind: free local variable and delete object when function return
+    - exception handle
+    - setjmp/longjmp
+    - debuging info
+    - profiler 
 - com
   - midl (Microsoft Interface Define Language)[https://en.wikipedia.org/wiki/Interface_description_language]
     ```
