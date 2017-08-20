@@ -263,14 +263,14 @@ Rootkit Programming
           * the compiler must assume that there may be calls from other source fles
           * a global symbol can be defned only once in any program, the function must not be 
             defned in the other source files,so the calls therein cannot be integrated.
-        * inline and extern in the function defnition,then the defnition is used only for inlining
+        * inline and extern in the function definition,then the definition is used only for inlining
           * function never compiled to its own, not even if you refer to its address explicitly.Such an address 
-            becomes an external reference, as if you had only declared the function, and had not defned it.
+            becomes an external reference, as if you had only declared the function, and had not defined it.
           * This combination of inline and extern has almost the eﬀect of a macro. 
             * function definition in a header file with inline and extern keywords,
               causes most calls to the function to be inlined
             * put another copy of definition (lack inline and extern) in a library file, 
-              any uses of the function refer to single copy in librar
+              any uses of the function refer to single copy in library
 
   - get define
     ```
@@ -407,6 +407,13 @@ Rootkit Programming
     1. file access flags: O_RDWR, O_RDONLY, O_WRONLY
     2. file create flags: O_CREAT, o_TRUNC, O_DIRECTORY,O_DIRECT
     3. file status flags: O_ASYNC, O_NONBLOCK, OAPPEND
+  
+  - usage:
+    - windows
+      ```
+      # convert os file handle to file descriptor in windows
+      int _open_osfhandle ( intptr_t osfhandle,  int flags);  
+      ```
 
 # buffer overflow
     * Make sure that the memory auditing is done properly in the program using utilities like valgrind memcheck

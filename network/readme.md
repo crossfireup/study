@@ -265,6 +265,12 @@
     ./autogen.sh
     ./configure --with-ssl --enable-setcap-install
 
+# [pf_ring](http://www.ntop.org/products/packet-capture/pf_ring/)
+  - introduction
+    - High-speed packet capture, filtering and analysis.
+    - ZC(Zero Copy): no sk_buffer copy in libpcap, using mmap
+    - DNA(Direct NIC Access)
+
 - windows
   - [TCP Chimney Offload overview](https://support.microsoft.com/en-us/help/951037/information-about-the-tcp-chimney-offload--receive-side-scaling--and-n#LetMeFixItMyselfAlways)
     - TCP Chimney Offload is a networking technology that helps transfer the workload from the CPU to a network adapter during network data transfer. 
@@ -307,3 +313,25 @@
 
 # todo
 - http header print using tshark
+- [network driver](https://stackoverflow.com/questions/7763321/libpcap-to-capture-10-gbps-nic)
+  - [netmap](https://sgros-students.blogspot.jp/2013/12/netmap-and-pfring-dna.html)
+    three major identified bottlenecks
+    - per packet dynamic memory allocations: preallocation
+    - system call overheads:  less system call with batches and not packets individually
+    - memory copies: sharing buffers and metadata between kernel and userspace.
+
+  - PF-RING(http://luca.ntop.org/Ring.pdf)
+      - ZC:reveals NIC memory and registers to userland so that there is no additional packet copy.
+      - drawback: only one application at time can have access to NIC memory and registers.
+
+  - PF-RING+netmap
+    - both Netmap and PF_RING is that they both bypass kernel completely:
+      - packet processing in Netfilter is skipped and there is no NAT or packet filtering involved
+        - PF_RING offers solution in Hardware Packet Filtering but the main problem still stands 
+        - but TCP packet must be sent, control of those packet and TCP processing must be implemented in user-space
+    
+    - difference
+      -  Netmap offers protected usage of NIC's memory and register while latter doesn't.
+    OpenOnload
+    DPDK
+    PacketShader
