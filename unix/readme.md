@@ -2156,3 +2156,10 @@ reader, updater, and reclaimer.
       - Install semanage tools: sudo yum -y install policycoreutils-python
       - Allow port 88 for httpd: sudo semanage port -a -t http_port_t -p tcp 88
       - Allow port 8445 for httpd: sudo semanage port -a -t http_port_t -p tcp 8445
+
+
+# [rtirq](https://wiki.linuxaudio.org/wiki/system_configuration#rtirq)
+  ```
+  cat /proc/interrupts 
+   ps -eLo pid,cls,rtprio,pri,nice,cmd
+  ```
