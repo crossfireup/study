@@ -2496,6 +2496,30 @@
     6.Windows closes the system session (also known as “session 0”).
     7.Windows flushes any pending data to the system drive to ensure it is saved completely.
     8.Windows sends a signal via the ACPI interface to the system to power down the PC.
+
+  - svchost
+    - [isolate a serivce for debug ](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/preparing-to-debug-the-service-application) 
+      - query config
+        ```
+        sc qc ServiceName 
+
+        HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet \Services\
+        HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs
+        ```
+
+      - locate registry path
+        ```
+        regjump HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SvcHost 
+        ```
+
+    - list
+      ```
+      tlist -s | findstr svchost
+
+      tasklist /SVC /FI "IMAGENAME eq svchost.exe" 
+      ```
+    - [init process](http://sysforensics.org/2014/01/know-your-windows-processes/)
+
 # MS15-050
   - 
 
