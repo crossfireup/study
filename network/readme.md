@@ -311,6 +311,15 @@
   - SIP (Session Initial Protocol)
   - STUN (Session Traversal Utilities for NAT)
 
+  - Kerberos
+     - PAC stands for Privilege Attribute Certificate 
+
+# codec
+  - [ASN.1](http://www.itu.int/en/ITU-T/asn1/Pages/introduction.aspx)
+    - BRE(Basic Encoding Rules)
+    - CRE(Canonical Encoding Rules )
+    - DRE(Distinguished Encoding Rules )
+
 # todo
 - http header print using tshark
 - [network driver](https://stackoverflow.com/questions/7763321/libpcap-to-capture-10-gbps-nic)
