@@ -724,6 +724,16 @@
     mt.exe /?
     ```
 
+    - [authentication of signature](http://www.exploit-monday.com/2017/08/application-of-authenticode-signatures.html)
+      ```
+      C:\WinDDK\7600.16385.1\bin\amd64\signtool.exe /a /v  'C:\Windows\System32\kernel32.dll' 
+
+      Get-AuthenticodeSignature -FilePath 'C:\Windows\System32\kernel32.dll'
+
+      http://www.harmj0y.net/blog/redteaming/pass-the-hash-is-dead-long-live-localaccounttokenfilterpolicy/ 
+      ```
+
+
 # common useful gui 
   - godmod
     ```
