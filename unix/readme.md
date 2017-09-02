@@ -349,6 +349,18 @@
     S – indicates the status of the process: S=sleep R=running Z=zombie (S)
     ```
 
+  - lsof
+    ```
+    lsof -c init
+    lsof -p 1
+    
+    # List processes which are listening on a particular port
+    lsof -i :24
+    lsof -i tcp -p 1 -u root
+    # List all Network File System ( NFS ) files
+    lsof -N -u root -a
+    ```
+
 # ubuntu 16.10 #
   * ppa
     
