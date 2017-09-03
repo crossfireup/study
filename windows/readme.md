@@ -443,6 +443,8 @@
     xperf.exe
     C:\etl> xperf -help start
     C:\etl> xperf -help stop
+
+    xperf -on LATENCY+FOOTPRINT+VIRT_ALLOC+MEMINFO+VAMAP+REFSET+MEMINFO_WS+ALL_FAULTS -stackwalk VirtualAlloc+VirtualFree+PROFILE+HardFault+PagefaultTransition+PagefaultDemandZero+PagefaultCopyOnWrite+PagefaultGuard+PagefaultHard+PagefaultAV -buffersize 2048 -MaxFile 2048 -FileMode Circular && timeout -1 && xperf -d C:\MemoryUsage.etl
     ```
 
     - logman
@@ -2528,8 +2530,69 @@
 
       tasklist /SVC /FI "IMAGENAME eq svchost.exe" 
       ```
-    - [init process](http://sysforensics.org/2014/01/know-your-windows-processes/)
 
+    - [init process](http://sysforensics.org/2014/01/know-your-windows-processes/)
+      - MBR
+        - os write boot sector(MBR) to disk including file system boot code(part of the boot sector) to a 100-MB bootable partition of the disk marked as hidden
+        - boot code in boot sector to load bootmgr from file system
+      - bootmgr
+        - concatenation of startup.com and bottmgr.exe
+
+        - begin in x86 real mode  ---> protect mode (no paging) ---> create page tables below 16M ---> PE
+        
+        - may switch back to real mode when using BIOS interface functions to access IDE-based system, boot disks and display
+        
+        - read BCD(boot configuration database) file(C:\Boot\BCD) using built-in file system code
+          - lightweight NTFS file system library
+          - FAT, CDFS, UDFS  Universal Disk Format (UDFS) File System
+          - WIM and VHD files
+        
+        - clear the screen
+          - if BCD setting to info Bootmgr of hibernation resume 
+            - luanching Winresume.exe which reads hiberfil.sys in system into memory 
+            - transfer control to code in the kernel that resumes a hibernated system
+              - restarting drivers that were active when the system was shut down
+
+          - if boot-selection entry > 1 in BCD show boot-selection menu, else bypasses the menu
+            - selection entries in BCD direct Bootmgr to partition on which Windows system direcotry(\Windows) of the selection resides
+              - if updating from old version, this partion might be same as the system partition
+              - clean install, it will always be the 100-MB hidden partition
+            - BCD includes optional argument for Bootmgr, Winload, and other components involved in the boot process interpret
+
+          - Bootmgr loads the boot loader with the select entry which will be Winload.exe for windows installations 
+
+      - Winload(Windows boot loader)
+        - contains code that queries the system's ACPI BIOS to retrieve basic device and configuration information 
+          - time and date information stored in the system's CMOS(nonvalotile memory)
+          - number, size and type of disk drivers in the system
+          - legacy（传统） device information ,such as  buses(ISA, PCI, EISA, Micro Channel Architecture(MCA)), mice, parallel ports, and video adaptors are not queried and instead faked out
+
+        - store this info into HKLM\HARDWARE\DESCRIPTION
+
+        - begins loading the files from boot volume(including Kernel Mode Code Signing(KMCS))
+          - loads appropriate kernel and HAL images(Ntoskrnl.exe and Hal.dll) and their dependencies
+
+          - reads in VGA font file(C:\Windows\Fonts\vgaoem.fon)
+
+          - reads in NLS(National Language Support)files used for internationalization. By default(l_intl.nls, c_1252.nls, nd c_437.nls
+          
+          - reads in the SYSTEM registry hive,(c:\windows\system32\config\system, so it can determine which device drivers nead to be loaded to accomplish the boot.
+
+          - scans the in-memory SYSTEM registery hive and locates all the boot device drivers.
+            - start value 0(SERVICE_BOOT_START) in HKLM\SYSTEM\CurrentControlSet\Services
+              ```(https://docs.microsoft.com/en-us/windows-hardware/drivers/ifs/what-determines-when-a-driver-is-loaded)
+              sc query type= driver
+              sc qc <name>
+              autoruns
+              ```
+          
+          - add file system drivers
+
+          - loads the boot drivers
+
+          - prepares CPU registers for the execution of Ntoskrnl.exe
+      
+        - calls the main function in Ntoskrnl.exe(KiSystemStartup)
 # MS15-050
   - 
 
@@ -3117,3 +3180,8 @@
 
 # kernel
   - CreateFile and NtCreateFile
+
+# terms
+  - MUI(Multilingual User Interface)(https://msdn.microsoft.com/en-us/library/windows/desktop/dd317706(v=vs.85).aspx)
+    - provides users a localized user interface for globalized applications and user interface language resource management in the Windows operating system
+    -  separate the storage of localizable resources from application source code
