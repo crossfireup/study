@@ -195,6 +195,10 @@
     - server latency: server --> client
       - layer7 protocol data 
 
+  - [DLPI(Data Link Provider Interface)](http://pubs.opengroup.org/onlinepubs/9638599/chap1.htm)
+    - enables a data link service user to access and use any of a variety of conforming data link service providers without special knowledge of the provider's protocol. 
+
+
   - usage
     ```
     tcpdump -U -v -i eth0 host 192.168.1.1 -w - | tee f.pcap | tcpdump -vvv -lnr -
@@ -226,6 +230,13 @@
       ```
       tshark -z flow,tcp,ascii -r *.pcap
       tshark -z "follow,tcp,ascii,200.57.7.197:32891,200.57.7.198:2906"
+      ```
+
+    - testing
+      ```
+      randpkt -c 50000 -t dns randpkt.pcap
+
+      editcap -E 0.03 in.pcap out.pcap
       ```
 
     - dns

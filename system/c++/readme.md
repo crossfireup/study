@@ -746,6 +746,13 @@
 
      - qt create
       - set spec
+
+    - [const define enum](https://stackoverflow.com/questions/1674032/static-const-vs-define-vs-enum)
+      ```C++
+      static const int VAR = 5;
+      #define VAR 5 # preferred in C
+      enum { var = 5 };
+      ```
         
   - multithread
     - pthread and c++11
