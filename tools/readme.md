@@ -1059,8 +1059,6 @@
                                   rename
       autoscan --> configure.scan --------> configure.ac
 
-      
-
       - autoconf: create configure from configure.ac
       
       - autoheader: create config.h.in from configure.ac
@@ -1079,13 +1077,10 @@
 
       - aclocal: Scan configure.ac for uses of third-party macros and gather definitions in aclocal.m4.
 
-
         - auxiliary tools used during build
           - depcomp
           - install-sh
           - missing
-
-       
 
     * automake
       AM_CFLAGS
@@ -1136,14 +1131,21 @@
     ```
 
 # packege manage tools
-  ```
+
+  ```bash
   dpkg-query -S /usr/lib/rtkit/rtkit-daemon
   rtkit: /usr/lib/rtkit/rtkit-daemon
 
   dpkg -s rtkit
-  
   apt-cache show rtkit
   ```
+
+# sed
+
+- regex
+    ```bash
+    sed -E 's/.*("\w+").*/\1/g' test
+    ```
     
 # todo
 - lex and yacc usage

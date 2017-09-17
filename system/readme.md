@@ -531,4 +531,9 @@ __os development__
     - Enumeration of Paging Features by CPUID
       - 
 
-        
+# Mutiple Process
+  
+  - Intel QuickPath Interconnect(QPI)
+    - Flow Control Unit(FLIT)
+  
+  - AMD HyperTransport(HT)
