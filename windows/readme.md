@@ -150,6 +150,13 @@
   
   * wf.msc # windows firewall
     firewall.cpl
+    ```ps
+    get-command -module netsecurity
+
+    Get-NetFirewallApplicationFilter
+
+    Get-NetFirewallRule -Name "*ssdp*" | Set-NetFirewallRule -Action Block
+    ```
   
   * main.cpl
     desk.cpl
@@ -221,6 +228,11 @@
   * netsh
     ```
     netsh firewall set opmode disable
+
+    netsh advfirewall firewall add rule name="Allow port range" dir=out protocol=udp localport=5000-5020 action=allow
+    netsh advfirewall firewall Set rule name="Allow port range" new description="test" action=block
+    netsh advfirewall firewall show rule name="allow port range"
+    netsh advfirewall firewall del rule name="allow port range"
     ```
 
   * sc

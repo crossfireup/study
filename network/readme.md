@@ -331,6 +331,14 @@
     - CRE(Canonical Encoding Rules )
     - DRE(Distinguished Encoding Rules )
 
+# windows
+  - [service port](https://support.microsoft.com/en-us/help/832017#method8)
+    ```
+    WSD (Web Service for Device)
+
+    SSDP(Simple Service Discover Protocol)
+    Get-NetFirewallRule -Name "*ssdp*" | Set-NetFirewallRule -Action Block
+    ```
 # todo
 - http header print using tshark
 - [network driver](https://stackoverflow.com/questions/7763321/libpcap-to-capture-10-gbps-nic)

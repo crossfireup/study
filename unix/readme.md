@@ -490,6 +490,10 @@
 
         until location
         u location 
+
+        # show entry point
+        info file
+        br *0x84040204
         ```
 
       - calling or reture from a function
@@ -569,7 +573,15 @@
       up n    up n frames
       down n 
       ```
+    
+    - print 
+      ```
+      set print pretty
 
+      set print object
+
+      show print asm-demangle
+      ```
     * Convenience Variables
       gdb provides convenience variables that you can use within gdb to hold on to a value and refer to it later
       - exist entirely within gdb
@@ -578,7 +590,12 @@
       - any name preceded by ‘$’ can be used for a convenience variable, unless it is one of the predefned 
         machine-specifc register names 
       ```
-      
+    
+    - tui
+      ```
+      C-x a
+      ```
+
     * usage:
       - debug daemon
         - vim non-stop.gdb

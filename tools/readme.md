@@ -387,7 +387,7 @@
   ndisasm -b 32 code.bin > code.asm
   ```
 
-- find
+- [find](https://www.gnu.org/software/findutils/manual/html_mono/find.html)
   ```
   -print0
               True; print the full file name a null character (instead of the newline character
@@ -396,9 +396,39 @@
               interpreted by programs that process the find output.  This
               option corresponds to the -0 option of xargs.
   # handle whitespace
-  find -type f -print0 | xargs -0 grep _NT_
+    ```bash
+    find -type f -print0 | xargs -0 grep _NT_
 
-  find -type f -exec echo '{}' +
+    find -type f -exec echo '{}' +
+    ```
+  - age ranges
+    ```bash
+    -atime -ctime -mtime
+    -amin -cmin -mmin
+
+    # Measure times from the beginning of today rather than from 24 hours ago
+    -daystart
+
+    find -maxdepth 1 -type f -atime +2 
+    find -type f -mmin -2 
+    ```
+
+  - compareing timestamp
+    ```bash
+     -newerXY reference
+       if timestamp ‘X’ of the file being considered is newer than timestamp ‘Y’ of the file reference. 
+      ‘a’    Last-access time of reference
+      ‘B’    Birth time of reference (when this is not known, the test cannot succeed)
+      ‘c’    Last-change time of reference
+      ‘m’    Last-modification time of reference
+      ‘t’    The reference argument is interpreted as a literal time, rather than the name of a file. See Date input formats, for a description of how the timestamp is understood. Tests of the form ‘-newerXt’ are valid but tests of the form ‘-newertY’ are not. 
+
+      find /usr -newermt "Feb 1"
+      # same as above 
+      touch -t 02010000 /tmp/stamp$$
+      find /usr -newer /tmp/stamp$$
+      rm -f /tmp/stamp$$
+    ```
 
 # other
   # ROPC
