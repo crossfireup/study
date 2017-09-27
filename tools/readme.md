@@ -939,6 +939,13 @@
     prefix $: rename sessions
 
     tmux -S /tmp/tmux/msf4 attach
+
+    tmux list-sessions 
+    # close all other sessions
+    tmux kill-sersion -a
+    # kill all sessions cleanly and graceful
+    tmux kill-server
+    pkill -f tmux
     ```
 
   * window

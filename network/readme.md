@@ -256,12 +256,13 @@
 
   - mergecap
     ```
-    mergecap -w all.pcap a.pcap b.pcap
+    # merge only same link layer
+    mergecap -F libpcap -w all.pcap a.pcap b.pcap
     ```
 
   - epan(Etheral Packet Analyzer)
 
-  - configure in ubuntu
+  - [configure in ubuntu](https://www.wireshark.org/docs/wsdg_html_chunked/index.html)
     ```
     # Get the development packages needed to build Wireshark
     apt-cache search libgcryp*
@@ -275,6 +276,14 @@
     # build
     ./autogen.sh
     ./configure --with-ssl --enable-setcap-install
+
+    - debug
+      ```
+      libtool --mode=execute gdb wireshark
+
+      apt install ddd
+      G_DEBUG=fatal_criticals libtool --mode=execute ddd wireshark
+      ```
 
 # [pf_ring](http://www.ntop.org/products/packet-capture/pf_ring/)
   - introduction
