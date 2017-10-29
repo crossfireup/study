@@ -453,6 +453,12 @@
       ```
         thread apply 1-4 backtrace/print $sp
         thread apply all backtrace full
+
+        info threads
+        thread thread-id
+        break a.c:31 thread 1 if var == 1
+        thread apply 1 2 break
+        thread find [regexp]
       ```
       
       * dynamic printf
