@@ -291,6 +291,21 @@
     - ZC(Zero Copy): no sk_buffer copy in libpcap, using mmap
     - DNA(Direct NIC Access)
 
+# network config
+  - ethtool
+    ```
+    ethtool -k eth1
+
+    ethtool -K eth1 gso off tso off
+
+    ifconfig eth1 mtu 9000
+    ip link set eth1 mtu 9000
+
+    netstat -i
+
+    ping -s 40000 -M do eth1
+    ```
+
 - windows
   - [TCP Chimney Offload overview](https://support.microsoft.com/en-us/help/951037/information-about-the-tcp-chimney-offload--receive-side-scaling--and-n#LetMeFixItMyselfAlways)
     - TCP Chimney Offload is a networking technology that helps transfer the workload from the CPU to a network adapter during network data transfer. 
@@ -336,9 +351,9 @@
 
 # codec
   - [ASN.1](http://www.itu.int/en/ITU-T/asn1/Pages/introduction.aspx)
-    - BRE(Basic Encoding Rules)
-    - CRE(Canonical Encoding Rules )
-    - DRE(Distinguished Encoding Rules )
+    - BER(Basic Encoding Rules)
+    - CER(Canonical Encoding Rules )
+    - DER(Distinguished Encoding Rules )
 
 # windows
   - [service port](https://support.microsoft.com/en-us/help/832017#method8)
