@@ -306,6 +306,19 @@
     ping -s 40000 -M do eth1
     ```
 
+  - send a record as a message
+    - set socket
+      - set tcp noelay
+        ```
+        IPPROTO_TCP TCP_NODELAY
+        ```
+      - set tcp cork and clear 
+      - set ip tos lowdelay
+        ```
+         IPPROTO_IP  IP_TOS IP_LOWDELAY
+        ```
+    - send with flag MSG_EOR
+
 - windows
   - [TCP Chimney Offload overview](https://support.microsoft.com/en-us/help/951037/information-about-the-tcp-chimney-offload--receive-side-scaling--and-n#LetMeFixItMyselfAlways)
     - TCP Chimney Offload is a networking technology that helps transfer the workload from the CPU to a network adapter during network data transfer. 
