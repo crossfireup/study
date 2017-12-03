@@ -319,6 +319,41 @@
         ```
     - send with flag MSG_EOR
 
+  - net namespace
+    ```
+    ip netns add net_ns1
+    ip netns list
+    ip netns exec net_ns1 bash
+    
+    # in another shell
+    ip link set dev eth0 netns net_ns1
+    ip netns identyfi `pidof bash`
+    ps -h -o pidns -p `pidof bash`
+    pgrep -a --ns `pdiof bash`
+    ip netns pids net_ns1
+
+     criu dump -D /path/to/image-dir -t PID
+     criu restore -D /path/to/image-dir
+    ```
+
+    - a dev config
+      ```
+      ip link add veth0 type veth peer name veth1
+      ip addr add 10.0.0.10/24 dev veth1 
+      ip link set veth1 up
+      ip link set veth1 netns net_ns1
+
+      ip addr add 10.0.0.20/24 dev veth0
+      ip link set veth0 up
+      ip link set veth1 netns net_ns2
+      ```
+
+    - usage
+      ```
+      # set back to default namespace
+      ip link set eth0 netns 1
+      ```
+      
 - windows
   - [TCP Chimney Offload overview](https://support.microsoft.com/en-us/help/951037/information-about-the-tcp-chimney-offload--receive-side-scaling--and-n#LetMeFixItMyselfAlways)
     - TCP Chimney Offload is a networking technology that helps transfer the workload from the CPU to a network adapter during network data transfer. 
