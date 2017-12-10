@@ -989,6 +989,8 @@
 
     set -g mode-mouse on
 
+    set-option -g history-limit 3000
+
     tmux kill-server && tmux
 
     # copy and paste using putty
@@ -1175,6 +1177,8 @@
 
   dpkg -s rtkit
   apt-cache show rtkit
+
+  yum install man-pages
   ```
 
 # sed
@@ -1182,6 +1186,61 @@
 - regex
     ```bash
     sed -E 's/.*("\w+").*/\1/g' test
+    ```
+
+# cgroup
+  - control group
+    ```
+    echo $$ > tasks
+    bash: echo: write error: No space left on device
+     cat /cgroup/cpuset/server/cpuset.mems
+
+     echo 0 /cgroup/cpuset/server/cpuset.mems
+    ```
+
+# virtualization
+  - lxc
+    ```
+     yum -y install epel-release
+     yum -y install lxc lxc-templates libcap-devel libcgroup busybox wget bridge-utils
+    ```
+
+  - [libvirt and kvm](https://www.howtoforge.com/how-to-install-kvm-and-libvirt-on-centos-6.2-with-bridged-networking)
+    ```
+    yum install kvm libvirt
+    modprobe kvm
+    # when error  Operation not supported
+    # using dmsg | grep kvm, check cpu virtualization enabled
+    modprobe kvm-intel
+    service libvirtd restart
+    chkconfig libvirt on
+
+    virsh -c qemu:///system sysinfo
+    virsh -c qemu+ssh://system sysinfo
+    ```
+
+- common
+  - bios info
+    - Desktop Management Interface
+      ```
+      # get BIOS infomation
+      dmidecode
+        Characteristics:
+                  64-bit capable
+                  Execute Protection
+                  Enhanced Virtualization
+
+
+      # check virtualization enabled: Intel VT(vmx) or AMD-V(svm)
+      cat /proc/cpuinfo | grep -e vmx -e svm --color
+      ```
+
+- gpg
+  - usage
+    ```
+    gpg --keyserver keyid
+    gpg --verify file.sig file
+    gpg -k keyid
     ```
     
 # todo

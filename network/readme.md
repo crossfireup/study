@@ -353,6 +353,53 @@
       # set back to default namespace
       ip link set eth0 netns 1
       ```
+
+- IPv6
+  - kernel support
+    ```
+    cat /sys/net/if_inet6
+    lsmod | grep ipv6
+    ```
+
+  - address type
+    - Link local address type
+      ```
+      fe8x:  <- currently the only one in use
+      fe9x:
+      feax:
+      febx:
+      ```
+    
+    - Site local address type
+      ```
+      fecx:  <- most commonly used
+      fedx:
+      feex:
+      fefx:
+      ```
+
+    - Unique Local IPv6 Unicast Addresses
+      ```
+      fcxx:
+      fdxx:  <- currently the only one in use
+      ```
+
+    - Global address type "(Aggregatable) global unicast"
+      ```
+      2xxx: 
+      3xxx:
+      ```
+  
+  - [tools](http://www.tldp.org/HOWTO/Linux+IPv6-HOWTO/)
+    ```
+    ping6 fe80::212:34ff:fe12:3456 
+    connect: Invalid argument
+
+    # specify interface,  Using link-local addresses for an IPv6 ping, the kernel not know through which (physically or virtual) device it must send the packet
+     ping6 -I eth1 -c 20  fe80::20c:29ff:fee5:d751
+
+     ping6 -c 1 fe80::20c:29ff:fee5:d751%eth1
+    ```
       
 - windows
   - [TCP Chimney Offload overview](https://support.microsoft.com/en-us/help/951037/information-about-the-tcp-chimney-offload--receive-side-scaling--and-n#LetMeFixItMyselfAlways)
