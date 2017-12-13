@@ -1074,6 +1074,17 @@ reader, updater, and reclaimer.
       find . | cpio --create --format='newc' > /tmp/newinitrd
       gzip newinitrd 
   
+  - udev
+    - [introduce](https://lists.freedesktop.org/archives/dbus/2010-April/012545.html)
+      ```
+      udev libudev
+      udev provides low-level access to the linux device tree. Allows programs to enumerate devices and their properties and get notifications when devices come and go.
+
+      dbus is a framework to allow programs to communicate with each other, securely, reliably, and with a high-level object-oriented programming interface.
+
+       Kernel --> udev --> Network Manager <--> D-Bus <--> Evolution
+       ```
+
   * gdb
     gdb --args bochs-bin -q -f bochsrc
 

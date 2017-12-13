@@ -1199,10 +1199,23 @@
     ```
 
 # virtualization
-  - lxc
+  - [lxc](http://www.itzgeek.com/how-tos/linux/centos-how-tos/setup-linux-container-with-lxc-on-centos-7-rhel-7.html)
     ```
      yum -y install epel-release
      yum -y install lxc lxc-templates libcap-devel libcgroup busybox wget bridge-utils
+
+     lxc-create -n test -t centos
+      /var/lib/lxc/test/tmp_root_pass
+
+    chroot /var/lib/lxc/test/rootfs passwd
+    
+    lxc-ls
+    lxc-info -n test
+    lxc-start -n test -d
+    lxc-console -n test -t 0
+       exit from console
+       “Ctrl+a” followed by “q”
+    lxc-stop -n test
     ```
 
   - [libvirt and kvm](https://www.howtoforge.com/how-to-install-kvm-and-libvirt-on-centos-6.2-with-bridged-networking)
@@ -1234,7 +1247,60 @@
       # check virtualization enabled: Intel VT(vmx) or AMD-V(svm)
       cat /proc/cpuinfo | grep -e vmx -e svm --color
       ```
+  
+  - histiry
+    ```.bashrc
+     # ignoreboth is shorthand for ignorespace and ignoredups.
+     HISTCONTROL=ignoreboth
+     HISTIGNORE='history -d*'
 
+     history -w; history -c; $EDITOR $HISTFILE; history -r
+
+  - pkg-config
+    - [glib](https://ftp.gnome.org/pub/gnome/sources/glib/)
+      - libffic
+      ```/usr/lib64/pkgconfig/libffi.pc
+      prefix=/usr
+      exec_prefix=/usr
+      libdir=/usr/lib64
+      includedir=/usr/include
+      major_version=5
+      version=5.0.6
+
+      Name: form
+      Description: libffi 5.0.6 add-on library
+      Version: ${version}
+      Libs: -L${libdir} -lform
+      Cflags: -I${includedir}
+      ```
+
+      - pcre
+        ```
+        ./confiugre --enable-utf
+
+         yum install gcc-c++
+        ```
+
+    - qemu
+      ```
+      yum groupinstall "Development Tools"
+      yum install gtk+-devel gtk2-devel
+
+      qemu-system-x86_64 -nographic -kernel bzImage -initrd initramfs-4.14.5  -hda hda.img  -append "root=/dev/hda console=ttyS0" 
+
+      qemu-system-x86_64 -kernel linux-3.9.2/arch/x86/boot/bzImage -serial stdio -append "root=/dev/ram0 console=ttyAMA0  console=ttyS0"
+
+      https://bugzilla.kernel.org/show_bug.cgi?id=60758
+      ```
+    - gprof gcov
+      - In order to write the gmon.out file properly, your program must exit normally
+        by returning from main or by calling exit
+        - [use with tricks](http://unix.ba/text/runtime-profiling-with-gprof/)
+          ```
+          gdb -p 
+          # call exit()
+          call write_gmon()
+          ```
 - gpg
   - usage
     ```
