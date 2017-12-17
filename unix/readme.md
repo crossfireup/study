@@ -1084,6 +1084,15 @@ reader, updater, and reclaimer.
 
        Kernel --> udev --> Network Manager <--> D-Bus <--> Evolution
        ```
+    
+    - usage
+      ```
+      udevadm info --query=all --path=/sys/class/net/eth0
+      udevadm test --action="remove" --path=/sys/class/net/eth0
+      udevadm trigger --action="remove" --sysname-match=eth0 --verbose 
+      udevadm monitor
+      ```
+
 
   * gdb
     gdb --args bochs-bin -q -f bochsrc
