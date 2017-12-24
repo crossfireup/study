@@ -460,6 +460,8 @@
       set cindent
       set smartindent
       set expandtab
+      set ignorecase
+      set smartcase
       syntax on
 
       # vim set backup and swp file position 
@@ -1230,6 +1232,30 @@
 
     virsh -c qemu:///system sysinfo
     virsh -c qemu+ssh://system sysinfo
+    ```
+
+- Sysvinit Upstart[git clone https://git.launchpad.net/~khurshid-alam/upstart https://github.com/yunit-io/upstart.git]
+  - init process
+    ```
+    # kernel call http://wiki.osdev.org/Kernel_Debugging
+    # https://github.com/torvalds/linux/blob/v4.9/Documentation/dev-tools/gdb-kernel-debugging.rst
+    # nokaslr to kernel cmdline:https://www.spinics.net/lists/newbies/msg59708.html
+    # https://stackoverflow.com/questions/11408041/how-to-debug-the-linux-kernel-with-gdb-and-qemu
+    git checkout v4.9
+    make mrproper
+    make x86_64_defconfig
+    cat <<EOF >.config-fragment
+    CONFIG_DEBUG_INFO=y
+    CONFIG_DEBUG_KERNEL=y
+    CONFIG_GDB_SCRIPTS=y
+    EOF
+    ./scripts/kconfig/merge_config.sh .config .config-fragment
+    make -j"$(nproc)"
+    qemu-system-x86_64 -kernel arch/x86/boot/bzImage \
+                      -initrd rootfs.cpio.gz -S -s
+    # INSTALL_PATH environment variable to change installation directory.
+    /sbin/init
+    /sbin/telinit
     ```
 
 - common
