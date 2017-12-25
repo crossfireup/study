@@ -1232,6 +1232,24 @@
 
     virsh -c qemu:///system sysinfo
     virsh -c qemu+ssh://system sysinfo
+
+    virsh domxml-from-native qemu-argv qemu_args  > kernel.xml
+
+    virsh create kernel.xml
+    virsh start kernel.xml
+
+    http://wiki.libvirt.org/page/Unable_to_connect_to_console_of_a_running_domain
+    <serial type='pty'>
+      <target port='0'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+    </console>
+
+    CTRL+Shift+5
+    CTRL+Shift+]
+
+    semanage fcontext -a -t virt_image_t "/vm(/.*)?"; restorecon -R /vm 
     ```
 
 - Sysvinit Upstart[git clone https://git.launchpad.net/~khurshid-alam/upstart https://github.com/yunit-io/upstart.git]
