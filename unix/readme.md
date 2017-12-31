@@ -2202,15 +2202,26 @@ reader, updater, and reclaimer.
 
     - state and mode
       - enforcing: selinux denys access based on selinux policies;
-      - permissive: selinux is not enforing, selinux does not deny access, but denies are logged for actions that 
-                    would deny if selinux is enforcing;
+      - permissive: selinux is not enforing, selinux does not deny access, but denies are logged for actions that would deny if selinux is enforcing;
     
     - 
 
     - tools
-      - Install semanage tools: sudo yum -y install policycoreutils-python
+      - Install semanage tools: 
+        ```
+        yum install policycoreutils policycoreutils-python selinux-policy selinux-policy-targeted libselinux-utils setroubleshoot-server setools setools-console mcstrans -y
+        ```
       - Allow port 88 for httpd: sudo semanage port -a -t http_port_t -p tcp 88
       - Allow port 8445 for httpd: sudo semanage port -a -t http_port_t -p tcp 8445
+
+    - usage
+      ```https://wiki.gentoo.org/wiki/SELinux/Tutorials/Where_to_find_SELinux_permission_denial_details
+      sestatus
+
+      find /sys -xdev -inum 30
+
+      ausearch  -m avc -p 78105 
+      ```
 
 
 # [rtirq](https://wiki.linuxaudio.org/wiki/system_configuration#rtirq)

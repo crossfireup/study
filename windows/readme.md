@@ -2605,6 +2605,18 @@
           - prepares CPU registers for the execution of Ntoskrnl.exe
       
         - calls the main function in Ntoskrnl.exe(KiSystemStartup)
+
+    - core parking
+      ```
+      regjump HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Power\PowerSettings\54533251-82be-4824-96c1-47b60b740d00\0cc5b647-c1df-4637-891a-dec35c318583
+
+      # cpuid.com
+      powercfg
+
+      Get-WmiObject -list "*power*" | format-table -AutoSize
+
+      Get-WmiObject -class Win32_Tpm -namespace root\CIMV2\Security\MicrosoftTpm
+      ```
 # MS15-050
   - 
 

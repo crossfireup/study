@@ -1252,6 +1252,9 @@
     semanage fcontext -a -t virt_image_t "/vm(/.*)?"; restorecon -R /vm 
     ```
 
+  - other
+    - virtme-run --installed-kernel --pwd
+
 - Sysvinit Upstart[git clone https://git.launchpad.net/~khurshid-alam/upstart https://github.com/yunit-io/upstart.git]
   - init process
     ```
@@ -1267,6 +1270,7 @@
     CONFIG_DEBUG_KERNEL=y
     CONFIG_GDB_SCRIPTS=y
     EOF
+    # https://kernelnewbies.org/Documents
     ./scripts/kconfig/merge_config.sh .config .config-fragment
     make -j"$(nproc)"
     qemu-system-x86_64 -kernel arch/x86/boot/bzImage \
