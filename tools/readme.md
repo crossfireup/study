@@ -1255,6 +1255,9 @@
   - other
     - virtme-run --installed-kernel --pwd
 
+    - [qemu to libvirtd](http://wiki.libvirt.org/page/QEMUSwitchToLibvirt)
+
+
 - Sysvinit Upstart[git clone https://git.launchpad.net/~khurshid-alam/upstart https://github.com/yunit-io/upstart.git]
   - init process
     ```

@@ -444,6 +444,29 @@
   - Kerberos
      - PAC stands for Privilege Attribute Certificate 
 
+  - [tun/tap](https://github.com/torvalds/linux/blob/master/Documentation/networking/tuntap.txt)
+    - TUN/TAP provides packet reception and transmission for user space programs
+      - [virtual network device](http://vtun.sourceforge.net/tun/faq.html)
+        Virtual network device can be viewed as a simple Point-to-Point or  Ethernet device, which instead of receiving packets from a physical  media, receives them from user space program and instead of sending
+        packets via physical media sends them to the user space program. 
+
+    - tunneling
+      - ipip
+      - gre
+      - sit
+      
+    - usage
+      ```
+      # Virtual Point-to-Point(TUN) and Ethernet(TAP) devices
+      # IP packets (with tun) or ethernet frames (with tap)
+      lsmod | grep tun
+      modprobe tun
+      mkdir /dev/net
+      mknod /dev/net/tun c 10 200
+      /dev/net/tun
+      udevadm info --query=all --name=net/tun
+       
+
 # codec
   - [ASN.1](http://www.itu.int/en/ITU-T/asn1/Pages/introduction.aspx)
     - BER(Basic Encoding Rules)

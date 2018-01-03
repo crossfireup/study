@@ -2221,6 +2221,13 @@ reader, updater, and reclaimer.
       find /sys -xdev -inum 30
 
       ausearch  -m avc -p 78105 
+
+      # https://wiki.centos.org/HowTos/SELinux
+      grep qemu-system /var/log/audit/audit.log  | audit2allow -m qemu_local > qemu_local.te
+      checkmodule -M -m qemu_local.te -o qemu_local.mod
+      semodule_package -o qemu_local.pp -m qemu_local.mod
+      semodule -i qemu_local.pp
+      # grep qemu-system /var/log/audit/audit.log  | audit2allow -M qemu_local
       ```
 
 
