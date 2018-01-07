@@ -2179,6 +2179,35 @@ reader, updater, and reclaimer.
 		Source          Destination     Gateway         Flags Metric Ref    Use Iface    MSS   Window irtt  TOS HHRef HHUptod     SpecDst
     ```
 
+# [IMA](https://sourceforge.net/p/linux-ima/wiki/Home/)
+  -  IMA maintains a runtime measurement list and, if anchored in a hardware Trusted Platform Module(TPM), an aggregate integrity value over this list.
+
+  - configure
+    ```
+    # Enabling IMA
+    # boot command line parameter 
+    ima=on
+
+    ima_audit= audit control
+    Format: { "0" | "1" }
+    0 -- integrity auditing messages. (Default)
+    1 -- enable additional informational integrity auditing messages.
+
+    ima_template= template used
+    Format: { "ima" | "ima-ng" | "ima-sig" }
+    NEW Linux 3.13 default: "ima-ng"
+
+    ima_hash= hash used
+    Format: { "sha1" | "md5" | "sha256" | "sha512" | "wp512" | ... }
+    'ima' template default: "sha1"
+    NEW Linux 3.13 default: "sha256"
+
+    ima_tcb
+
+    https://grsecurity.net/~spender/uderef.txt
+    ```
+
+
 # [SELinux](https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Security-Enhanced_Linux/sect-Security-Enhanced_Linux-Maintaining_SELinux_Labels_-Checking_the_Default_SELinux_Context.html)
   - introduction
     selinux checked after DAC, selinux policies won't be used if dac rules denys
