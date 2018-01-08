@@ -2265,3 +2265,5 @@ reader, updater, and reclaimer.
   cat /proc/interrupts 
    ps -eLo pid,cls,rtprio,pri,nice,cmd
   ```
+
+# [memory](https://lwn.net/Articles/229984/)

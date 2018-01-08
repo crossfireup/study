@@ -1359,6 +1359,17 @@
     gpg --verify file.sig file
     gpg -k keyid
     ```
+
+- manage windows
+  ```
+  wmic
+  net rpc
+  winexe
+  
+  pip install pipwin32
+  pip install wmi
+  pip install winrm
+  ```
     
 # todo
 - lex and yacc usage

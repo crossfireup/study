@@ -100,6 +100,14 @@
   
   * winmgmt.exe
 
+  * [winrs](https://msdn.microsoft.com/en-us/library/dd163506.aspx)
+    ```https://support.microsoft.com/en-us/help/555966
+    winrm quickconfig 
+
+    winrs -r:SEA-SC2 cscript %WINDIR%\system32\scregedit.wsf /ar 0
+    ```
+    
+
   * wmic:
     ```
     SERVICE WHERE CAPTION='TELNET' CALL STARTSERVICE
