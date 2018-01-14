@@ -7,6 +7,8 @@
   - AOSP stands for Android Open Source Project.
   - Stock Android is what Google provides in their Nexus devices.
   - CyanogenMod (pronounced /saɪ.'æn.oʊ.dʒɛn.mɒd/) is an enhanced open source firmware distribution for smartphones and tablet computers based on the Android mobile operating system. It offers features and options not found in the official firmware distributed by vendors of these devices.   
+  - [Android Internal](http://newandroidbook.com/)
+    - http://newandroidbook.com/files/ArtOfDalvik.pdf
 
 # android x86 
   * [7.0_x86](http://www.osboxes.org/android-x86/#android-x86-7_0-vmware) 
@@ -130,3 +132,8 @@
     - API(C, C++, Java) for making log entries and accessing logging messages
     - standalone program for viewing  log messages - logcat
     - ability to view and filter the log messages from the host machine (via eclipse or ddms)
+
+  - [JIT or AOT](https://www.ibm.com/support/knowledgecenter/en/SSSTCZ_3.0.0/com.ibm.wrt.rtlinux.doc.30/realtime/aot.html)
+    - Just-In-Time (JIT) compiler runs as a high-priority SCHED_OTHER thread, running above the priority of standard Java threads, but running below the priority of real-time threads
+    - Ahead-of-Time (AOT) compilation allows you to compile Java classes and methods before you run your code
+      precompile your code into a shared class cache using the AOT compiler

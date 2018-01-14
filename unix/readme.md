@@ -2267,3 +2267,10 @@ reader, updater, and reclaimer.
   ```
 
 # [memory](https://lwn.net/Articles/229984/)
+
+# system process
+  - watchdog
+    ```
+    watchdogd
+    /dev/watchdog
+    ```
