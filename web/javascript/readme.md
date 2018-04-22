@@ -8,6 +8,7 @@
 
 [Javascript resources](https://www.javascript.com/resources)
 
+[JavaScript Language Reference](https://docs.microsoft.com/en-us/scripting/javascript/javascript-language-reference)
  libraries (like jQuery)
  
  frameworks (like AngularJS, ReactJS and NodeJS)

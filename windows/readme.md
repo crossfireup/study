@@ -2452,6 +2452,12 @@
           WM_CTLCOLORSTATIC
           ```
 
+    - security
+      C:\ProgramData\Microsoft\Microsoft Security Client\Support    
+      ```
+      dir/o/s | findstr/r " Directory | bytes" >> folder_list.txt
+      ```      
+
 # windows internal
   1. subsystem
     * csrss - client/server runtime subsystem
