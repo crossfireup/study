@@ -1299,7 +1299,7 @@
       cat /proc/cpuinfo | grep -e vmx -e svm --color
       ```
   
-  - histiry
+  - history
     ```.bashrc
      # ignoreboth is shorthand for ignorespace and ignoredups.
      HISTCONTROL=ignoreboth

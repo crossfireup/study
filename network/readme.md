@@ -487,6 +487,14 @@
     - NDIS and NPF
     - BPF
 
+- proxy
+    - settings
+        '''
+        ALL_PROXY=ip:port
+        HTTP_PROXY=ip:port
+        HTTPS_PROXY=ip:port
+        '''
+
 # todo
 - http header print using tshark
 - [network driver](https://stackoverflow.com/questions/7763321/libpcap-to-capture-10-gbps-nic)
